@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="mainLogo.png" alt="Project Logo" width="200" align="center">
+  <img src="mainLogo.svg" alt="Project Logo" width="200" align="center">
 </p>
 Tafawouq is a peer-to-peer platform created specifically for King Saud University students to increase collaboration and academic success.
 
@@ -11,8 +11,8 @@ Tafawouq is a peer-to-peer platform created specifically for King Saud Universit
 - **Comment Filtration**: Sort comments by the most recent or highest-rated for better visibility.
 
 ## Technology Stack
-- **Frontend**: TBD
-- **Backend**: TBD
-- **Database**: TBD
+- **Frontend**: reactJS
+- **Backend**: Nodejs using ExpressJS framework
+- **Database**: PostgreSQL
 - **API Integration**: OpenAI API for quiz generation
 - **Others**: File handling for PDFs
