@@ -1,52 +1,12 @@
-import {
-  isEmail,
-  isEqualToOtherValue,
-  isEmpty,
-  hasMinLength,
-} from "../util/validation";
 import { useActionState } from "react";
 import { Link } from "react-router-dom";
 import { errorMapping } from "../util/errorMapping";
+import { handleSignupSubmission } from "../util/signupAction.js";
 export default function Signup() {
-  function handleSignupSubmission(prevFormState, formData) {
-    const email = formData.get("email");
-    const password = formData.get("password");
-    const confirmPassword = formData.get("confirmPassword");
-
-    let errors = [];
-
-    // Validate email
-    if (!isEmail(email)) {
-      errors.push("not email");
-    }
-
-    // Validate password length and emptiness
-    if (!hasMinLength(password, 8) || isEmpty(password)) {
-      errors.push(
-        "password is empty or has characters less than minimum length"
-      );
-    }
-
-    // Validate password and confirm password match
-    if (!isEqualToOtherValue(password, confirmPassword)) {
-      errors.push("password and confirm password does not match");
-    }
-
-    // Return errors if any exist
-    if (errors.length > 0) {
-      console.log(errors);
-      return { errors };
-    }
-
-    // If no errors, return null errors
-    return { errors: null };
-  }
-
   const [formState, formAction, pending] = useActionState(
     handleSignupSubmission,
     { errors: null }
   );
-  console.log(formState.errors);
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-br from-sky-50 to-sky-200">
@@ -64,6 +24,7 @@ export default function Signup() {
                 type="text"
                 id="email"
                 name="email"
+                defaultValue={formState.enteredValues?.email}
                 required
                 className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -77,6 +38,7 @@ export default function Signup() {
                 type="password"
                 id="password"
                 name="password"
+                defaultValue={formState.enteredValues?.password}
                 required
                 className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -90,6 +52,7 @@ export default function Signup() {
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
+                defaultValue={formState.enteredValues?.confirmPassword}
                 required
                 className="w-full p-3 mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
@@ -97,9 +60,7 @@ export default function Signup() {
             {formState.errors && (
               <ul>
                 {formState.errors.map((error) => (
-                  <li key={error}>
-                    {errorMapping(error)}
-                  </li>
+                  <li key={error}>{errorMapping(error)}</li>
                 ))}
               </ul>
             )}
