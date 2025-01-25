@@ -1,24 +1,32 @@
 // Libraries imports
 import express from "express"
-import pg from "pg";
 import session from "express-session";
 import passport from "passport";
 import { Strategy } from "passport-local";
 import env from 'dotenv'
+env.config()
 import flash from 'connect-flash'
 import bcryptjs from "bcryptjs"
+
+
 
 const app = express()
 
 
+
 // start coding
-env.config()
-const port = process.env.PORT
+
+
+import db from "./config/db.js"
+
+//import connectDb from './config/db.js';  // to conect with database
+//let db =connectDb()
+let  port = process.env.PORT
+
 const error505msg = "Sorry! It seems we have a problem with our servers. Please try again later."
 
-
 const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET,
+    secret: process.env.SESSION_SECRET ,
     resave: false,
     saveUninitialized: true,
     cookie: {
@@ -44,51 +52,26 @@ app.use((req, res, next) => {
 app.use(flash());
 
 
-let db
-if (process.env.DATABASE_URL) {
 
-    console.log('\x1b[38;5;123m%s\x1b[0m', 'Connected to the [Cloud] DB')
-    // for cloud
-    db = new pg.Client({
-        connectionString: process.env.DATABASE_URL, // Use the DATABASE_URL provided by Heroku
-        connectionTimeoutMillis: 5000, // 5 seconds timeout
-
-        ssl: {
-            rejectUnauthorized: false // Required for Heroku SSL connections
-        }
-    });
-} else {
-
-    console.log('\x1b[38;5;156m%s\x1b[0m', 'Connected to the [LOCAL] DB')
-
-    db = new pg.Client(
-        {
-            user: process.env.USER,
-            host: process.env.HOST,
-            database: process.env.DATABASE,
-            password: process.env.PASSWORD,
-            port: process.env.DATABASEPORT
-        }
-    )
-}
-db.connect();
 db.on('error', error => {
     console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
     console.log(error)
 })
 
-
 app.get("/", (req, res) => {
     res.json("Home page :) ")
 })
 
+
 // routers import:
 import coursesRouter from "./routers/courses_page.js"
 import registrationRouter from "./routers/registration_page.js"
+import userRouter from "./routers/user.js"
 
-// routers middlewares
+// routers   middlewares
 app.use(coursesRouter)
 app.use(registrationRouter)
+app.use(userRouter)
 
 
 app.listen(port, () => console.log(`Server listen to the port ${port}`))
