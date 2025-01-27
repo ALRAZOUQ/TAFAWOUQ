@@ -7,7 +7,7 @@ export default function Landing() {
           مرحباً بكم في تفوُق
         </h1>
       </div>
-
+      <img src="../assets/mainLogo.svg" alt="TAFAWOUQ Logo" />
       <p className="text-xl font-semibold text-center text-gray-700 mb-6">
         اختر ما تريد القيام به
       </p>
