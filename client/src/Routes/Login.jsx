@@ -34,7 +34,7 @@ export default function Login() {
               />
             </div>
 
-            <button className="w-full p-3 mt-4 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <button className="w-full p-3 mt-4 bg-TAF-100 text-white font-semibold rounded-lg hover:bg-TAF-300 focus:outline-none focus:ring-2 focus:ring-blue-500">
               تسجيل الدخول
             </button>
 
