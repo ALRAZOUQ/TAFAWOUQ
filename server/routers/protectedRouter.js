@@ -11,7 +11,7 @@ router.use(checkAuth);
 router.get('/userData', async (req, res) => {
   try {
     const { rows } = await db.query(
-      'SELECT id, name, isadmin FROM "user" WHERE id = $1',
+      'SELECT id, name,email, isadmin FROM "user" WHERE id = $1',
       [req.user.id]
     );
     

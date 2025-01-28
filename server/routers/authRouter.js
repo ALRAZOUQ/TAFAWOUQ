@@ -8,7 +8,7 @@ const router = express.Router();
 // Public routes (no authentication needed)
 router.post("/register", async (req, res) => {
   try {
-    console.log(req.body);
+    //console.log(req.body);
     const { name, email, password, isadmin } = req.body;
 
     // Check if user exists
@@ -27,10 +27,17 @@ router.post("/register", async (req, res) => {
     const newUser = await db.query(
       `INSERT INTO "user"(name, email, password, isadmin)
 	VALUES ( $1, $2, $3, $4) RETURNING *;`,
-      [name, email, hashedPassword,false]
+      [name, email, hashedPassword,isadmin]
     );
 
-    res.status(201).json(newUser.rows[0]); // 201 Created
+    // Log the user in
+    req.login(newUser.rows[0], (err) => {
+      if (err) {
+        return next(err);
+      }
+      const { id, name, email, isadmin } = newUser.rows[0];
+      res.status(201).json({ id, name, email, isadmin }); // 201 Created
+    });
   } catch (error) {
     res.status(500).json({ error: error.message }); // 500 Internal Server Error
   }
@@ -39,7 +46,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).json({
     message: "Logged in successfully",
-    user: { id: req.user.id, email: req.user.email, isadmin: req.user.isadmin },
+    user: { id: req.user.id, name : req.user.name, email: req.user.email, isadmin: req.user.isadmin , name : req.user.name},
   }); // 200 OK
 });
 
