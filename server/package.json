@@ -5,20 +5,24 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "author": "Abdulrahman Alrazouq",
   "license": "ISC",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "connect-flash": "^0.1.1",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
     "express-session": "^1.18.0",
+    "express-validator": "^7.2.1",
     "jquery": "^3.7.1",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
-    "pg": "^8.12.0"
+    "pg": "^8.12.0",
+    "postgres": "^3.4.5"
   },
   "devDependencies": {
     "nodemon": "^3.1.9"
