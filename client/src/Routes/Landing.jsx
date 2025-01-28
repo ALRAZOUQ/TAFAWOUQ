@@ -1,13 +1,15 @@
+import MainHeader from "../components/MainHeader";
+
 export default function Landing() {
   return (
     <div className="bg-[#f7fbff] text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4">
-      {/* Header Section */}
+      <MainHeader />
       <div className="text-center mb-8 animate-fadeIn">
         <h1 className="text-4xl font-bold text-[#0b8eca] mb-4">
           مرحباً بكم في
         </h1>
       </div>
-      <div className="w-full max-w-[600px] min-w-[100px] mx-auto">
+      <div className="w-full max-w-[400px] min-w-[100px] mx-auto">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           xmlnsXlink="http://www.w3.org/1999/xlink"
