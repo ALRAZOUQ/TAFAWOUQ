@@ -57,7 +57,7 @@ passport.use(new LocalStrategy({
       
       if (!isValid) return done(null, false);
       
-      return done(null, { id: user.id, email: user.email, isadmin: user.isadmin });
+      return done(null, { id: user.id, email: user.email, isadmin: user.isadmin ,name: user.name});
     } catch (error) {
       return done(error);
     }
@@ -68,9 +68,10 @@ passport.use(new LocalStrategy({
   passport.deserializeUser(async (id, done) => {
     try {
       const { rows } = await db.query(
-        'SELECT id, email , isadmin FROM "user" WHERE id = $1',
+        'SELECT id, email , isadmin ,name FROM "user" WHERE id = $1',
         [id]
       );
+      //console.log("test values" , rows[0])
       done(null, rows[0]);
     } catch (error) {
       done(error);

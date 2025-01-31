@@ -3,9 +3,16 @@ import main_logo from "../assets/mainLogo.svg";
 
 export default function MainHeader() {
   return (
+<<<<<<< HEAD
     <nav className="bg-TAF-100 p-4 flex items-center justify-between">
       <div className="order-3 md:order-1 max-w-[150px] min-w-[75px]">
         <img src={main_logo} className="w-max h-auto" alt="TAFAWOUQ LOGO" />
+=======
+    <nav className="bg-blue-600 p-4 flex items-center justify-between">
+      {/* Logo */}
+      <div className="order-3 md:order-1">
+        <h1 className="text-white font-bold text-xl">Project Logo</h1>
+>>>>>>> c9f060eebd4da8b8425364924101c6131b7d2671
       </div>
 
       {/* Search Bar */}
