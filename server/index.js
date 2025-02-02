@@ -9,7 +9,7 @@ import env from 'dotenv'
 import flash from 'connect-flash'
 import errorHandler from "./middleware/errorHandler.js";
 
-
+import cors from 'cors';
 
 const app = express()
 
@@ -88,13 +88,13 @@ passport.use(new LocalStrategy({
 
 
 
- /*
+ 
 // cross to prepare communicate with client server (React)
 app.use(cors({
-    origin: 'http://localhost:3000', //React link. we have to chek if will work normaly or not
+    origin: 'http://localhost:5173/', //React link. we have to check if will work normally or not
     credentials: true
   }));
-*/
+
  
 
 db.on('error', error => {
