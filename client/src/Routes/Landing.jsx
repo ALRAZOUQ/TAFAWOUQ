@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader";
 import main_logo from "../assets/mainLogo.svg";
 
@@ -5,7 +6,7 @@ export default function Landing() {
   return (
     <>
       <MainHeader />
-      <div className="bg-[#f7fbff] text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4">
+      <div className="bg-gradient-to-l from-TAFb-200 to-TAFb-100 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4">
         <div className="text-center mb-8 animate-fadeIn">
           <h1 className="text-4xl font-bold text-[#0b8eca] mb-4">
             مرحباً بكم في
@@ -18,20 +19,20 @@ export default function Landing() {
           اختر ما تريد القيام به
         </p>
         <div className="flex flex-col gap-4">
-          <a
-            href="/signup"
-            className="bg-[#0b8eca] text-white text-center py-3 rounded-lg hover:bg-[#097bb3] transition duration-300"
+          <Link
+            to="/signup"
+            className="bg-[#0b8eca] text-white text-center py-3 rounded-lg hover:opacity-75 active:opacity-50 transition duration-300"
           >
             الاشتراك
-          </a>
-          <a
-            href="/login"
-            className="bg-gray-100 text-[#0b8eca] text-center py-3 rounded-lg hover:bg-gray-200 transition duration-300"
+          </Link>
+          <Link
+            to="/login"
+            className="bg-gray-100 text-[#0b8eca] px-2 text-center py-3 rounded-lg hover:bg-gray-200 transition duration-300"
           >
             تسجيل الدخول
-          </a>
+          </Link>
         </div>
       </div>
-    </>
+    </> 
   );
 }

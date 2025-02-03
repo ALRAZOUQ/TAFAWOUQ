@@ -7,8 +7,15 @@ export default {
       },
       colors: {
         TAF: { 100: "#0b8eca", 200: "#1b8acb", 300: "#0a7dc4" },
+        TAFb: {
+          100: "#edf1f3",
+          200: "#dde3e8",
+          300: "#ced7dd",
+          400: "#bfcbd3",
+        },
       },
     },
   },
   plugins: [],
 };
+
