@@ -9,7 +9,7 @@ import {
 } from "../util/validation.js";
 export default function Signup() {
   function handleSignupSubmission(prevFormState, formData) {
-    const username = formData.get("name");
+    const username = formData.get("username");
     const email = formData.get("email");
     const password = formData.get("password");
     const confirmPassword = formData.get("confirmPassword");

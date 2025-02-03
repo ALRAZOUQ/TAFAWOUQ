@@ -27,7 +27,7 @@ router.post("/register", async (req, res) => {
     const newUser = await db.query(
       `INSERT INTO "user"(name, email, password, isadmin)
 	VALUES ( $1, $2, $3, $4) RETURNING *;`,
-      [name, email, hashedPassword,isadmin]
+      [name, email, hashedPassword,isadmin || false]
     );
 
     // Log the user in
@@ -36,7 +36,12 @@ router.post("/register", async (req, res) => {
         return next(err);
       }
       const { id, name, email, isadmin } = newUser.rows[0];
-      res.status(201).json({ id, name, email, isadmin }); // 201 Created
+      res.status(201).json({
+        message: "registered successfully",
+        user: { id: id, name : name, email: email, isadmin: isadmin},
+      }
+        
+      ); // 201 Created
     });
   } catch (error) {
     res.status(500).json({ error: error.message }); // 500 Internal Server Error
@@ -46,7 +51,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).json({
     message: "Logged in successfully",
-    user: { id: req.user.id, name : req.user.name, email: req.user.email, isadmin: req.user.isadmin , name : req.user.name},
+    user: { id: req.user.id, name : req.user.name, email: req.user.email, isadmin: req.user.isadmin },
   }); // 200 OK
 });
 

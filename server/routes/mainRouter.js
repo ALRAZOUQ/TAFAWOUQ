@@ -4,12 +4,12 @@ import authRouter from './authRouter.js';
 import protectedRouter from './protectedRouter.js';
 import adminRouter from './adminRouter.js';
 
-//here as classfication of the routers
+//here as classfication of the routes
 
 const mainRouter = express.Router();
-mainRouter.use('/auth', authRouter); // Public routers
-mainRouter.use('/protected', protectedRouter); // Authenticated routers
-mainRouter.use('/admin', adminRouter); // Admin-only routers
+mainRouter.use('/auth', authRouter); // Public routes
+mainRouter.use('/protected', protectedRouter); // Authenticated routes
+mainRouter.use('/admin', adminRouter); // Admin-only routes
 mainRouter.use(userRouter)
 
 
