@@ -18,7 +18,6 @@ export default function MainHeader() {
           />
         </h1>
 
-        
         <button
           className="md:hidden text-white focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
@@ -40,16 +39,6 @@ export default function MainHeader() {
             placeholder="إبحث عن المواد"
             className="w-1/2 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-cairo"
           />
-        </div>
-
-        
-        <div>
-          <Link
-            to="/login"
-            className="text-white bg-TAF-100 px-6 py-2 rounded-md hover:bg-blue-600 focus:ring-2 focus:ring-blue-300 focus:outline-none transition-all font-cairo"
-          >
-            تسجيل الدخول
-          </Link>
         </div>
       </div>
     </nav>
