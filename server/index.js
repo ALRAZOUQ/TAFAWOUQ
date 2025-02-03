@@ -91,7 +91,7 @@ passport.use(new LocalStrategy({
  
 // cross to prepare communicate with client server (React)
 app.use(cors({
-    origin: 'http://localhost:5173/', //React link. we have to check if will work normally or not
+    origin: 'http://localhost:5173', //React link. we have to check if will work normally or not
     credentials: true
   }));
 
