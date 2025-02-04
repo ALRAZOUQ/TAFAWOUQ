@@ -33,24 +33,7 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
         });
     }
   }, [coursesData, setCoursesData]);
-  // Only fetch the data one time then use
-  useEffect(() => {
-    if (!coursesData) {
-      axios
-        .get("auth/coursesTiteles")
-        .then((response) => {
-          const coursesArray = Array.isArray(response.data)
-            ? response.data
-            : [];
-          // console.log(response.data);
-          setCoursesData(coursesArray);
-          setfilterdCourses(coursesArray);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
-    }
-  }, [coursesData, setCoursesData]);
+
 
   /*note if the admin create new course we have to update the data stored in the context CourseContext */
 
@@ -60,13 +43,6 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
     setShowResults(value.length > 0);
 
     if (coursesData) {
-      setfilterdCourses(
-        coursesData.filter(
-          (course) =>
-            course.code.toLowerCase().includes(value.toLowerCase()) ||
-            course.name.toLowerCase().includes(value.toLowerCase())
-        )
-      );
       setfilterdCourses(
         coursesData.filter(
           (course) =>
@@ -91,7 +67,7 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
 
         
         <button
-          className="md:hidden text-white focus:outline-none"
+          className="md:hidden text-TAF-100 focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
