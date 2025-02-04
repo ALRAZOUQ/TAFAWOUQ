@@ -7,7 +7,7 @@ export default function MainHeader() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-[#002F4B] p-4 flex flex-col md:flex-row items-center justify-between">
+    <nav className="p-4 flex flex-col md:flex-row items-center justify-between border-2 border-TAFb-400 bg-gradient-to-l from-TAFb-200 to-TAFb-100 rounded-lg w-full">
       {/* Logo and Toggle Button */}
       <div className="flex items-center justify-between w-full md:w-auto">
         <h1 className="text-white font-bold text-xl md:text-2xl">
