@@ -6,16 +6,9 @@ export default {
         cairo: ["Cairo", "sans-serif"], // Add Cairo font
       },
       colors: {
-        TAF: { 100: "#0b8eca", 200: "#1b8acb", 300: "#0a7dc4" },
-        TAFb: {
-          100: "#edf1f3",
-          200: "#dde3e8",
-          300: "#ced7dd",
-          400: "#bfcbd3",
-        },
+        TAF: { 100: "#0b8eca", 200: "#e4f4fe", 300: "#d2ebfa" },//B3DDF5    for grediant  879097 in course inside the container
       },
     },
   },
   plugins: [],
 };
-
