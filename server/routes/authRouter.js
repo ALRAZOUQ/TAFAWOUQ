@@ -64,4 +64,16 @@ router.post("/logout", (req, res) => {
   });
 });
 
-export default router;
+
+router.get("/coursesTiteles", async (req, res) => {
+  try {
+    const courses = await db.query(`select id , name , code from course;`);
+    if (courses.rows.length === 0) {
+      return res.status(404).json({ error: "No courses found" });
+    }
+    res.status(200).json(courses.rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+    export default router;
