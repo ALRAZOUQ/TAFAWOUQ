@@ -1,13 +1,50 @@
-import { useState } from "react";
+import { useState, useEffect ,useContext } from "react";
 import { Link } from "react-router-dom";
-import { Menu, X } from "lucide-react"; // Icons for toggling
+import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
-
+import axios from "../api/axios";
+import { useCourseData } from "../context/CourseContext";
 export default function MainHeader() {
+  const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+ 
+  const [filterdCourses, setfilterdCourses] = useState(null);
+  const [showResults, setShowResults] = useState(false);
+// Use the context to get courses data
+const { coursesData, setCoursesData } = useCourseData();
+
+// Only fetch the data one time then use 
+useEffect(() => {
+  if (!coursesData) {
+    axios.get('auth/coursesTiteles')
+      .then((response) => {
+        const coursesArray = Array.isArray(response.data) ? response.data : [];
+        console.log(response.data);
+        setCoursesData(coursesArray);
+        setfilterdCourses(coursesArray);
+      })
+      .catch((error) => {
+        console.error("API Error:", error);
+      });
+  }
+}, [coursesData, setCoursesData]);
+
+/*note if the admin create new course we have to update the data stored in the context CourseContext */
+  const onSearch = (e) => {
+    const { value } = e.target;
+    setSearchInput(value);
+    setShowResults(value.length > 0);
+
+    if (coursesData) {
+      setfilterdCourses(coursesData.filter((course) =>
+      course.code.toLowerCase().includes(value.toLowerCase())||
+        course.name.toLowerCase().includes(value.toLowerCase())
+      ));
+    }
+  };
 
   return (
-    <nav className="bg-[#002F4B] p-4 flex flex-col md:flex-row items-center justify-between">
+    <nav className="bg-[#002F4B] p-4 flex flex-col md:flex-row items-center justify-between relative">
       {/* Logo and Toggle Button */}
       <div className="flex items-center justify-between w-full md:w-auto">
         <h1 className="text-white font-bold text-xl md:text-2xl">
@@ -17,7 +54,6 @@ export default function MainHeader() {
             alt="TAFAWOUQ LOGO"
           />
         </h1>
-
         <button
           className="md:hidden text-white focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
@@ -33,12 +69,44 @@ export default function MainHeader() {
         } md:flex-row md:justify-center`}
       >
         {/* Search Bar */}
-        <div className="w-full md:w-1/2 flex justify-center">
-          <input
-            type="text"
-            placeholder="إبحث عن المواد"
-            className="w-1/2 p-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-cairo"
-          />
+        <div className="w-full md:w-1/2 relative">
+          <div className="relative flex items-center">
+            <Search className="absolute left-3 h-5 w-5 text-gray-400" />
+            <input
+              type="text"
+              placeholder="إبحث عن المواد"
+              className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-cairo"
+              value={searchInput}
+              onChange={onSearch}
+              onFocus={() => setShowResults(searchInput.length > 0)}
+              onBlur={() => setTimeout(() => setShowResults(false), 200)}
+            />
+          </div>
+
+          {/* Search Results */}
+          {showResults && (
+            <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
+              <div className="max-h-60 overflow-y-auto">
+                {filterdCourses?.length === 0 ? (
+                  <div className="p-3 text-gray-500 font-cairo">لا توجد نتائج</div>
+                ) : (
+                  <ul className="py-2">
+                    {filterdCourses?.map((course) => (
+                      <li key={course.id} className="px-3 py-2 hover:bg-gray-100">
+                        <Link
+                          to={`/course/${course.id}`}
+                          className="block font-cairo text-lg hover:text-blue-500"
+                        >
+                          <p className="text-gray-700">{course.name} | <span className="font-bold text-gray-900">{course.code}</span></p>
+                         
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </nav>
