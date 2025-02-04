@@ -146,12 +146,7 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
                               {course.code}
                             </span>
                           </p>
-                          <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
-                            {course.name} |{" "}
-                            <span className="font-bold text-gray-900">
-                              {course.code}
-                            </span>
-                          </p>
+                          
                         </Link>
                       </li>
                     ))}
