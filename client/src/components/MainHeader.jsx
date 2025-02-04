@@ -8,11 +8,31 @@ export default function MainHeader() {
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
 const [isLogged, setIsLogged] = useState(false);//we have to update the state bases on userContext
+
   const [filterdCourses, setfilterdCourses] = useState(null);
   const [showResults, setShowResults] = useState(false);
   // Use the context to get courses data
   const { coursesData, setCoursesData } = useCourseData();
+  
 
+  // Only fetch the data one time then use
+  useEffect(() => {
+    if (!coursesData) {
+      axios
+        .get("auth/coursesTiteles")
+        .then((response) => {
+          const coursesArray = Array.isArray(response.data)
+            ? response.data
+            : [];
+          // console.log(response.data);
+          setCoursesData(coursesArray);
+          setfilterdCourses(coursesArray);
+        })
+        .catch((error) => {
+          console.error("API Error:", error);
+        });
+    }
+  }, [coursesData, setCoursesData]);
   // Only fetch the data one time then use
   useEffect(() => {
     if (!coursesData) {
@@ -33,6 +53,7 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
   }, [coursesData, setCoursesData]);
 
   /*note if the admin create new course we have to update the data stored in the context CourseContext */
+
   const onSearch = (e) => {
     const { value } = e.target;
     setSearchInput(value);
@@ -46,11 +67,18 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
             course.name.toLowerCase().includes(value.toLowerCase())
         )
       );
+      setfilterdCourses(
+        coursesData.filter(
+          (course) =>
+            course.code.toLowerCase().includes(value.toLowerCase()) ||
+            course.name.toLowerCase().includes(value.toLowerCase())
+        )
+      );
     }
   };
 
   return (
-    <nav className="bg-[#002F4B] p-4 flex flex-col md:flex-row items-center justify-between relative">
+    <nav className="p-4 flex flex-col md:flex-row items-center justify-between border-2 border-TAFb-400 bg-gradient-to-l from-TAFb-200 to-TAFb-100 rounded-lg w-full">
       {/* Logo and Toggle Button */}
       <div className="flex items-center justify-between w-full md:w-auto">
         <h1 className="text-white font-bold text-xl md:text-2xl">
@@ -97,6 +125,7 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
             <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
               <div className="max-h-60 overflow-y-auto">
                 {filterdCourses?.length === 0 ? (
+                  
                   <div className="p-3 text-gray-500 font-cairo">
                     لا توجد نتائج
                   </div>
@@ -111,6 +140,12 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
                           to={`/course/${course.id}`}
                           className="block font-cairo text-lg  "
                         >
+                          <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
+                            {course.name} |{" "}
+                            <span className="font-bold text-gray-900">
+                              {course.code}
+                            </span>
+                          </p>
                           <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
                             {course.name} |{" "}
                             <span className="font-bold text-gray-900">
@@ -164,3 +199,4 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
     </nav>
   );
 }
+
