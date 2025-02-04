@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader";
 import main_logo from "../assets/mainLogo.svg";
-
+//bg-gradient-to-l from-TAFb-200 to-TAFb-100   e4f4fe  #d2ebfa
 export default function Landing() {
   return (
-    <>
+    <div className="bg-TAF-300 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4 rounded-lg">
       <MainHeader />
       <div className="bg-gradient-to-l from-TAFb-200 to-TAFb-100 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4">
         <div className="text-center mb-8 animate-fadeIn">
