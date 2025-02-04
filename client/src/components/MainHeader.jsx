@@ -19,7 +19,7 @@ useEffect(() => {
     axios.get('auth/coursesTiteles')
       .then((response) => {
         const coursesArray = Array.isArray(response.data) ? response.data : [];
-        console.log(response.data);
+       // console.log(response.data);
         setCoursesData(coursesArray);
         setfilterdCourses(coursesArray);
       })
@@ -92,12 +92,12 @@ useEffect(() => {
                 ) : (
                   <ul className="py-2">
                     {filterdCourses?.map((course) => (
-                      <li key={course.id} className="px-3 py-2 hover:bg-gray-100">
+                      <li key={course.id} className="px-3 py-2 hover:bg-gray-100 group/searchResult">
                         <Link
                           to={`/course/${course.id}`}
-                          className="block font-cairo text-lg hover:text-blue-500"
+                          className="block font-cairo text-lg  "
                         >
-                          <p className="text-gray-700">{course.name} | <span className="font-bold text-gray-900">{course.code}</span></p>
+                          <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">{course.name} | <span className="font-bold text-gray-900">{course.code}</span></p>
                          
                         </Link>
                       </li>
