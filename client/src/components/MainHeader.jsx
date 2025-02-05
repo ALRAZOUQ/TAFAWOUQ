@@ -7,13 +7,12 @@ import { useCourseData } from "../context/CourseContext";
 export default function MainHeader() {
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-const [isLogged, setIsLogged] = useState(false);//we have to update the state bases on userContext
+  const [isLogged, setIsLogged] = useState(false); //we have to update the state bases on userContext
 
   const [filterdCourses, setfilterdCourses] = useState(null);
   const [showResults, setShowResults] = useState(false);
   // Use the context to get courses data
   const { coursesData, setCoursesData } = useCourseData();
-  
 
   // Only fetch the data one time then use
   useEffect(() => {
@@ -34,7 +33,6 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
     }
   }, [coursesData, setCoursesData]);
 
-
   /*note if the admin create new course we have to update the data stored in the context CourseContext */
 
   const onSearch = (e) => {
@@ -54,7 +52,7 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
   };
 
   return (
-    <nav className="p-4 flex flex-col md:flex-row items-center justify-between border-2 border-TAFb-400 bg-gradient-to-l from-TAFb-200 to-TAFb-100 rounded-lg w-full">
+    <nav className="p-4 flex flex-col md:flex-row items-center justify-between bg-transparent w-full  lg:max-h-[100px] xl:max-h-[100px]">
       {/* Logo and Toggle Button */}
       <div className="flex items-center justify-between w-full md:w-auto">
         <h1 className="text-white font-bold text-xl md:text-2xl">
@@ -65,14 +63,12 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
           />
         </h1>
 
-        
         <button
           className="md:hidden text-TAF-100 focus:outline-none"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
-        
       </div>
 
       {/* Navigation Links & Search Bar */}
@@ -101,7 +97,6 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
             <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
               <div className="max-h-60 overflow-y-auto">
                 {filterdCourses?.length === 0 ? (
-                  
                   <div className="p-3 text-gray-500 font-cairo">
                     لا توجد نتائج
                   </div>
@@ -122,7 +117,6 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
                               {course.code}
                             </span>
                           </p>
-                          
                         </Link>
                       </li>
                     ))}
@@ -133,9 +127,8 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
           )}
         </div>
 
-
-  {/* Additional Links */}
-   {/*
+        {/* Additional Links */}
+        {/*
   <div className="flex flex-col md:flex-row gap-2 md:gap-8 mt-4 md:mt-0 justify-center items-center ">
   <Link to="/" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo">
        القائمة الرئيسية
@@ -149,25 +142,28 @@ const [isLogged, setIsLogged] = useState(false);//we have to update the state ba
   </div>
   */}
 
-  {/* Sign Up Button mobile */}
+        {/* Sign Up Button mobile */}
 
- 
-  {isLogged ?(  <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  ">
-     سجل الخروج
-        </button>):(
-      <button className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
-     سجل الدخول
-        </button>)}
-
+        {isLogged ? (
+          <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  ">
+            سجل الخروج
+          </button>
+        ) : (
+          <button className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
+            سجل الدخول
+          </button>
+        )}
       </div>
       {/* Desktop Sign Up Button */}
-      {isLogged ?( <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap ">
-      سجل الخروج
-        </button>):(
-      <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap ">
-      سجل الدخول
-        </button>)}
+      {isLogged ? (
+        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap ">
+          سجل الخروج
+        </button>
+      ) : (
+        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap ">
+          سجل الدخول
+        </button>
+      )}
     </nav>
   );
 }
-
