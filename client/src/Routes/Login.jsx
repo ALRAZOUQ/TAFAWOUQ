@@ -3,7 +3,7 @@ import { useActionState } from "react";
 import { isEmail, isEmpty } from "../util/validation";
 import { errorMapping } from "../util/errorMapping";
 export default function Login() {
-  function loginhandler(prevFormState, formData) {
+  function login_handler(prevFormState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
     let errors = [];
@@ -27,7 +27,7 @@ export default function Login() {
 
     return { errors: null };
   }
-  const [formState, formAction, pending] = useActionState(loginhandler, {
+  const [formState, formAction, pending] = useActionState(login_handler, {
     errors: null,
   });
   return (

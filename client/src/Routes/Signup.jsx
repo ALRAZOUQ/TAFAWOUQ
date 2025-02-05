@@ -8,7 +8,7 @@ import {
   hasMinLength,
 } from "../util/validation.js";
 export default function Signup() {
-  function handleSignupSubmission(prevFormState, formData) {
+  function handle_Signup_Submission(prevFormState, formData) {
     const username = formData.get("username");
     const email = formData.get("email");
     const password = formData.get("password");
@@ -55,14 +55,14 @@ export default function Signup() {
   }
 
   const [formState, formAction, pending] = useActionState(
-    handleSignupSubmission,
+    handle_Signup_Submission,
     { errors: null }
   );
 
   return (
     <div className="h-screen flex items-center justify-center flex-col bg-TAF-300">
       {/* Responsive container */}
-      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto rounded border-2 border-gray-300 bg-TAF-300">
+      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto rounded border-2 border-gray-300 bg-TAF-300 mt-6">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">
           {/* Responsive heading */}
           <h2 className="text-xl sm:text-2xl font-semibold text-center text-gray-700 mb-4 sm:mb-6 font-cairo">

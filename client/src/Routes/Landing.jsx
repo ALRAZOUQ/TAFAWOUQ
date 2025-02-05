@@ -4,7 +4,7 @@ import main_logo from "../assets/mainLogo.svg";
 //bg-gradient-to-l from-TAFb-200 to-TAFb-100   e4f4fe  #d2ebfa
 export default function Landing() {
   return (
-    <div className="bg-TAF-300 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4 rounded-lg">
+    <div className="bg-gradient-to-b from-TAF-200 from-40%  via-gray-200  to-TAF-200 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4 rounded-lg">
       <MainHeader />
       <div className="w-full max-w-[400px] min-w-[100px] mx-auto">
         <img src={main_logo} alt="KSU logo" className="w-full h-auto" />
