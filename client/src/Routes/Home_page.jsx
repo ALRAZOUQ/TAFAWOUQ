@@ -1,6 +1,9 @@
 import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader.jsx";
 
+import { Link } from "react-router-dom";
+import MainHeader from "../components/MainHeader.jsx";
+
 export default function Home_page() {
   const courses = [
     {
@@ -108,6 +111,171 @@ export default function Home_page() {
       title: "Cybersecurity",
       description: "Protect systems from cyber threats.",
     },
+    {
+      id: 44,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 433625432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 434625,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4253235,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 436425,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 43452423,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 463435,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4543,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4421,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 44,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 433625432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 434625,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4253235,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 436425,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 43452423,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 463435,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4543,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4421,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 44,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 433625432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 434625,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4253235,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 436425,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 43452423,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 463435,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4543,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4432,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
+    {
+      id: 4421,
+      title: "Cybersecurity",
+      description: "Protect systems from cyber threats.",
+    },
   ];
   const course_container = `mt-10 mb-10 max-h-96 ${
     courses.length > 6 ? "overflow-y-scroll" : undefined
@@ -115,7 +283,7 @@ export default function Home_page() {
 
   return (
     <div className="h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
-      <MainHeader/>
+      <MainHeader />
       <div className={course_container}>
         {courses.map((course) => (
           <Link>
