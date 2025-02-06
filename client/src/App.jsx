@@ -8,18 +8,19 @@ import After_login from "./Routes/After_login";
 
 
 const router = createBrowserRouter([
-  { path: "/signup", element: <Signup /> },
-  { path: "/", element: <Landing />, errorElement: <Error404Page /> },
-  { path: "/login", element: <Login /> },
-  { path: "/home", element: <Home_page/> },
+  {
+    path: "/",
+    element: <Landing />,
+    errorElement: <Error404Page />,
+    children: [],
+  },
+  { path: "home", element: <Home_page /> }, //relative paths so we can navigate to it easily without clashes
+  { path: "signup", element: <Signup /> },
+  { path: "login", element: <Login /> },
   { path: "/After_login", element: <After_login /> },
 ]);
 function App() {
-  return (
-    
-      <RouterProvider router={router} />
-    
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
