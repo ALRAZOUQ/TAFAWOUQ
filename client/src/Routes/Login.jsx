@@ -31,7 +31,7 @@ export default function Login() {
     errors: null,
   });
   return (
-    <div className="h-screen flex items-center justify-center bg-TAF-300">
+    <div className="h-screen flex items-center justify-center bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
       {/* Responsive container */}
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto rounded shadow-md bg-TAF-300 border-2 border-gray-300">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">

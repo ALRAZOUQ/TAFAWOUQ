@@ -53,8 +53,8 @@ export default function MainHeader() {
   };
 
   return (
-    <div className="fixed top-0 left-0 w-full shadow-md z-50 bg-transparent">
-      <nav className="p-4 flex flex-col md:flex-row items-center justify-between bg-transparent w-full  lg:max-h-[100px] xl:max-h-[100px]">
+    <div className="w-full  shadow-md z-50 bg-transparent mb-0">
+      <nav className="p-4 flex flex-col md:flex-row items-center justify-between  bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px]">
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">

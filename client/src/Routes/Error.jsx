@@ -1,6 +1,6 @@
 export default function Error404Page() {
   return (
-    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-br from-sky-100 to-sky-300">
+    <div className="h-screen flex flex-col items-center justify-center bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
       <div className="text-center">
         <svg
           xmlns="http://www.w3.org/2000/svg"

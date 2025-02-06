@@ -114,7 +114,8 @@ export default function Home_page() {
   } bg-gray-100 shadow-inner shadow-gray-300 rounded-lg w-3/4 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 scrollbar-thumb-blue-500`;
 
   return (
-    <div className="h-screen w-full bg-gray-300 flex justify-center items-center p-6">
+    <div className="h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
+      <MainHeader/>
       <div className={course_container}>
         {courses.map((course) => (
           <Link>
