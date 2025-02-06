@@ -1,12 +1,13 @@
 import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader";
 import main_logo from "../assets/mainLogo.svg";
+import MainFooter from "../components/MainFooter";
 //bg-gradient-to-l from-TAFb-200 to-TAFb-100   e4f4fe  #d2ebfa
 export default function Landing() {
   return (
-    <div className="bg-gradient-to-b from-TAF-200 from-40%  via-gray-200  to-TAF-200 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4 rounded-lg">
+    <div className="bg-TAF-300 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center px-4 rounded-lg">
       <MainHeader />
-      <div className="w-full max-w-[400px] min-w-[100px] mx-auto">
+      <div className="w-full max-w-[400px] min-w-[100px] mx-auto mt-12">
         <img src={main_logo} alt="KSU logo" className="w-full h-auto" />
       </div>
       <div className="shadow-md rounded-2xl p-6 max-w-2xl mx-auto mt-10 text-gray-800 shadow-gray-400">
@@ -64,6 +65,9 @@ export default function Landing() {
         >
           تسجيل الدخول
         </Link>
+      </div>
+      <div>
+        <MainFooter />
       </div>
     </div>
   );

@@ -1,3 +1,6 @@
+import { Link } from "react-router-dom";
+import MainHeader from "../components/MainHeader.jsx";
+
 export default function Home_page() {
   const courses = [
     {
@@ -107,22 +110,24 @@ export default function Home_page() {
     },
   ];
   const course_container = `mt-10 mb-10 max-h-96 ${
-    courses.length > 9 ? "overflow-y-scroll" : undefined
-  } bg-gray-200 shadow-inner shadow-gray-300 rounded-lg w-3/4 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6`;
+    courses.length > 6 ? "overflow-y-scroll" : undefined
+  } bg-gray-100 shadow-inner shadow-gray-300 rounded-lg w-3/4 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 scrollbar-thumb-blue-500`;
 
   return (
     <div className="h-screen w-full bg-gray-300 flex justify-center items-center p-6">
       <div className={course_container}>
         {courses.map((course) => (
-          <div
-            key={course.id}
-            className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all"
-          >
-            <h2 className="text-xl font-semibold text-gray-800">
-              {course.title}
-            </h2>
-            <p className="text-gray-600 mt-2">{course.description}</p>
-          </div>
+          <Link>
+            <div
+              key={course.id}
+              className="bg-gradient-to-b from-TAF-200 via-gray-300 to-TAF-300 p-4 rounded-lg shadow-md hover:shadow-lg transition-all"
+            >
+              <h2 className="text-xl font-semibold text-gray-800">
+                {course.title}
+              </h2>
+              <p className="text-gray-600 mt-2">{course.description}</p>
+            </div>
+          </Link>
         ))}
       </div>
     </div>
