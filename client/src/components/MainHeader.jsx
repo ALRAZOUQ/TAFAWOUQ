@@ -4,8 +4,7 @@ import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
 import axios from "../api/axios";
 import { useCourseData } from "../context/CourseContext";
-import { Outlet } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+
 export default function MainHeader() {
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);

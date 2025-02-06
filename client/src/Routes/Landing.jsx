@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader";
 import main_logo from "../assets/mainLogo.svg";
 import MainFooter from "../components/MainFooter";
-//bg-gradient-to-l from-TAFb-200 to-TAFb-100   e4f4fe  #d2ebfa
+
 export default function Landing() {
   return (
     <>

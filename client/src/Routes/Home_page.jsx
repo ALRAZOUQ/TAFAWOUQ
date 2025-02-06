@@ -1,9 +1,6 @@
 import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader.jsx";
 
-import { Link } from "react-router-dom";
-import MainHeader from "../components/MainHeader.jsx";
-
 export default function Home_page() {
   const courses = [
     {
