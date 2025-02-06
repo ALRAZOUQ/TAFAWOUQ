@@ -1,294 +1,20 @@
 import { Link } from "react-router-dom";
 import MainHeader from "../components/MainHeader.jsx";
+import { courses } from "../dummy-data/dummyData.js";
 
-export default function Home_page() {
-  const courses = [
-    {
-      id: 1,
-      title: "Web Development",
-      description: "Learn HTML, CSS, and JavaScript.",
-    },
-    {
-      id: 2,
-      title: "Data Structures",
-      description: "Understand algorithms and data structures.",
-    },
-    {
-      id: 32,
-      title: "Machine Learning",
-      description: "Introduction to AI and ML models.",
-    },
-    {
-      id: 443,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 47,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 45,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 41,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 421,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 42,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 43,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 44,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 433625432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 434625,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4253235,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 436425,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 43452423,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 463435,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4543,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4421,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 44,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 433625432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 434625,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4253235,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 436425,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 43452423,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 463435,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4543,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4421,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 44,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 433625432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 434625,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4253235,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 436425,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 43452423,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 463435,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4543,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4421,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 44,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 433625432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 434625,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4253235,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 436425,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 43452423,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 463435,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4543,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4432,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-    {
-      id: 4421,
-      title: "Cybersecurity",
-      description: "Protect systems from cyber threats.",
-    },
-  ];
-  const course_container = `mt-10 mb-10 max-h-96 ${
-    courses.length > 6 ? "overflow-y-scroll" : undefined
-  } bg-gray-100 shadow-inner shadow-gray-300 rounded-lg w-3/4 p-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 scrollbar-thumb-blue-500`;
-
+export default function HomePage() {
   return (
     <>
       <MainHeader />
-      <div className="h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex  justify-center items-center p-6">
-        <div className={course_container}>
+      <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
+        <div
+          className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 
+                        grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 
+                        overflow-auto max-h-screen min-h-0 scrollbar-thumb-blue-500"
+        >
           {courses.map((course) => (
-            <Link>
-              <div
-                key={course.id}
-                className="bg-gradient-to-b from-TAF-200 via-gray-300 to-TAF-300 p-4 rounded-lg shadow-md hover:shadow-lg transition-all"
-              >
+            <Link key={course.id}>
+              <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all">
                 <h2 className="text-xl font-semibold text-gray-800">
                   {course.title}
                 </h2>
@@ -296,6 +22,17 @@ export default function Home_page() {
               </div>
             </Link>
           ))}
+
+          {/* Add Course Box */}
+          <Link to="/courses">
+            <div
+              className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dotted border-gray-400 p-3 rounded-lg cursor-pointer 
+                            hover:bg-gray-300 transition-all text-gray-600 text-lg font-semibold"
+            >
+              <span className="text-4xl">➕</span>
+              <p>Add a New Course</p>
+            </div>
+          </Link>
         </div>
       </div>
     </>
