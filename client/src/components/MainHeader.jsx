@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link ,useNavigate} from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
 import axios from "../api/axios";
 import { useCourseData } from "../context/CourseContext";
 import { useAuth } from "../context/authContext";
 export default function MainHeader() {
+  const navigate = useNavigate();
   const { logout , isAuthorized } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
@@ -51,6 +52,10 @@ export default function MainHeader() {
     }
   };
 
+  const handleLogout = () => {
+    if(logout()) 
+    navigate("/");
+  };
   return (
     <div className="w-full  shadow-md z-50 bg-transparent mb-0">
       <nav className="p-4 flex flex-col md:flex-row items-center justify-between  bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px]">
@@ -146,7 +151,7 @@ export default function MainHeader() {
           {/* Sign Up Button mobile */}
 
         {isAuthorized ? (
-          <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  " onClick={logout}>
+          <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  " onClick={handleLogout}>
             تسجيل الخروج
           </button>
         ) : (
@@ -157,7 +162,7 @@ export default function MainHeader() {
       </div>
       {/* Desktop Sign Up Button */}
       {isAuthorized ? (
-        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap " onClick={logout}>
+        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap " onClick={handleLogout}>
           تسجيل الخروج
         </button>
       ) : (
