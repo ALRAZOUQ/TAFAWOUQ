@@ -17,7 +17,7 @@ router.post("/register", async (req, res) => {
     ]);
 
     if (existingUser.rows.length > 0) {
-      return res.status(409).json({ error: "User already exists" }); // 409 Conflict
+      return res.status(409).json({ success: false, message: "An account with this already exists" }); // 409 Conflict
     }
 
     // Hash password
@@ -44,12 +44,13 @@ router.post("/register", async (req, res) => {
       ); // 201 Created
     });
   } catch (error) {
-    res.status(500).json({ error: error.message }); // 500 Internal Server Error
+    res.status(500).json({  success: false ,message:"Internal Server Error" }); // 500 Internal Server Error
   }
 });
 
 router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).json({
+    success: true,
     message: "Logged in successfully",
     user: { id: req.user.id, name : req.user.name, email: req.user.email, isadmin: req.user.isadmin },
   }); // 200 OK
@@ -57,10 +58,13 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
 
 router.post("/logout", (req, res) => {
   req.logout((err) => {
-    if (err) return res.status(500).json({ error: "Logout failed" }); // 500 Internal Server Error
-    req.session.destroy();
+    try {
+      req.session.destroy();
     res.clearCookie("connect.sid");
-    res.status(200).json({ message: "Logged out successfully" }); // 200 OK
+    res.status(200).json({ success: true, message: "Logged out successfully" }); // 200 OK
+    } catch (error) {
+      return res.status(500).json({success: false, message: "Logout failed" }); // 500 Internal Server Error
+    }
   });
 });
 
@@ -69,11 +73,11 @@ router.get("/coursesTiteles", async (req, res) => {
   try {
     const courses = await db.query(`select id , name , code from course;`);
     if (courses.rows.length === 0) {
-      return res.status(404).json({ error: "No courses found" });
+      return res.status(404).json({success: false, message: "No courses found" });
     }
     res.status(200).json(courses.rows);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).json({success: false, message: error.message });
   }
 });
     export default router;

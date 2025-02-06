@@ -4,11 +4,11 @@ import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
 import axios from "../api/axios";
 import { useCourseData } from "../context/CourseContext";
+import { useAuth } from "../context/authContext";
 export default function MainHeader() {
+  const { logout , isAuthorized } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const [isLogged, setIsLogged] = useState(false); //we have to update the state bases on userContext
-
   const [filterdCourses, setfilterdCourses] = useState(null);
   const [showResults, setShowResults] = useState(false);
   // Use the context to get courses data
@@ -144,25 +144,29 @@ export default function MainHeader() {
 
         {/* Sign Up Button mobile */}
 
-        {isLogged ? (
-          <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  ">
-            سجل الخروج
+        {isAuthorized ? (
+          <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  " onClick={logout}>
+            تسجيل الخروج
           </button>
         ) : (
-          <button className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
-            سجل الدخول
-          </button>
+          <Link to="/login" className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
+            تسجيل الدخول
+          </Link>
         )}
       </div>
       {/* Desktop Sign Up Button */}
-      {isLogged ? (
-        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap ">
-          سجل الخروج
+      {isAuthorized ? (
+        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap " onClick={logout}>
+          تسجيل الخروج
         </button>
       ) : (
-        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap ">
-          سجل الدخول
-        </button>
+       
+        <Link
+        to="/login"
+        className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap "
+      >
+        تسجيل الدخول
+      </Link>
       )}
     </nav>
   );

@@ -1,6 +1,8 @@
-import { useActionState } from "react";
-import { Link } from "react-router-dom";
+import { useActionState , useEffect} from "react";
+import { Link ,useNavigate} from "react-router-dom";
 import { errorMapping } from "../util/errorMapping";
+import axios from "../api/axios";
+import { useAuth } from "../context/authContext";
 import {
   isEmail,
   isEqualToOtherValue,
@@ -8,7 +10,11 @@ import {
   hasMinLength,
 } from "../util/validation.js";
 export default function Signup() {
-  function handle_Signup_Submission(prevFormState, formData) {
+  const { setUserStateLogin } = useAuth(); // to update the context of the user
+  const navigate = useNavigate();
+
+
+  async function handle_Signup_Submission(prevFormState, formData) {
     const username = formData.get("username");
     const email = formData.get("email");
     const password = formData.get("password");
@@ -50,14 +56,48 @@ export default function Signup() {
       };
     }
 
-    // If no errors, return null errors
-    return { errors: null };
-  }
+    //this is the code that will be executed if the form is valid
+    try {
+      const response = await axios.post("auth/register", {
+        "name":username ,
+        "email": email,
+        "password": password
+    });
 
+      if (response.status === 201) {
+        setUserStateLogin(response.data.user);
+        return { success: true, message: response.data.message };
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 409) {
+          return { errors: ["An account with this email already exists"] };
+        } else {
+          return { errors: [error.response.data.message] };
+        }
+      } else {
+        console.error("An error occurred while sending the request");
+        return {
+          errors: [error.message] || [
+            "An error occurred while sending the request",
+          ],
+        };
+      }
+    }
+    
+  }
+  
   const [formState, formAction, pending] = useActionState(
     handle_Signup_Submission,
     { errors: null }
   );
+
+  // Redirect to the After_login if the user is register sucsessfully 
+  useEffect(() => {
+    if (formState.success) {
+      navigate("/After_login");
+    }
+  }, [formState.success, navigate]);
 
   return (
     <div className="h-screen flex items-center justify-center flex-col bg-TAF-300">

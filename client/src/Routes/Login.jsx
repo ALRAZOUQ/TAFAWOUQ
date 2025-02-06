@@ -1,9 +1,16 @@
-import { Link } from "react-router-dom";
-import { useActionState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useActionState, useEffect } from "react";
 import { isEmail, isEmpty } from "../util/validation";
 import { errorMapping } from "../util/errorMapping";
+import axios from "../api/axios";
+import { useAuth } from "../context/authContext";
+
 export default function Login() {
-  function login_handler(prevFormState, formData) {
+  const { setUserStateLogin } = useAuth();// to update the context of the user
+  const navigate = useNavigate();
+
+
+  async function login_handler(prevFormState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
     let errors = [];
@@ -25,11 +32,42 @@ export default function Login() {
       };
     }
 
-    return { errors: null };
+    //this is the code that will be executed if the form is valid
+    try {
+      const response = await axios.post("auth/login", { email, password });
+
+      if (response.status === 200) {
+        setUserStateLogin(response.data.user);
+        return { success: true, message: response.data.message };
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 401) {
+          return { errors: ["email or password is incorrect"] };
+        } else {
+          return { errors: [error.response.data.message] };
+        }
+      } else {
+        console.error("An error occurred while sending the request");
+        return {
+          errors: [error.message] || [
+            "An error occurred while sending the request",
+          ],
+        };
+      }
+    }
   }
+  
   const [formState, formAction, pending] = useActionState(login_handler, {
     errors: null,
   });
+
+  // Redirect to the After_login if the user is logged in
+  useEffect(() => {
+    if (formState.success) {
+      navigate("/After_login");
+    }
+  }, [formState.success, navigate]);
   return (
     <div className="h-screen flex items-center justify-center bg-TAF-300">
       {/* Responsive container */}
