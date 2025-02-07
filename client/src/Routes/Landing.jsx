@@ -3,36 +3,7 @@ import MainHeader from "../components/MainHeader";
 import main_logo from "../assets/mainLogo.svg";
 import MainFooter from "../components/MainFooter";
 import { motion } from "framer-motion";
-import {
-  FaClipboardList,
-  FaCalendarAlt,
-  FaCalculator,
-  FaComments,
-  FaQuestionCircle,
-} from "react-icons/fa";
-
-const features = [
-  {
-    icon: <FaClipboardList className="text-4xl text-TAF-100" />,
-    text: "مراجعات المقررات: شارك تقييماتك وساعد زملاءك في اختيار الأنسب.",
-  },
-  {
-    icon: <FaCalendarAlt className="text-4xl text-TAF-100" />,
-    text: "جدولة المقررات: قم بتثبيت المقررات في جدولك الدراسي لمتابعتها بسهولة.",
-  },
-  {
-    icon: <FaCalculator className="text-4xl text-TAF-100" />,
-    text: "حساب المعدل التراكمي: أداة لحساب ومتابعة معدلك بدقة.",
-  },
-  {
-    icon: <FaComments className="text-4xl text-TAF-100" />,
-    text: "مناقشات فعالة: تبادل المعرفة والنصائح الأكاديمية مع زملائك.",
-  },
-  {
-    icon: <FaQuestionCircle className="text-4xl text-TAF-100" />,
-    text: "اختبارات تفاعلية: اختبر معلوماتك من خلال الاختبارات المخصصة.",
-  },
-];
+import { features } from "../non-changeable-data/features.jsx";
 
 export default function Landing() {
   return (
@@ -53,20 +24,16 @@ export default function Landing() {
           />
         </div>
 
-        <p className="text-center mb-6 text-2xl">
+        <p className="text-center mb-10 text-2xl">
           بيئة تفاعلية تجمع طلاب الجامعة لتبادل الخبرات والمعارف ومشاركة الآراء
           حول المسارات الدراسية والمقررات الأكاديمية.
         </p>
-
-        <h3 className="font-semibold mb-6 text-center text-2xl">
-          🚀 💡 ماذا نقدم؟
-        </h3>
 
         <div className="flex flex-col gap-10 w-full justify-center items-center">
           {features.map((feature, index) => (
             <motion.div
               key={index}
-              className="bg-white shadow-lg rounded-xl px-4 py-8 flex items-center gap-4 text-xl border-x-4 border-TAF-300 w-3/5"
+              className="bg-white shadow-lg rounded-xl px-4 py-8 flex items-center gap-4 text-xl border-x-4 border-TAF-300 w-2/5"
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}

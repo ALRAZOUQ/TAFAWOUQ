@@ -1,8 +1,17 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import MainHeader from "../components/MainHeader.jsx";
 import { courses } from "../dummy-data/dummyData.js";
-
+import { useAuth } from "../context/authContext";
+import { useEffect } from "react";
 export default function HomePage() {
+  const navigate = useNavigate();
+  const { isAuthorized } = useAuth(); // Get authorization status from context
+
+  useEffect(() => {
+    if (!isAuthorized) {
+      navigate("/"); // Redirects correctly
+    }
+  }, [isAuthorized, navigate]);
   return (
     <>
       <MainHeader />
@@ -10,7 +19,7 @@ export default function HomePage() {
         <div
           className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 
                         grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 
-                        overflow-auto max-h-screen min-h-0 scrollbar-thumb-blue-500"
+                         max-h-max min-h-0 scrollbar-thumb-blue-500 my-16"
         >
           {courses.map((course) => (
             <Link key={course.id}>
