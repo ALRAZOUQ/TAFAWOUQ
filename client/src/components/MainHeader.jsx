@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Link ,useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
 import axios from "../api/axios";
@@ -7,7 +7,7 @@ import { useCourseData } from "../context/CourseContext";
 import { useAuth } from "../context/authContext";
 export default function MainHeader() {
   const navigate = useNavigate();
-  const { logout , isAuthorized } = useAuth();
+  const { logout, isAuthorized } = useAuth();
   const [searchInput, setSearchInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [filterdCourses, setfilterdCourses] = useState(null);
@@ -53,8 +53,7 @@ export default function MainHeader() {
   };
 
   const handleLogout = () => {
-    if(logout()) 
-    navigate("/");
+    if (logout()) navigate("/");
   };
   return (
     <div className="w-full  shadow-md z-50 bg-transparent mb-0">
@@ -83,55 +82,56 @@ export default function MainHeader() {
             isOpen ? "flex flex-col gap-4" : "hidden"
           } md:flex-row md:justify-center`}
         >
-          {/* Search Bar */}
-          <div className="w-full md:w-1/2 xl:w-1/4 relative">
-            <div className="relative flex items-center">
-              <Search className="absolute left-3 h-5 w-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="إبحث عن المواد"
-                className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-cairo"
-                value={searchInput}
-                onChange={onSearch}
-                onFocus={() => setShowResults(searchInput.length > 0)}
-                onBlur={() => setTimeout(() => setShowResults(false), 200)}
-              />
-            </div>
-
-            {/* Search Results */}
-            {showResults && (
-              <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
-                <div className="max-h-60 overflow-y-auto">
-                  {filterdCourses?.length === 0 ? (
-                    <div className="p-3 text-gray-500 font-cairo">
-                      لا توجد نتائج
-                    </div>
-                  ) : (
-                    <ul className="py-2">
-                      {filterdCourses?.map((course) => (
-                        <li
-                          key={course.id}
-                          className="px-3 py-2 hover:bg-gray-100 group/searchResult"
-                        >
-                          <Link
-                            to={`/course/${course.id}`}
-                            className="block font-cairo text-lg  "
-                          >
-                            <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
-                              {course.name} |{" "}
-                              <span className="font-bold text-gray-900">
-                                {course.code}
-                              </span>
-                            </p>
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
+          {isAuthorized && (
+            <div className="w-full md:w-1/2 xl:w-1/4 relative">
+              <div className="relative flex items-center">
+                <Search className="absolute left-3 h-5 w-5 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="إبحث عن المواد"
+                  className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-cairo"
+                  value={searchInput}
+                  onChange={onSearch}
+                  onFocus={() => setShowResults(searchInput.length > 0)}
+                  onBlur={() => setTimeout(() => setShowResults(false), 200)}
+                />
               </div>
-            )}
-          </div>
+
+              {/* Search Results */}
+              {showResults && (
+                <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
+                  <div className="max-h-60 overflow-y-auto">
+                    {filterdCourses?.length === 0 ? (
+                      <div className="p-3 text-gray-500 font-cairo">
+                        لا توجد نتائج
+                      </div>
+                    ) : (
+                      <ul className="py-2">
+                        {filterdCourses?.map((course) => (
+                          <li
+                            key={course.id}
+                            className="px-3 py-2 hover:bg-gray-100 group/searchResult"
+                          >
+                            <Link
+                              to={`/course/${course.id}`}
+                              className="block font-cairo text-lg  "
+                            >
+                              <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
+                                {course.name} |{" "}
+                                <span className="font-bold text-gray-900">
+                                  {course.code}
+                                </span>
+                              </p>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Additional Links */}
           {/*
@@ -150,31 +150,39 @@ export default function MainHeader() {
 
           {/* Sign Up Button mobile */}
 
+          {isAuthorized ? (
+            <button
+              className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  "
+              onClick={handleLogout}
+            >
+              تسجيل الخروج
+            </button>
+          ) : (
+            <Link
+              to="/login"
+              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo "
+            >
+              تسجيل الدخول
+            </Link>
+          )}
+        </div>
+        {/* Desktop Sign Up Button */}
         {isAuthorized ? (
-          <button className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  " onClick={handleLogout}>
+          <button
+            className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap "
+            onClick={handleLogout}
+          >
             تسجيل الخروج
           </button>
         ) : (
-          <Link to="/login" className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
+          <Link
+            to="/login"
+            className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap "
+          >
             تسجيل الدخول
           </Link>
         )}
-      </div>
-      {/* Desktop Sign Up Button */}
-      {isAuthorized ? (
-        <button className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap " onClick={handleLogout}>
-          تسجيل الخروج
-        </button>
-      ) : (
-       
-        <Link
-        to="/login"
-        className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap "
-      >
-        تسجيل الدخول
-      </Link>
-      )}
-    </nav>
+      </nav>
     </div>
   );
 }
