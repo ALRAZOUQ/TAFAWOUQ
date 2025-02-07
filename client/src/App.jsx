@@ -5,16 +5,19 @@ import Error404Page from "./Routes/Error";
 import Landing from "./Routes/Landing";
 import Home_page from "./Routes/Home_page";
 import After_login from "./Routes/After_login";
-
+import RootLayout from "./Routes/RootLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Landing />,
+    element: <RootLayout />,
     errorElement: <Error404Page />,
-    children: [],
+    children: [
+      { path: "home", element: <Home_page /> },
+      { index: true, path: "", element: <Landing /> },
+    ],
   },
-  { path: "home", element: <Home_page /> }, //relative paths so we can navigate to it easily without clashes
+  //relative paths so we can navigate to it easily without clashes
   { path: "signup", element: <Signup /> },
   { path: "login", element: <Login /> },
   { path: "/After_login", element: <After_login /> },
