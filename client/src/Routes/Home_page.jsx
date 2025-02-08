@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { courses } from "../dummy-data/dummyData.js";
+import { courses } from "../dummy-data/dummyData.jsx";
 import { useAuth } from "../context/authContext";
 import { useEffect } from "react";
 export default function HomePage() {

@@ -95,7 +95,7 @@ export default function Signup() {
   // Redirect to the After_login if the user is register sucsessfully 
   useEffect(() => {
     if (formState.success) {
-      navigate("/After_login");
+      navigate("/home");
     }
   }, [formState.success, navigate]);
 

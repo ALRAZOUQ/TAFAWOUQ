@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
 import axios from "../api/axios";
@@ -61,15 +61,17 @@ export default function MainHeader() {
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
-            <img
-              src={main_logo}
-              className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 object-contain"
-              alt="TAFAWOUQ LOGO"
-            />
+            <Link to={isAuthorized ? "/home" : "/"}>
+              <img
+                src={main_logo}
+                className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 object-contain"
+                alt="TAFAWOUQ LOGO"
+              />
+            </Link>
           </h1>
 
           <button
-            className="md:hidden text-TAF-100 focus:outline-none"
+            className="md:hidden text-TAF-100 focus:outline-none "
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -77,6 +79,7 @@ export default function MainHeader() {
         </div>
 
         {/* Navigation Links & Search Bar */}
+
         <div
           className={`w-full md:flex md:items-center md:gap-8  ${
             isOpen ? "flex flex-col gap-4" : "hidden"
@@ -130,6 +133,20 @@ export default function MainHeader() {
                   </div>
                 </div>
               )}
+            </div>
+          )}
+          {isAuthorized && (
+            <div className="flex flex-col md:flex-row gap-2 md:gap-8 mt-4 md:mt-0 justify-center items-center mr-24 ">
+              <NavLink
+                className={({ isActive }) =>
+                  isActive
+                    ? "text-gray-700 hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo underline"
+                    : "text-gray-700 hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo"
+                }
+                to="/courses"
+              >
+                المواد
+              </NavLink>
             </div>
           )}
 

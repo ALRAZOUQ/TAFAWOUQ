@@ -541,3 +541,21 @@ export const courses = [
     description: "Protect systems from cyber threats.",
   },
 ];
+export const coursesP = [
+  { code: "CSC111", name: "basics", description: "something", avgrating: 4 },
+  { code: "CSC131", name: "basics", description: "something", avgrating: 3 },
+  { code: "CSC141", name: "basics", description: "something", avgrating: 3 },
+  { code: "CSC151", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC1431", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC151243", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC15421", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC151243", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC154321", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC123551", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC154231", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC1542341", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC15521", name: "basics", description: "something", avgrating: 2 },
+  { code: "CSC15561", name: "basics", description: "something", avgrating: 2 },
+  
+
+];

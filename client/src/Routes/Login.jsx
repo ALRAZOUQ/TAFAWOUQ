@@ -6,9 +6,8 @@ import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 
 export default function Login() {
-  const { setUserStateLogin } = useAuth();// to update the context of the user
+  const { setUserStateLogin } = useAuth(); // to update the context of the user
   const navigate = useNavigate();
-
 
   async function login_handler(prevFormState, formData) {
     const email = formData.get("email");
@@ -57,7 +56,7 @@ export default function Login() {
       }
     }
   }
-  
+
   const [formState, formAction, pending] = useActionState(login_handler, {
     errors: null,
   });
@@ -65,7 +64,7 @@ export default function Login() {
   // Redirect to the After_login if the user is logged in
   useEffect(() => {
     if (formState.success) {
-      navigate("/After_login");
+      navigate("/home");
     }
   }, [formState.success, navigate]);
   return (
