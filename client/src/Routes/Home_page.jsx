@@ -35,7 +35,7 @@ export default function HomePage() {
             className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dotted border-gray-400 p-3 rounded-lg cursor-pointer 
                             hover:bg-gray-300 transition-all text-gray-600 text-lg font-semibold"
           >
-            <span className="text-4xl">➕</span>
+            <span className="text-6xl">+</span>
             <p>Add a New Course</p>
           </div>
         </Link>

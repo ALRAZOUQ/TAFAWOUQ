@@ -1,6 +1,6 @@
 // authContext.js
-import React, { createContext, useContext, useState ,useEffect } from 'react';
-import  axios  from '../api/axios';
+import React, { createContext, useContext, useState, useEffect } from "react";
+import axios from "../api/axios";
 
 const AuthContext = createContext(null);
 
@@ -8,7 +8,7 @@ export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     isAuthorized: false,
     user: null,
-    isLoading: true
+    isLoading: true,
   });
 
   useEffect(() => {
@@ -17,7 +17,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuthStatus = async () => {
     try {
-      const response = await axios.get('protected/userData');
+      const response = await axios.get("protected/userData");
       console.log("checkAuthStatus is run");
       if (response.status === 200) {
         setAuthState({
@@ -26,9 +26,9 @@ export const AuthProvider = ({ children }) => {
             id: response.data.id,
             name: response.data.name,
             email: response.data.email,
-            isAdmin: response.data.isadmin
+            isAdmin: response.data.isadmin,
           },
-          isLoading: false
+          isLoading: false,
         });
       }
     } catch (error) {
@@ -37,16 +37,16 @@ export const AuthProvider = ({ children }) => {
         setAuthState({
           isAuthorized: false,
           user: null,
-          isLoading: false
+          isLoading: false,
         });
       }
     }
   };
-/**
- * 
- * @param {*} userData 
- * 
- */
+  /**
+   *
+   * @param {*} userData
+   *
+   */
   const setUserStateLogin = (userData) => {
     setAuthState({
       isAuthorized: true,
@@ -54,27 +54,27 @@ export const AuthProvider = ({ children }) => {
         id: userData.id,
         name: userData.name,
         email: userData.email,
-        isAdmin: userData.isadmin
+        isAdmin: userData.isadmin,
       },
-      isLoading: false
+      isLoading: false,
     });
   };
 
   const logout = async () => {
     try {
-      const response = await axios.post('auth/logout');
-      
+      const response = await axios.post("auth/logout");
+
       if (response.status === 200) {
         setAuthState({
           isAuthorized: false,
           user: null,
-          isLoading: false
+          isLoading: false,
         });
         // You might want to redirect to login page here
         return true;
       }
     } catch (error) {
-      console.error('Logout failed:', error);
+      console.error("Logout failed:", error);
       // You might want to show an error message to the user
       return false;
     }
@@ -85,7 +85,9 @@ export const AuthProvider = ({ children }) => {
   }
 
   return (
-    <AuthContext.Provider value={{ ...authState, setUserStateLogin, logout, checkAuthStatus }}>
+    <AuthContext.Provider
+      value={{ ...authState, setUserStateLogin, logout, checkAuthStatus }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -94,7 +96,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

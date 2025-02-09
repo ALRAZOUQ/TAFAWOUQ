@@ -171,7 +171,7 @@ export default function MainHeader() {
   */}
 
           {/* Sign Up Button mobile */}
-          {isAuthorized && <ThreeDotMenu />}
+
           {isAuthorized ? (
             <button
               className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  "
