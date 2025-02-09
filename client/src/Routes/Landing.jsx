@@ -29,7 +29,7 @@ export default function Landing() {
         {features.map((feature, index) => (
           <motion.div
             key={index}
-            className="bg-white shadow-lg rounded-xl px-4 py-8 flex items-center gap-4 text-xl border-x-4 border-TAF-300 w-2/5"
+            className="bg-gray-100 shadow-lg rounded-xl px-4 py-8 flex items-center gap-4 text-xl border-x-4 border-TAF-300 w-2/5"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}

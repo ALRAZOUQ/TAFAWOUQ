@@ -5,6 +5,7 @@ import main_logo from "../assets/mainLogo.svg";
 import axios from "../api/axios";
 import { useCourseData } from "../context/CourseContext";
 import { useAuth } from "../context/authContext";
+import ThreeDotMenu from "./ThreeDotMenu";
 export default function MainHeader() {
   const navigate = useNavigate();
   const { logout, isAuthorized } = useAuth();
@@ -136,7 +137,11 @@ export default function MainHeader() {
             </div>
           )}
           {isAuthorized && (
-            <div className="flex flex-col md:flex-row gap-2 md:gap-8 mt-4 md:mt-0 justify-center items-center mr-24 ">
+            <div
+              className={`md:flex md:items-center md:gap-8  ${
+                isOpen ? "flex flex-col gap-4" : "hidden"
+              } md:flex-row md:justify-center`}
+            >
               <NavLink
                 className={({ isActive }) =>
                   isActive
@@ -166,7 +171,7 @@ export default function MainHeader() {
   */}
 
           {/* Sign Up Button mobile */}
-
+          {isAuthorized && <ThreeDotMenu />}
           {isAuthorized ? (
             <button
               className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  "
@@ -183,22 +188,7 @@ export default function MainHeader() {
             </Link>
           )}
         </div>
-        {/* Desktop Sign Up Button */}
-        {isAuthorized ? (
-          <button
-            className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap "
-            onClick={handleLogout}
-          >
-            تسجيل الخروج
-          </button>
-        ) : (
-          <Link
-            to="/login"
-            className="hidden md:block bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo w-fit whitespace-nowrap "
-          >
-            تسجيل الدخول
-          </Link>
-        )}
+        <ThreeDotMenu />
       </nav>
     </div>
   );

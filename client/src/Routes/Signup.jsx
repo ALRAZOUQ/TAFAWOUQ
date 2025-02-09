@@ -1,5 +1,5 @@
-import { useActionState , useEffect} from "react";
-import { Link ,useNavigate} from "react-router-dom";
+import { useActionState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { errorMapping } from "../util/errorMapping";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
@@ -12,7 +12,6 @@ import {
 export default function Signup() {
   const { setUserStateLogin } = useAuth(); // to update the context of the user
   const navigate = useNavigate();
-
 
   async function handle_Signup_Submission(prevFormState, formData) {
     const username = formData.get("username");
@@ -59,10 +58,10 @@ export default function Signup() {
     //this is the code that will be executed if the form is valid
     try {
       const response = await axios.post("auth/register", {
-        "name":username ,
-        "email": email,
-        "password": password
-    });
+        name: username,
+        email: email,
+        password: password,
+      });
 
       if (response.status === 201) {
         setUserStateLogin(response.data.user);
@@ -84,15 +83,14 @@ export default function Signup() {
         };
       }
     }
-    
   }
-  
+
   const [formState, formAction, pending] = useActionState(
     handle_Signup_Submission,
     { errors: null }
   );
 
-  // Redirect to the After_login if the user is register sucsessfully 
+  // Redirect to the After_login if the user is register sucsessfully
   useEffect(() => {
     if (formState.success) {
       navigate("/home");
@@ -102,7 +100,7 @@ export default function Signup() {
   return (
     <div className="h-screen flex items-center justify-center flex-col bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
       {/* Responsive container */}
-      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto rounded border-2 border-gray-300 bg-TAF-300 mt-6">
+      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto border-y-8 border-TAF-300 bg-gray-50 rounded-lg shadow-md mt-6">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">
           {/* Responsive heading */}
           <h2 className="text-xl sm:text-2xl font-semibold text-center text-gray-700 mb-4 sm:mb-6 font-cairo">
