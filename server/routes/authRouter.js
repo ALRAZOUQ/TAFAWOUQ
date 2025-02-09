@@ -80,4 +80,56 @@ router.get("/coursesTiteles", async (req, res) => {
     res.status(500).json({success: false, message: error.message });
   }
 });
+
+router.get("/courses", async (req, res) => {
+  try {
+    const courses = await db.query(`SELECT
+    c.*,
+    COALESCE(ROUND(r.avgRating, 2), 0.00) AS avgRating,
+    COALESCE(ROUND(g.avgGrade, 2), 0.00) AS avgGrade,
+    COALESCE(r.num_raters, 0) AS numOfRaters
+FROM
+    course c
+LEFT JOIN (
+    SELECT
+        courseId,
+        AVG(value) AS avgRating,
+        COUNT(DISTINCT creatorId) AS num_raters
+    FROM
+        rate
+    GROUP BY
+        courseId
+) r ON c.id = r.courseId
+LEFT JOIN (
+    SELECT
+        courseId,
+        AVG(value) AS avgGrade
+    FROM
+        grade
+    GROUP BY
+        courseId
+) g ON c.id = g.courseId;`);
+    if (courses.rows.length === 0) {
+      return res.status(404).json({success: false, message: "No courses found" });
+    }
+    const camelCaseCourses = courses.rows.map(course => ({
+      id: course.id,
+      name: course.name,
+      code: course.code,
+      overview: course.overview,
+      creditHours: course.credithours,
+      creatorId: course.creatorid,
+      avgRating: course.avgrating,
+      avgGrade: course.avggrade,
+      numOfRaters: course.numofraters
+    }));
+    res.status(200).json({
+      success: true,
+      message: "Courses retrieved successfully",
+      courses: camelCaseCourses,
+    });
+  } catch (error) {
+    res.status(500).json({success: false, message: error.message });
+  }
+});
     export default router;
