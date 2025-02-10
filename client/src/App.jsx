@@ -6,6 +6,8 @@ import Landing from "./Routes/Landing";
 import Home_page from "./Routes/Home_page";
 import RootLayout from "./Routes/RootLayout";
 import CoursesPage from "./Routes/CoursesPage";
+import 'react-toastify/dist/ReactToastify.css'; // Import CSS
+import { ToastContainer } from 'react-toastify';
 
 const router = createBrowserRouter([
   {
@@ -23,7 +25,21 @@ const router = createBrowserRouter([
   { path: "login", element: <Login /> },
 ]);
 function App() {
-  return <RouterProvider router={router} />;
+  return ( <>
+    <RouterProvider router={router} />
+    <ToastContainer
+        position="top-center"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
+  </>);
 }
 
 export default App;

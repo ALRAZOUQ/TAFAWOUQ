@@ -19,7 +19,7 @@ export default function HomePage() {
   const fetchCourses = useCallback(async () => {
     try {
       const response = await axios.get("protected/currentSchedule");
-      //console.log(response.data); // i do not know why it is printing the data twice
+      console.log(response.data); // i do not know why it is printing the data twice
       if (response.status === 200) {
         setscheduleCourses((prevCourses) =>
           JSON.stringify(prevCourses) !== JSON.stringify(response.data.courses)

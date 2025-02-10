@@ -3,13 +3,33 @@ import { FiMoreVertical } from "react-icons/fi";
 import { useAuth } from "../context/authContext";
 import { useNavigate } from "react-router-dom";
 import LogoutConformation from "./LogOutConformation";
+import { toast } from "react-toastify";
 
 export default function ThreeDotMenu() {
   const navigate = useNavigate();
   const { logout, isAuthorized } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false); // New state to prevent unmounting
-
+const handleLogout = async () => {
+    
+    try {
+      const flag=await logout();
+      console.log("Logout successful"); // Debugging log
+      if(flag){toast.success('تم تسجيل الخروج بنجاح', { // Arabic success message
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        rtl: true, // Key for RTL support
+      });}
+      
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
   return (
     <div className="relative md:inline-block text-left hidden">
       {/* Kebab Button */}
@@ -31,7 +51,7 @@ export default function ThreeDotMenu() {
             //   }}
             // />
             <button
-              onClick={logout}
+              onClick={(handleLogout) }
               className="block w-full text-center px-4 py-2 hover:bg-gray-100"
             >
               تسجيل الخروج

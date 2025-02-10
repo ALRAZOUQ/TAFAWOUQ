@@ -6,6 +6,8 @@ import axios from "../api/axios";
 import { useCourseData } from "../context/CourseContext";
 import { useAuth } from "../context/authContext";
 import ThreeDotMenu from "./ThreeDotMenu";
+import { toast } from "react-toastify";
+
 export default function MainHeader() {
   const navigate = useNavigate();
   const { logout, isAuthorized } = useAuth();
@@ -53,9 +55,28 @@ export default function MainHeader() {
     }
   };
 
-  const handleLogout = () => {
-    if (logout()) navigate("/");
+  const handleLogout = async () => {
+    
+    try {
+      const flag=await logout();
+      console.log("Logout successful"); // Debugging log
+      if(flag){toast.success('تم تسجيل الخروج بنجاح', { // Arabic success message
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+        rtl: true, // Key for RTL support
+      });}
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
   };
+
+
   return (
     <div className="w-full  shadow-md z-50 bg-transparent mb-0">
       <nav className="p-4 flex flex-col md:flex-row items-center justify-between  bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px]">

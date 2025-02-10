@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { errorMapping } from "../util/errorMapping";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
+import { toast } from 'react-toastify';
 import {
   isEmail,
   isEqualToOtherValue,
@@ -64,6 +65,17 @@ export default function Signup() {
       });
 
       if (response.status === 201) {
+        toast.success('تم تسجيل الدخول بنجاح!', { // Arabic success message
+                   
+                  autoClose: 3000,
+                  hideProgressBar: true,
+                  closeOnClick: true,
+                  pauseOnHover: true,
+                  draggable: true,
+                  progress: undefined,
+                  theme: "light",
+                  rtl: true, // Key for RTL support
+                });
         setUserStateLogin(response.data.user);
         return { success: true, message: response.data.message };
       }

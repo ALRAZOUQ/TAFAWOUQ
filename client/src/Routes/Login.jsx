@@ -4,6 +4,7 @@ import { isEmail, isEmpty } from "../util/validation";
 import { errorMapping } from "../util/errorMapping";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
+import { toast } from 'react-toastify';
 
 export default function Login() {
   const { setUserStateLogin } = useAuth(); // to update the context of the user
@@ -37,6 +38,19 @@ export default function Login() {
 
       if (response.status === 200) {
         setUserStateLogin(response.data.user);
+        
+        toast.success('تم تسجيل الدخول بنجاح!', { // Arabic success message
+           
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          rtl: true, // Key for RTL support
+        });
+        navigate("/home");
         return { success: true, message: response.data.message };
       }
     } catch (error) {
