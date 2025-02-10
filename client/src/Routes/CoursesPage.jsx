@@ -1,10 +1,18 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
+import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
+  const navigate = useNavigate();
+  const { isAuthorized } = useAuth(); // Get authorization status from context
+  useEffect(() => {
+    if (!isAuthorized) {
+      navigate("/"); // Redirects correctly
+    }
+  }, [isAuthorized, navigate]);
 
   useEffect(() => {
     const fetchCourses = async () => {
