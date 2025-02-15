@@ -24,26 +24,26 @@ router.get('/userData', async (req, res) => {
 router.get("/currentSchedule", async (req, res) => {
   try {
     
-    //req.user.id
-    const studentId = 2;
+    //const studentId = 2;
+    const studentId = req.user.id;
     const course = await db.query(`WITH latest_term AS (
     SELECT name
     FROM term
     ORDER BY startDate DESC
     LIMIT 1
 )
-SELECT course.*
+SELECT course.* , schedule.id as scheduleId
 FROM schedule
 JOIN latest_term ON schedule.termName = latest_term.name
 JOIN schedule_course ON schedule.id = schedule_course.scheduleId
 JOIN course ON schedule_course.courseId = course.id
 WHERE schedule.studentId = $1;`,[studentId]);
     if (course.rows.length === 0) {
-      console.log(course.rows)
+      //console.log(course.rows)
       return res.status(404).json({success: false, message: "No schedule associated with the current term was found" });
     }
     const camelCaseCourses = course.rows.map(course => (
-      console.log(course),{
+      {
       id: course.id,
       name: course.name,
       code: course.code,
@@ -55,11 +55,16 @@ WHERE schedule.studentId = $1;`,[studentId]);
     res.status(200).json({
       success: true,
       message: "Courses retrieved successfully",
+      scheduleId: course.rows[0].scheduleid,
       courses: camelCaseCourses,
     });
   } catch (error) {
     res.status(500).json({success: false, message: error.message });
   }
 });
+
+
+
+
 
 export default router;
