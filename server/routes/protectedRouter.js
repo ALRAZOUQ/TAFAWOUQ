@@ -21,6 +21,13 @@ router.get('/userData', async (req, res) => {
   }
 });
 
+
+
+
+//==================================================
+//================= schedule ========================
+//==================================================
+
 router.get("/currentSchedule", async (req, res) => {
   try {
     
@@ -65,6 +72,126 @@ WHERE schedule.studentId = $1;`,[studentId]);
 
 
 
+router.post("/addCourseToSchedule", async (req, res) => {
+  try {
+    const { scheduleId, courseId } = req.body;
+    const userId = req.user.id;
 
+    // Check if the user has the schedule
+    const userSchedule = await db.query(
+      `SELECT * FROM schedule WHERE id = $1 AND studentId = $2`,
+      [scheduleId, userId]
+    );
+
+    if (userSchedule.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Schedule not found for the user" });
+    }
+
+// Check if the course is already in the schedule
+// we can delete this
+const courseInSchedule = await db.query(
+  `SELECT * FROM schedule_course WHERE scheduleId = $1 AND courseId = $2`,
+  [scheduleId, courseId]
+);
+
+if (courseInSchedule.rows.length > 0) {
+  return res.status(400).json({ success: false, message: "Course already in the schedule" });
+}
+    // Check if the course is already registered in one of the student's schedules
+    const existingCourse = await db.query(
+      `SELECT sc.courseId, COALESCE(g.value, 0) AS grade
+       FROM schedule_course sc
+       JOIN schedule s ON sc.scheduleId = s.id
+       LEFT JOIN grade g ON sc.courseId = g.courseId AND s.studentId = g.creatorId
+       WHERE s.studentId = $1 AND sc.courseId = $2`,
+      [userId, courseId]
+    );
+
+    if (existingCourse.rows.length > 0) {
+      const grade = existingCourse.rows[0].grade;
+      console.log(grade)
+      if (grade !== 1) {// 1 means he did not pass the course, meaning he got an F grade
+        return res.status(401).json({ success: false, message: "Course already registered in past terms with a grade value more than 1" });
+      }
+    }
+
+    // Add the course to the schedule
+    await db.query(
+      `INSERT INTO schedule_course (scheduleId, courseId)
+       VALUES ($1, $2)`,
+      [scheduleId, courseId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Course added to schedule successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+router.delete("/deleteCourseFromSchedule", async (req, res) => {
+  try {
+    const { scheduleId, courseId } = req.body;
+    const userId = req.user.id;
+
+    // Check if the user has the schedule
+    const userSchedule = await db.query(
+      `SELECT * FROM schedule WHERE id = $1 AND studentId = $2`,
+      [scheduleId, userId]
+    );
+
+    if (userSchedule.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Schedule not found for the user" });
+    }
+
+    // Check if the course is in the schedule
+    const courseInSchedule = await db.query(
+      `SELECT * FROM schedule_course WHERE scheduleId = $1 AND courseId = $2`,
+      [scheduleId, courseId]
+    );
+
+    if (courseInSchedule.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Course not found in the schedule" });
+    }
+//**********opthonal**********
+/*
+    // Get the current term's end date
+    const currentTerm = await db.query(
+      `SELECT endDate FROM term
+       WHERE name = (SELECT termName FROM schedule WHERE id = $1)`,
+      [scheduleId]
+    );
+
+    if (currentTerm.rows.length === 0) {
+      return res.status(404).json({ success: false, message: "Current term not found" });
+    }
+
+    const endDate = new Date(currentTerm.rows[0].enddate);
+    const currentDate = new Date();
+
+    // Check if the current date is before the end date
+    if (currentDate > endDate) {
+      return res.status(400).json({ success: false, message: "Cannot delete course after the term end date" });
+    }
+*/
+
+//******************************* 
+    // Delete the course from the schedule
+    await db.query(
+      `DELETE FROM schedule_course WHERE scheduleId = $1 AND courseId = $2`,
+      [scheduleId, courseId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Course deleted from schedule successfully",
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 export default router;
