@@ -23,13 +23,13 @@ router.get("/users", async (req, res) => {
 
 router.post("/addCourse", async (req, res) => {
   try {
-    const { name, code, overview, creditHours } = req.body;
-    const creatorId = req.user.id;
-
+const { name, code, overview, creditHours } = req.body;
+const creatorId = req.user.id;
+const lowerCode = code.toLowerCase();
     // Check if the course already exists
     const existingCourse = await db.query(
       `SELECT * FROM course WHERE code = $1`,
-      [code]
+      [lowerCode]
     );
 
     if (existingCourse.rows.length > 0) {
