@@ -39,17 +39,7 @@ export default function Login() {
       if (response.status === 200) {
         setUserStateLogin(response.data.user);
         
-        toast.success('تم تسجيل الدخول بنجاح!', { // Arabic success message
-           
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-          rtl: true, // Key for RTL support
-        });
+        toast.success('تم تسجيل الدخول بنجاح!');
         navigate("/home");
         return { success: true, message: response.data.message };
       }

@@ -60,16 +60,7 @@ export default function MainHeader() {
     try {
       const flag=await logout();
       console.log("Logout successful"); // Debugging log
-      if(flag){toast.success('تم تسجيل الخروج بنجاح', { // Arabic success message
-        autoClose: 3000,
-        hideProgressBar: true,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-        rtl: true, // Key for RTL support
-      });}
+      if(flag){toast.success('تم تسجيل الخروج بنجاح');}
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
