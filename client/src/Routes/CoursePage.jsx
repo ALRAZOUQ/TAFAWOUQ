@@ -1,10 +1,33 @@
-/*this page to view the course and its comment but for now it just view the commets in bad style (i copied from my code)*/
-
+/*stiil need to work on it*/
 import React, { useState, useEffect } from "react";
-import axios from "../api/axios"
-import { useParams } from 'react-router-dom';
+import axios from "../api/axios";
+import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
+import CourseCard from "../components/coursePageComponents/CourseCard";
+import Comment from "../components/coursePageComponents/Comment";
+import FilterControls from "../components/coursePageComponents/FilterControls";
+
+const Pagination = ({ currentPage, totalPages, setCurrentPage }) => (
+  <div className="flex justify-center items-center gap-2 mt-6">
+    {Array.from({ length: totalPages }, (_, index) => (
+      <button
+        key={index}
+        onClick={() => setCurrentPage(index + 1)}
+        className={`px-3 py-1 rounded-md transition-colors ${
+          currentPage === index + 1
+            ? "bg-blue-600 text-white"
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
+        }`}
+      >
+        {index + 1}
+      </button>
+    ))}
+  </div>
+);
+
 const CommentList = () => {
-    const { courseId } = useParams();
+  const { courseId } = useParams();
+  const [course, setCourse] = useState(null);
   const [comments, setComments] = useState([]);
   const [filterTag, setFilterTag] = useState("");
   const [sortBy, setSortBy] = useState("recent");
@@ -12,147 +35,81 @@ const CommentList = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const commentsPerPage = 2;
 
-  
-
-  // Fetch comments from JSON file
   useEffect(() => {
-    const fetchComments = async () => {
+    const fetchCourse = async () => {
       try {
-        
-        const response = await axios.get(`auth/comments/${courseId ||2}`);
-
+        const response = await axios.get(`auth/course/${courseId}`);
         if (response.status === 200) {
-          console.log(response.data);
-          setComments(response.data.comments); // ✅ Update state properly
+          setCourse(response.data.course[0]);
         }
       } catch (error) {
-        if (error.response) {
-          if (error.response.status === 404) {
-            console.log("No comments found");
-            //we did handel the case of no courses found
-          } else {
-            console.error(error.response.data.message);
-          }
-        } else {
-          console.error("An error occurred while sending the request");
-        }
+        console.error("Error fetching course:", error);
+        setCourse(null);
       }
     };
 
+    const fetchComments = async () => {
+      try {
+        const response = await axios.get(`auth/comments/${courseId}`);
+        if (response.status === 200) {
+          setComments(response.data.comments);
+        }
+      } catch (error) {
+        if (error.response?.status === 404) {
+          toast.error("لا توجد تعليقات على هذا المقرر بعد");
+          setComments([]);
+        }
+        console.error("Error fetching comments:", error);
+      }
+    };
+
+    fetchCourse();
     fetchComments();
-  }, []);
-  // Search, filter, sort, and paginate logic
-  const searchedComments = comments.filter((comment) =>
-    comment.content.toLowerCase().includes(searchQuery.toLowerCase())
+  }, [courseId]);
+
+  const filteredAndSortedComments = comments
+    .filter(comment => comment.content.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter(comment => filterTag ? comment.tag === filterTag : true)
+    .sort((a, b) => {
+      if (sortBy === "recent") return new Date(b.creationDate) - new Date(a.creationDate);
+      if (sortBy === "mostLikes") return b.numOfLikes - a.numOfLikes;
+      if (sortBy === "mostReplies") return b.numOfReplies - a.numOfReplies;
+      return 0;
+    });
+
+
+
+  const currentComments = filteredAndSortedComments.slice(
+    (currentPage - 1) * commentsPerPage,
+    currentPage * commentsPerPage
   );
 
-  const filteredComments = searchedComments.filter((comment) =>
-    filterTag ? comment.tag === filterTag : true
-  );
-
-  const sortedComments = [...filteredComments].sort((a, b) => {
-    if (sortBy === "recent") {
-      return new Date(b.creationDate) - new Date(a.creationDate);
-    } else if (sortBy === "mostLikes") {
-      return b.numOfLikes - a.numOfLikes;
-    } else if (sortBy === "mostReplies") {
-      return b.numOfReplies - a.numOfReplies;
-    }
-    return 0;
-  });
-
-  const indexOfLastComment = currentPage * commentsPerPage;
-  const indexOfFirstComment = indexOfLastComment - commentsPerPage;
-  const currentComments = sortedComments.slice(
-    indexOfFirstComment,
-    indexOfLastComment
-  );
-
-  const totalPages = Math.ceil(sortedComments.length / commentsPerPage);
+  const totalPages = Math.ceil(filteredAndSortedComments.length / commentsPerPage);
 
   return (
-    <div>
-      {/* Controls */}
-      <div style={{ marginBottom: "20px" }}>
-        <label>
-          Search Content:
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search for comments..."
-            style={{ marginLeft: "10px" }}
-          />
-        </label>
-        <br />
-        <label>
-          Filter by Tag:
-          <input
-            type="text"
-            value={filterTag}
-            onChange={(e) => setFilterTag(e.target.value)}
-            placeholder="Enter tag..."
-            style={{ marginLeft: "10px" }}
-          />
-        </label>
-        <br />
-        <label>
-          Sort by:
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            style={{ marginLeft: "10px" }}
-          >
-            <option value="recent">Most Recent</option>
-            <option value="mostLikes">Most Likes</option>
-            <option value="mostReplies">Most Replies</option>
-          </select>
-        </label>
-      </div>
+    <div className="container mx-auto p-4">
+      <CourseCard course={course} />
+      
+      <FilterControls
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        filterTag={filterTag}
+        setFilterTag={setFilterTag}
+        sortBy={sortBy}
+        setSortBy={setSortBy}
+      />
 
-      {/* Render Comments */}
-      <div>
-        {currentComments.map((comment) => (
-          <div
-            key={comment.id}
-            style={{
-              border: "1px solid #ccc",
-              margin: "10px",
-              padding: "10px",
-              borderRadius: "5px",
-            }}
-          >
-            <h3>{comment.authorName}</h3>
-            <p>{comment.content}</p>
-            <small>{comment.creationDate}</small>
-            <div>
-              <span>Likes: {comment.numOfLikes}</span> | 
-              <span> Replies: {comment.numOfReplies}</span> | 
-              <span> Tag: {comment.tag}</span>
-            </div>
-          </div>
+      <div className="space-y-4">
+        {currentComments.map(comment => (
+          <Comment key={comment.id} comment={comment} />
         ))}
       </div>
 
-      {/* Pagination */}
-      <div>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <button
-            key={index}
-            onClick={() => setCurrentPage(index + 1)}
-            style={{
-              margin: "5px",
-              padding: "5px",
-              backgroundColor: currentPage === index + 1 ? "#007BFF" : "#f1f1f1",
-              color: currentPage === index + 1 ? "white" : "black",
-              border: "none",
-              borderRadius: "3px",
-            }}
-          >
-            {index + 1}
-          </button>
-        ))}
-      </div>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        setCurrentPage={setCurrentPage}
+      />
     </div>
   );
 };
