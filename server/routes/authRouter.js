@@ -158,9 +158,9 @@ LEFT JOIN (
 
 //we will use this route to get the course details wen we create course page
 
-router.get("/course", async (req, res) => {
+router.get("/course/:courseId", async (req, res) => {
   try {
-    const courseId = req.body.courseId;
+    const courseId = parseInt(req.params.courseId);
     const course = await db.query(
       `SELECT
     c.*,
@@ -222,12 +222,9 @@ WHERE
 //================= comment ========================
 //==================================================
 
-/* it receive comment id then will retrieve all replies that are not hidden*/
-
-/* it receive course id then will retrieve all comments that are not hidden*/
-router.get("/comments", async (req, res) => {
+router.get("/comment/:id", async (req, res) => {
   try {
-    const courseId = req.body.courseId;
+    const commentId = parseInt(req.params.id);
     const comments = await db.query(
       `SELECT 
   c.id,
@@ -235,7 +232,65 @@ router.get("/comments", async (req, res) => {
   c.creationDate,
   c.tag,
   u.name AS author,
-  u.id  AS authorid,
+  u.id AS authorId,
+  COALESCE(l.num_likes, 0) AS numOfLikes,
+  COALESCE(r.reply_count, 0) AS numOfReplies
+FROM comment c
+JOIN "user" u ON c.authorId = u.id
+LEFT JOIN (
+  SELECT commentId, COUNT(*) AS num_likes
+  FROM "like"
+  GROUP BY commentId
+) l ON c.id = l.commentId
+LEFT JOIN (
+  SELECT parentCommentId, COUNT(*) AS reply_count
+  FROM comment
+  WHERE parentCommentId IS NOT NULL
+  GROUP BY parentCommentId
+) r ON c.id = r.parentCommentId
+LEFT JOIN hideComment hc ON c.id = hc.commentId
+WHERE c.id = $1
+  AND hc.id IS NULL;  -- Exclude comments that exist in hideComment`,
+      [commentId]
+    );
+
+    if (comments.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No replies found on this comment" });
+    }
+    const camelCaseComments = comments.rows.map((comment) => ({
+      id: comment.id,
+      content: comment.content,
+      authorId: comment.authorid,
+      authorName: comment.author,
+      tag: comment.tag,
+      creationDate: comment.creationdate,
+      numOfLikes: comment.numoflikes,
+      numOfReplies: comment.numofreplies,
+    }));
+    res.status(200).json({
+      success: true,
+      message: "replies retrieved successfully",
+      comments: camelCaseComments,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+/* it receive course id then will retrieve all comments that are not hidden*/
+router.get("/comments/:courseId", async (req, res) => {
+  try {
+    const courseId = parseInt(req.params.courseId);
+    const comments = await db.query(
+      `SELECT 
+  c.id,
+  c.content,
+  c.creationDate,
+  c.tag,
+  u.name AS author,
+  u.id AS authorid,
   COALESCE(l.num_likes, 0) AS numOfLikes,
   COALESCE(r.reply_count, 0) AS numOfReplies
 FROM comment c
@@ -254,7 +309,8 @@ LEFT JOIN (
 LEFT JOIN hideComment hc ON c.id = hc.commentId
 WHERE c.courseId = $1  -- Filter by course ID
   AND hc.id IS NULL    -- Exclude hidden comments
-ORDER BY c.creationDate DESC;  -- Optional sorting`,
+  AND c.parentCommentId IS NULL  -- Only top-level comments (no parent)
+ORDER BY c.creationDate DESC;`,
       [courseId]
     );
 
@@ -283,9 +339,9 @@ ORDER BY c.creationDate DESC;  -- Optional sorting`,
   }
 });
 
-router.get("/replies", async (req, res) => {
+router.get("/replies/:commentId", async (req, res) => {
   try {
-    const commentId = req.body.commentId;
+    const commentId = parseInt(req.params.commentId);
     const comments = await db.query(
       `SELECT 
   c.id,
@@ -295,7 +351,7 @@ router.get("/replies", async (req, res) => {
   u.name AS author,
   u.id AS authorId,
   COALESCE(l.num_likes, 0) AS numOfLikes,
-  COALESCE(r.reply_count, 0) AS numOfReplies
+  COALESCE(r.numOfReplies, 0) AS numOfReplies
 FROM comment c
 JOIN "user" u ON c.authorId = u.id
 LEFT JOIN (
@@ -304,14 +360,15 @@ LEFT JOIN (
   GROUP BY commentId
 ) l ON c.id = l.commentId
 LEFT JOIN (
-  SELECT parentCommentId, COUNT(*) AS reply_count
+  SELECT parentCommentId, COUNT(*) AS numOfReplies
   FROM comment
   WHERE parentCommentId IS NOT NULL
   GROUP BY parentCommentId
 ) r ON c.id = r.parentCommentId
 LEFT JOIN hideComment hc ON c.id = hc.commentId
-WHERE c.id = $1
-  AND hc.id IS NULL;  -- Exclude comments that exist in hideComment`,
+WHERE ( c.parentCommentId = $1)  -- Fetch the main comment and its replies
+  AND hc.id IS NULL  -- Exclude hidden comments
+ORDER BY c.creationDate ASC;  -- Sort by oldest to maintain thread order`,
       [commentId]
     );
 
