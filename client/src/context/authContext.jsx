@@ -18,7 +18,7 @@ export const AuthProvider = ({ children }) => {
   const checkAuthStatus = async () => {
     try {
       const response = await axios.get("protected/userData");
-      console.log("checkAuthStatus is run");
+      console.log("checkAuthStatus is run"); // actually it is called :)
       if (response.status === 200) {
         setAuthState({
           isAuthorized: true,
@@ -86,8 +86,7 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ ...authState, setUserStateLogin, logout, checkAuthStatus }}
-    >
+      value={{ ...authState, setUserStateLogin, logout, checkAuthStatus }}>
       {children}
     </AuthContext.Provider>
   );

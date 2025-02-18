@@ -4,12 +4,11 @@ import { isEmail, isEmpty } from "../util/validation";
 import { errorMapping } from "../util/errorMapping";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 export default function Login() {
   const { setUserStateLogin } = useAuth(); // to update the context of the user
   const navigate = useNavigate();
-
   async function login_handler(prevFormState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
@@ -17,7 +16,6 @@ export default function Login() {
     if (!isEmail(email)) {
       errors.push("not email");
     }
-
     if (isEmpty(email) || isEmpty(password)) {
       errors.push("email or password cannot be empty");
     }
@@ -38,8 +36,8 @@ export default function Login() {
 
       if (response.status === 200) {
         setUserStateLogin(response.data.user);
-        
-        toast.success('تم تسجيل الدخول بنجاح!');
+
+        toast.success("تم تسجيل الدخول بنجاح!");
         navigate("/home");
         return { success: true, message: response.data.message };
       }
@@ -85,8 +83,7 @@ export default function Login() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm sm:text-base text-gray-600 font-cairo"
-              >
+                className="block text-sm sm:text-base text-gray-600 font-cairo">
                 الإيميل
               </label>
               <input
@@ -102,8 +99,7 @@ export default function Login() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm sm:text-base text-gray-600 font-cairo"
-              >
+                className="block text-sm sm:text-base text-gray-600 font-cairo">
                 كلمة المرور
               </label>
               <input
@@ -121,8 +117,7 @@ export default function Login() {
                 {formState.errors.map((error) => (
                   <li
                     className="text-red-600 text-sm sm:text-base font-cairo"
-                    key={error}
-                  >
+                    key={error}>
                     {errorMapping(error)}
                   </li>
                 ))}
@@ -138,8 +133,7 @@ export default function Login() {
             <div className="flex justify-center mt-4 sm:mt-6">
               <Link
                 to="/signup"
-                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none font-cairo"
-              >
+                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none font-cairo">
                 ليس لديك حساب؟ التسجيل
               </Link>
             </div>
