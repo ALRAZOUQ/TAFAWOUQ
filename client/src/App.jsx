@@ -19,7 +19,7 @@ const router = createBrowserRouter([
       { path: "home", element: <Home_page /> },
       { index: true, path: "", element: <Landing /> },
       { path: "courses", element: <CoursesPage /> },
-      { path: "course/:courseId", element: <CoursePage /> },
+      { path: "courses/:courseId", element: <CoursePage /> },
     ],
   },
   //relative paths so we can navigate to it easily without clashes

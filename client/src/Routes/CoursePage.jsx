@@ -8,7 +8,7 @@ import Comment from "../components/coursePageComponents/Comment";
 import FilterControls from "../components/coursePageComponents/FilterControls";
 
 const Pagination = ({ currentPage, totalPages, setCurrentPage }) => (
-  <div className="flex justify-center items-center gap-2 mt-6">
+  <div className="flex flex-col justify-center items-center gap-2 mt-6">
     {Array.from({ length: totalPages }, (_, index) => (
       <button
         key={index}
@@ -68,28 +68,31 @@ const CommentList = () => {
   }, [courseId]);
 
   const filteredAndSortedComments = comments
-    .filter(comment => comment.content.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter(comment => filterTag ? comment.tag === filterTag : true)
+    .filter((comment) =>
+      comment.content.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((comment) => (filterTag ? comment.tag === filterTag : true))
     .sort((a, b) => {
-      if (sortBy === "recent") return new Date(b.creationDate) - new Date(a.creationDate);
+      if (sortBy === "recent")
+        return new Date(b.creationDate) - new Date(a.creationDate);
       if (sortBy === "mostLikes") return b.numOfLikes - a.numOfLikes;
       if (sortBy === "mostReplies") return b.numOfReplies - a.numOfReplies;
       return 0;
     });
-
-
 
   const currentComments = filteredAndSortedComments.slice(
     (currentPage - 1) * commentsPerPage,
     currentPage * commentsPerPage
   );
 
-  const totalPages = Math.ceil(filteredAndSortedComments.length / commentsPerPage);
+  const totalPages = Math.ceil(
+    filteredAndSortedComments.length / commentsPerPage
+  );
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 h-screen w-auto mx-auto p-4">
       <CourseCard course={course} />
-      
+
       <FilterControls
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
@@ -100,7 +103,7 @@ const CommentList = () => {
       />
 
       <div className="space-y-4">
-        {currentComments.map(comment => (
+        {currentComments.map((comment) => (
           <Comment key={comment.id} comment={comment} />
         ))}
       </div>
