@@ -6,13 +6,16 @@ import axios from "../api/axios";
 export default function HomePage() {
   const [scheduleCourses, setscheduleCourses] = useState([]);
   const navigate = useNavigate();
-  const { isAuthorized } = useAuth(); // Get authorization status from context
+  const { isAuthorized, user } = useAuth(); // Get authorization status from context
 
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/"); // Redirects correctly
     } else {
       fetchCourses();
+    }
+    if (user.isAdmin) {
+      navigate("/admin/home");
     }
   }, [isAuthorized, navigate]);
 
