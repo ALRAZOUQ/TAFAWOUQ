@@ -15,11 +15,21 @@ export const AuthProvider = ({ children }) => {
     checkAuthStatus();
   }, []);
 
+  // Razouq: some helping functions:
+  /**
+   * Razouq
+   *
+   * If there's an active session for the user on the server,
+   * the function fetches the user data from the server and assigns it to `authState`.
+   *
+   * If not, it assigns `null` to the user data and `false` to the other attributes.
+   */
   const checkAuthStatus = async () => {
     try {
       const response = await axios.get("protected/userData");
       console.log("checkAuthStatus is run"); // actually it is called :)
       if (response.status === 200) {
+        // ? Razouq: I think u should call setUserStateLogin() here insted of setAuthState()
         setAuthState({
           isAuthorized: true,
           user: {
@@ -43,9 +53,26 @@ export const AuthProvider = ({ children }) => {
     }
   };
   /**
+   * Razouq
    *
-   * @param {*} userData
+   * @param {*} userData - The user data object containing user details.
    *
+   * This function updates the authentication state by setting the user as authorized
+   * and storing their details in `authState`.
+   *
+   * Example usage:
+   * ```js
+   * setAuthState({
+   *   isAuthorized: true,
+   *   user: {
+   *     id: userData.id,
+   *     name: userData.name,
+   *     email: userData.email,
+   *     isAdmin: userData.isadmin,
+   *   },
+   *   isLoading: false,
+   * });
+   * ```
    */
   const setUserStateLogin = (userData) => {
     setAuthState({
@@ -59,7 +86,16 @@ export const AuthProvider = ({ children }) => {
       isLoading: false,
     });
   };
+  /**
+   * Logs out the user by sending a logout request to the server.
+   *
+   * This function makes a POST request to `"auth/logout"`. If the request is
+   * successful (status 200), it updates the authentication state to indicate
+   * that the user is logged out.
+   *
+   * @returns {Promise<boolean>} Returns `true` if logout is successful, otherwise `false`.
 
+   */
   const logout = async () => {
     try {
       const response = await axios.post("auth/logout");
@@ -80,6 +116,9 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  /*
+   * The remainaing function instructions
+   */
   if (authState.isLoading) {
     return <div>Loading...</div>;
   }
