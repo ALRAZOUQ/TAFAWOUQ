@@ -58,34 +58,25 @@ export default function HomePage() {
       >
         {/* Schedule Courses */}
         {
-          !scheduleCourses &&
+          scheduleCourses &&
             renderedCourses /* if there is courses it will render it otherwise nothing will happen}
 
         {/* Add Course Box */
         }
-        {!scheduleCourses && (
-          <Link to="/courses">
+
+        {scheduleCourses && (
+          <Link to="/courses" className="col-span-full w-full">
             <div
-              className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dotted border-gray-400 p-3 rounded-lg cursor-pointer 
-                          hover:bg-gray-300 transition-all text-gray-600 text-lg font-semibold"
+              className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dashed h-56 border-gray-400 p-3 rounded-lg cursor-pointer 
+                        hover:bg-gray-300 transition-all text-gray-600 text-lg font-semibold 
+                        w-full col-span-full"
             >
+              <p>لا يوجد لديك مواد مضافة</p>
+              <p>أضف مواد الآن</p>
               <span className="text-6xl">+</span>
-              <p>Add a New Course</p>
             </div>
           </Link>
         )}
-        {
-          <Link to="">
-            <div
-              className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dashed h-48 border-gray-400 p-3 rounded-lg cursor-pointer 
-                        hover:bg-gray-300 transition-all text-gray-600 text-lg font-semibold 
-                        w-full col-span-1 sm:col-span-2 md:col-span-3 lg:col-span-4"
-            >
-              <span className="text-6xl">+</span>
-              <p>لا يوجد لديك مواد مضافة</p>
-            </div>
-          </Link>
-        }
       </div>
     </div>
   );
