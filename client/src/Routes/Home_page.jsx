@@ -7,7 +7,7 @@ export default function HomePage() {
   const [scheduleCourses, setscheduleCourses] = useState([]);
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth(); // Get authorization status from context
-
+  
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/"); // Redirects correctly

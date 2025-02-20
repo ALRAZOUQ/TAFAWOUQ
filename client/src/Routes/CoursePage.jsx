@@ -7,6 +7,7 @@ import CourseCard from "../components/coursePageComponents/CourseCard";
 import Comment from "../components/coursePageComponents/Comment";
 import FilterControls from "../components/coursePageComponents/FilterControls";
 
+
 const Pagination = ({ currentPage, totalPages, setCurrentPage }) => (
   <div className="flex flex-col justify-center items-center gap-2 mt-6">
     {Array.from({ length: totalPages }, (_, index) => (

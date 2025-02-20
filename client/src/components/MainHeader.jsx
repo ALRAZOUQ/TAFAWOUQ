@@ -7,6 +7,7 @@ import { useCourseData } from "../context/CourseContext";
 import { useAuth } from "../context/authContext";
 import ThreeDotMenu from "./ThreeDotMenu";
 import { toast } from "react-toastify";
+import { motion } from "framer-motion";
 
 export default function MainHeader() {
   const navigate = useNavigate();
@@ -75,10 +76,12 @@ export default function MainHeader() {
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
             <Link to={isAuthorized ? "/home" : "/"}>
-              <img
+              <motion.img
                 src={main_logo}
                 className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 object-contain"
                 alt="TAFAWOUQ LOGO"
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring" }}
               />
             </Link>
           </h1>
@@ -155,7 +158,7 @@ export default function MainHeader() {
               } md:flex-row md:justify-center`}
             >
               <NavLink
-                className="text-gray-700 hover:text-gray-300 transition-colors w-full md:w-auto text-center font-cairo "
+                className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center font-cairo "
                 to="/courses"
                 end
               >
