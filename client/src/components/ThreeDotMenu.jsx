@@ -10,13 +10,13 @@ export default function ThreeDotMenu() {
   const { logout, isAuthorized } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false); // New state to prevent unmounting
-const handleLogout = async () => {
-    
+  const handleLogout = async () => {
     try {
-      const flag=await logout();
+      const flag = await logout();
       console.log("Logout successful"); // Debugging log
-      if(flag){toast.success('تم تسجيل الخروج بنجاح');}
-      
+      if (flag) {
+        toast.success("تم تسجيل الخروج بنجاح");
+      }
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -26,8 +26,7 @@ const handleLogout = async () => {
       {/* Kebab Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="p-2 rounded-full hover:bg-gray-200"
-      >
+        className="p-2 rounded-full hover:bg-gray-200">
         <FiMoreVertical className="w-6 h-6" />
       </button>
 
@@ -42,16 +41,14 @@ const handleLogout = async () => {
             //   }}
             // />
             <button
-              onClick={(handleLogout) }
-              className="block w-full text-center px-4 py-2 hover:bg-gray-100"
-            >
+              onClick={handleLogout}
+              className="block w-full text-center px-4 py-2 hover:bg-gray-100">
               تسجيل الخروج
             </button>
           ) : (
             <button
               onClick={() => navigate("/login")}
-              className="block w-full text-center px-4 py-2 hover:bg-gray-100"
-            >
+              className="block w-full text-center px-4 py-2 hover:bg-gray-100">
               تسجيل الدخول
             </button>
           )}

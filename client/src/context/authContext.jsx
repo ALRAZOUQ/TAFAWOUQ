@@ -4,6 +4,14 @@ import axios from "../api/axios";
 
 const AuthContext = createContext(null);
 
+/**
+ * The AuthProvider component manages authentication state, including checking user authorization,
+ * logging in users, and logging them out.
+ * @returns either a loading message (`<div>Loading...</div>`) if
+ * the authentication state is still loading, or it returns the `AuthContext.Provider` component with
+ * the authentication state values, `setUserStateLogin`, `logout`, and `checkAuthStatus` functions
+ * provided as context values to its children components.
+ */
 export const AuthProvider = ({ children }) => {
   const [authState, setAuthState] = useState({
     isAuthorized: false,
@@ -16,14 +24,22 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Razouq: some helping functions:
+  /** @Faisal4z @Hassanalmaymn
+   * ? Razouq:
+   * ? My preferance is to move the helper functions to the bottem of the block (after the return statment) to make the code more readable instead of injecting them in the midddle 💔💔
+   * ? Also changing them to `function f(){}` syntax, and only use the `const funcName=()=>{}` syntax for the components
+   * ? Any way, I didn't move them beacause GPT said this not the best practice because it will make the code less readable, So may be u depended on that 🙃 I think it's an AI hallucination
+   */
+
   /**
-   * Razouq
+   * @author Razouq
    *
    * If there's an active session for the user on the server,
    * the function fetches the user data from the server and assigns it to `authState`.
    *
    * If not, it assigns `null` to the user data and `false` to the other attributes.
    */
+
   const checkAuthStatus = async () => {
     try {
       const response = await axios.get("protected/userData");
@@ -59,20 +75,6 @@ export const AuthProvider = ({ children }) => {
    *
    * This function updates the authentication state by setting the user as authorized
    * and storing their details in `authState`.
-   *
-   * Example usage:
-   * ```js
-   * setAuthState({
-   *   isAuthorized: true,
-   *   user: {
-   *     id: userData.id,
-   *     name: userData.name,
-   *     email: userData.email,
-   *     isAdmin: userData.isadmin,
-   *   },
-   *   isLoading: false,
-   * });
-   * ```
    */
   const setUserStateLogin = (userData) => {
     setAuthState({
@@ -131,6 +133,14 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+/**
+ * The useAuth function is a custom hook in React that retrieves the authentication context from the
+ * nearest AuthProvider.
+ * @returns The `context` obtained from the `useContext(AuthContext)` hook.
+ *
+ * If the `context` is not available
+ *  (i.e., `!context`), an error is thrown with the message "useAuth must be used within an AuthProvider".
+ */
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
