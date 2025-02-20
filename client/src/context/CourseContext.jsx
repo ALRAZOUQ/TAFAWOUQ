@@ -28,7 +28,7 @@ export function CourseProvider({ children }) {
  * The course data is represented as an array of course objects, where each course
  * contains an `id`, `name`, and `code`. The hook ensures that context is accessed 
  * within a valid `CourseProvider`.
-``` * [
+```[
     {
         "id": 1,
         "name": "Introduction to Computer Science",
@@ -40,11 +40,11 @@ export function CourseProvider({ children }) {
         "code": "CS201"
     }
 ]
- @returns {{
-*   coursesData: Course[] | null, 
-*   setCoursesData: (data: Course[] | null) => void
-* }} An state object containing the current list of courses detiles and a function to update the state.
-* 
+  * @returns {{
+  *   coursesData: Course[] | null, 
+  *   setCoursesData: (data: Course[] | null) => void
+  * }} An state object containing the current list of courses detiles and a function to update the state.
+  * 
 */
 export function useCourseData() {
   return useContext(CourseContext);

@@ -24,6 +24,12 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   // Razouq: some helping functions:
+  /** @Faisal4z @Hassanalmaymn
+   * ? Razouq:
+   * ? My preferance is to move the helper functions to the bottem of the block (after the return statment) to make the code more readable instead of injecting them in the midddle 💔💔
+   * ? Also changing them to `function f(){}` syntax, and only use the `const funcName=()=>{}` syntax for the components
+   * ? Any way, I didn't move them beacause GPT said this not the best practice because it will make the code less readable, So may be u depended on that 🙃 I think it's an AI hallucination
+   */
 
   /**
    * @author Razouq

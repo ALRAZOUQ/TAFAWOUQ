@@ -10,7 +10,7 @@ export default function Pagination({
   totalPages,
   setCurrentPage,
 }) {
-    // Don't render anything if there are no pages
+  // Don't render anything if there are no pages
   if (totalPages <= 0) return null;
   // Helper function to render individual page number buttons
   const renderPageButton = (pageNum) => (
@@ -21,8 +21,7 @@ export default function Pagination({
         currentPage === pageNum
           ? "bg-blue-600 text-white" // Style for active page
           : "bg-gray-100 text-gray-600 hover:bg-gray-200" // Style for inactive pages
-      }`}
-    >
+      }`}>
       {pageNum}
     </button>
   );
@@ -37,8 +36,7 @@ export default function Pagination({
         key="prev"
         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50"
-      >
+        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
         السابق
       </button>
     );
@@ -59,8 +57,7 @@ export default function Pagination({
         key="next"
         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50"
-      >
+        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
         التالي
       </button>
     );
