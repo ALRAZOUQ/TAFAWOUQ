@@ -6,24 +6,6 @@ import { toast } from "react-toastify";
 import CourseCard from "../components/coursePageComponents/CourseCard";
 import Comment from "../components/coursePageComponents/Comment";
 import FilterControls from "../components/coursePageComponents/FilterControls";
-
-const Pagination = ({ currentPage, totalPages, setCurrentPage }) => (
-  <div className="flex flex-col justify-center items-center gap-2 mt-6">
-    {Array.from({ length: totalPages }, (_, index) => (
-      <button
-        key={index}
-        onClick={() => setCurrentPage(index + 1)}
-        className={`px-3 py-1 rounded-md transition-colors ${
-          currentPage === index + 1
-            ? "bg-blue-600 text-white"
-            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-        }`}
-      >
-        {index + 1}
-      </button>
-    ))}
-  </div>
-);
 import Pagination from "../components/Pagination";
 
 const CommentList = () => {
