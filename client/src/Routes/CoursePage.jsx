@@ -6,24 +6,7 @@ import { toast } from "react-toastify";
 import CourseCard from "../components/coursePageComponents/CourseCard";
 import Comment from "../components/coursePageComponents/Comment";
 import FilterControls from "../components/coursePageComponents/FilterControls";
-
-const Pagination = ({ currentPage, totalPages, setCurrentPage }) => (
-  <div className="flex justify-center items-center gap-2 mt-6">
-    {Array.from({ length: totalPages }, (_, index) => (
-      <button
-        key={index}
-        onClick={() => setCurrentPage(index + 1)}
-        className={`px-3 py-1 rounded-md transition-colors ${
-          currentPage === index + 1
-            ? "bg-blue-600 text-white"
-            : "bg-gray-100 text-gray-600 hover:bg-gray-200"
-        }`}
-      >
-        {index + 1}
-      </button>
-    ))}
-  </div>
-);
+import Pagination from "../components/Pagination";
 
 const CommentList = () => {
   const { courseId } = useParams();
@@ -33,7 +16,7 @@ const CommentList = () => {
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const commentsPerPage = 2;
+  const commentsPerPage = 8;
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -67,49 +50,64 @@ const CommentList = () => {
     fetchComments();
   }, [courseId]);
 
+  //  handle page reset when number of comments changes
+  useEffect(() => {
+    const totalPages = Math.ceil(
+      filteredAndSortedComments.length / commentsPerPage
+    );
+    if (currentPage > totalPages) {
+      setCurrentPage(Math.max(1, totalPages));
+    }
+  }, [filterTag, sortBy, searchQuery, comments]);
+
   const filteredAndSortedComments = comments
-    .filter(comment => comment.content.toLowerCase().includes(searchQuery.toLowerCase()))
-    .filter(comment => filterTag ? comment.tag === filterTag : true)
+    .filter((comment) =>
+      comment.content.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+    .filter((comment) => (filterTag ? comment.tag === filterTag : true))
     .sort((a, b) => {
-      if (sortBy === "recent") return new Date(b.creationDate) - new Date(a.creationDate);
+      if (sortBy === "recent")
+        return new Date(b.creationDate) - new Date(a.creationDate);
       if (sortBy === "mostLikes") return b.numOfLikes - a.numOfLikes;
       if (sortBy === "mostReplies") return b.numOfReplies - a.numOfReplies;
       return 0;
     });
-
-
 
   const currentComments = filteredAndSortedComments.slice(
     (currentPage - 1) * commentsPerPage,
     currentPage * commentsPerPage
   );
 
-  const totalPages = Math.ceil(filteredAndSortedComments.length / commentsPerPage);
+  const totalPages = Math.ceil(
+    filteredAndSortedComments.length / commentsPerPage
+  );
 
   return (
-    <div className="container mx-auto p-4">
-      <CourseCard course={course} />
-      
-      <FilterControls
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        filterTag={filterTag}
-        setFilterTag={setFilterTag}
-        sortBy={sortBy}
-        setSortBy={setSortBy}
-      />
+    <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
+      <div className=" w-auto mx-auto container p-4">
+        <CourseCard course={course} />
 
-      <div className="space-y-4">
-        {currentComments.map(comment => (
-          <Comment key={comment.id} comment={comment} />
-        ))}
+        <FilterControls
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          filterTag={filterTag}
+          setFilterTag={setFilterTag}
+          sortBy={sortBy}
+          setSortBy={setSortBy}
+        />
+
+        <div className="space-y-4">
+          {currentComments.map((comment) => (
+            <Comment key={comment.id} comment={comment} />
+          ))}
+        </div>
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          setCurrentPage={setCurrentPage}
+        />
       </div>
-
-      <Pagination
-        currentPage={currentPage}
-        totalPages={totalPages}
-        setCurrentPage={setCurrentPage}
-      />
     </div>
   );
 };

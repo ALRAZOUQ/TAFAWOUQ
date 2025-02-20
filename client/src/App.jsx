@@ -17,13 +17,14 @@ const router = createBrowserRouter([
     errorElement: <Error404Page />,
     children: [
       { path: "home", element: <Home_page /> },
-      { index: true, path: "", element: <Landing /> },
+      { index: true,  element: <Landing /> },
       { path: "courses", element: <CoursesPage /> },
-      { path: "course/:courseId", element: <CoursePage /> },
+      { path: "courses/:courseId", element: <CoursePage /> },
     ],
   },
   //relative paths so we can navigate to it easily without clashes
   { path: "signup", element: <Signup /> },
+  { path: "admin/home", element: <Signup /> },
   { path: "login", element: <Login /> },
 ]);
 function App() {

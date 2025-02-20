@@ -92,7 +92,7 @@ export default function Signup() {
     { errors: null }
   );
 
-  // Redirect to the After_login if the user is register sucsessfully
+  // Redirect to the homePage if the user is register sucsessfully
   useEffect(() => {
     if (formState.success) {
       navigate("/home");

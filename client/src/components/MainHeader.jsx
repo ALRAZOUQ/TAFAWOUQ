@@ -56,17 +56,17 @@ export default function MainHeader() {
   };
 
   const handleLogout = async () => {
-    
     try {
-      const flag=await logout();
+      const flag = await logout();
       console.log("Logout successful"); // Debugging log
-      if(flag){toast.success('تم تسجيل الخروج بنجاح');}
+      if (flag) {
+        toast.success("تم تسجيل الخروج بنجاح");
+      }
       navigate("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
   };
-
 
   return (
     <div className="w-full  shadow-md z-50 bg-transparent mb-0">
@@ -129,7 +129,7 @@ export default function MainHeader() {
                             className="px-3 py-2 hover:bg-gray-100 group/searchResult"
                           >
                             <Link
-                              to={`/course/${course.id}`}
+                              to={`/courses/${course.id}`}
                               className="block font-cairo text-lg  "
                             >
                               <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
@@ -155,14 +155,19 @@ export default function MainHeader() {
               } md:flex-row md:justify-center`}
             >
               <NavLink
-                className={({ isActive }) =>
-                  isActive
-                    ? "text-gray-700 hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo underline"
-                    : "text-gray-700 hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo"
-                }
+                className="text-gray-700 hover:text-gray-300 transition-colors w-full md:w-auto text-center font-cairo "
                 to="/courses"
+                end
               >
-                المواد
+                {({ isActive }) => (
+                  <div
+                    className={`relative w-full md:w-auto text-center py-1 px-3 
+                    border-b-2 border-TAF-100 transition-all duration-300 
+                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}
+                  >
+                    المواد
+                  </div>
+                )}
               </NavLink>
             </div>
           )}
