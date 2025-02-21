@@ -3,11 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
+import CreateCourse from "../components/createCourseModal";
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const navigate = useNavigate();
-  const { isAuthorized } = useAuth(); // Get authorization status from context
+  const { isAuthorized, user } = useAuth(); // Get authorization status from context
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/"); // Redirects correctly
@@ -52,6 +53,7 @@ export default function CoursesPage() {
           />
         </Link>
       ))}
+      {user.isAdmin && <CreateCourse />}
     </div>
   );
 }

@@ -86,7 +86,7 @@ const CommentList = () => {
   );
 
   return (
-    <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
+    <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
       <div className=" w-auto mx-auto container p-4">
         <CourseCard course={course} />
 
