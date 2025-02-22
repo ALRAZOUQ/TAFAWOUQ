@@ -31,11 +31,11 @@ export default function CoursesPage() {
             console.log("No courses found");
             //we did handel the case of no courses found
           } else {
-            // Todo :Razouq:  we dont show an error msg for the user here !
+            // Todo :Razouq:  we dont show an error msg to the user here !
             console.error(error.response.data.message);
           }
         } else {
-          // Todo :Razouq:  we dont show an error msg for the user here !
+          // Todo :Razouq:  we dont show an error msg to the user here !
           console.error("An error occurred while sending the request");
         }
       }

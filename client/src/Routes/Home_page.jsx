@@ -4,6 +4,8 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import axios from "../api/axios";
 
 export default function HomePage() {
+  // TODO Razouq: `scheduleCourses` should be `coursesSchedule`
+  // TODO Razouq: Actually it should be `scheduleData` because it containts the data only, not the components
   const [scheduleCourses, setscheduleCourses] = useState([]);
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth(); // Get authorization status and user data from context
@@ -18,7 +20,7 @@ export default function HomePage() {
       navigate("/admin/admin-home");
     }
   }, [isAuthorized, navigate]);
-
+  // ? Razouq: why did u use `useCallback` ?
   const fetchCourses = useCallback(async () => {
     try {
       const response = await axios.get("protected/currentSchedule");
@@ -31,6 +33,7 @@ export default function HomePage() {
         );
       }
     } catch (error) {
+      // Todo :Razouq:  we dont show an error msg to the user here !
       console.error(
         error.response?.data?.message ||
           "An error occurred while sending the request"
@@ -38,6 +41,9 @@ export default function HomePage() {
     }
   }, []);
 
+  // ? Razouq: why did u use `useMemo` ?
+  // TODO Razouq: I think the descriptive name for `renderedCourses` is coursesList
+  // ? Razouq: BTW, we always use ".map" inside the return statment, why did u write it here?
   const renderedCourses = useMemo(
     () =>
       scheduleCourses.map((course) => (
@@ -52,6 +58,8 @@ export default function HomePage() {
       )),
     [scheduleCourses]
   );
+
+  // TODO Razouq: Hmmmmmmm, Do u thik there is a logical error in this return?
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
       <div

@@ -45,7 +45,7 @@ const CommentList = () => {
           toast.error("لا توجد تعليقات على هذا المقرر بعد");
           setComments([]);
         }
-        // Todo :Razouq:  we dont show an error msg for the user here !
+        // Todo :Razouq:  we dont show an error msg to the user here !
         console.error("Error fetching comments:", error);
       }
     }
