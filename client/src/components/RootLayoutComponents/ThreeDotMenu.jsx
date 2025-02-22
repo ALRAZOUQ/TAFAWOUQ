@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { FiMoreVertical } from "react-icons/fi";
-import { useAuth } from "../context/authContext";
+import { useAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
-import LogoutConformation from "./LogOutConformation";
+import LogoutConformation from "../LogOutConformation";
 import { toast } from "react-toastify";
 
 export default function ThreeDotMenu() {

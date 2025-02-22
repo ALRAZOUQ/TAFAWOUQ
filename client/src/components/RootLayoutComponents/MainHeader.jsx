@@ -1,11 +1,11 @@
 import { useState, useEffect, useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
-import main_logo from "../assets/mainLogo.svg";
+import main_logo from "../../assets/mainLogo.svg";
 import axios from "../../api/axios";
 import { useCourseData } from "../../context/CourseContext";
 import { useAuth } from "../../context/authContext";
-import ThreeDotMenu from "../ThreeDotMenu";
+import ThreeDotMenu from "./ThreeDotMenu";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 

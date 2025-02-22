@@ -13,6 +13,7 @@ export default function CoursesPage() {
     if (!isAuthorized) {
       navigate("/"); // Redirects correctly
     }
+    // ? Razouq: why `navigate` added to the dependency array ?
   }, [isAuthorized, navigate]);
 
   useEffect(() => {
@@ -30,9 +31,11 @@ export default function CoursesPage() {
             console.log("No courses found");
             //we did handel the case of no courses found
           } else {
+            // Todo :Razouq:  we dont show an error msg for the user here !
             console.error(error.response.data.message);
           }
         } else {
+          // Todo :Razouq:  we dont show an error msg for the user here !
           console.error("An error occurred while sending the request");
         }
       }
@@ -46,9 +49,11 @@ export default function CoursesPage() {
       {courses.map((course) => (
         <Link key={course.id} to={`/courses/${course.id}`}>
           <Course
+            // TODO Razouq: The long text should be truncated, we must maintain a consistent card size
             name={course.name}
             avgRating={course.avgRating}
             code={course.code}
+            // TODO Razouq: The long text should be truncated, we must maintain a consistent card size
             overview={course.overview}
           />
         </Link>

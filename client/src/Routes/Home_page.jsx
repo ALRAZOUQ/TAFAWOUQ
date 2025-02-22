@@ -7,7 +7,7 @@ export default function HomePage() {
   const [scheduleCourses, setscheduleCourses] = useState([]);
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth(); // Get authorization status and user data from context
-  
+
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/"); // Redirects correctly
@@ -57,8 +57,7 @@ export default function HomePage() {
       <div
         className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 
              grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 
-             max-h-max min-h-0 scrollbar-thumb-blue-500 my-16"
-      >
+             max-h-max min-h-0 scrollbar-thumb-blue-500 my-16">
         {/* Schedule Courses */}
         {
           scheduleCourses &&
@@ -72,8 +71,7 @@ export default function HomePage() {
             <div
               className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dashed h-56 border-gray-400 p-3 rounded-lg cursor-pointer 
                         hover:bg-gray-300 transition-all text-gray-600 text-lg font-semibold 
-                        w-full col-span-full"
-            >
+                        w-full col-span-full">
               <p>لا يوجد لديك مواد مضافة</p>
               <p>أضف مواد الآن</p>
               <span className="text-6xl">+</span>
