@@ -2,10 +2,10 @@ import { useState, useEffect, useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../assets/mainLogo.svg";
-import axios from "../api/axios";
-import { useCourseData } from "../context/CourseContext";
-import { useAuth } from "../context/authContext";
-import ThreeDotMenu from "./ThreeDotMenu";
+import axios from "../../api/axios";
+import { useCourseData } from "../../context/CourseContext";
+import { useAuth } from "../../context/authContext";
+import ThreeDotMenu from "../ThreeDotMenu";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 
@@ -88,8 +88,7 @@ export default function MainHeader() {
 
           <button
             className="md:hidden text-TAF-100 focus:outline-none "
-            onClick={() => setIsOpen(!isOpen)}
-          >
+            onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
@@ -99,8 +98,7 @@ export default function MainHeader() {
         <div
           className={`w-full md:flex md:items-center md:gap-8  ${
             isOpen ? "flex flex-col gap-4" : "hidden"
-          } md:flex-row md:justify-center`}
-        >
+          } md:flex-row md:justify-center`}>
           {isAuthorized && (
             <div className="w-full md:w-1/2 xl:w-1/4 relative">
               <div className="relative flex items-center">
@@ -129,12 +127,10 @@ export default function MainHeader() {
                         {filterdCourses?.map((course) => (
                           <li
                             key={course.id}
-                            className="px-3 py-2 hover:bg-gray-100 group/searchResult"
-                          >
+                            className="px-3 py-2 hover:bg-gray-100 group/searchResult">
                             <Link
                               to={`/courses/${course.id}`}
-                              className="block font-cairo text-lg  "
-                            >
+                              className="block font-cairo text-lg  ">
                               <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
                                 {course.name} |{" "}
                                 <span className="font-bold text-gray-900">
@@ -155,19 +151,16 @@ export default function MainHeader() {
             <div
               className={`md:flex md:items-center md:gap-8  ${
                 isOpen ? "flex flex-col gap-4" : "hidden"
-              } md:flex-row md:justify-center`}
-            >
+              } md:flex-row md:justify-center`}>
               <NavLink
                 className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center font-cairo "
                 to="/courses"
-                end
-              >
+                end>
                 {({ isActive }) => (
                   <div
                     className={`relative w-full md:w-auto text-center py-1 px-3 
                     border-b-2 border-TAF-100 transition-all duration-300 
-                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}
-                  >
+                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}>
                     المواد
                   </div>
                 )}
@@ -195,15 +188,13 @@ export default function MainHeader() {
           {isAuthorized ? (
             <button
               className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  "
-              onClick={handleLogout}
-            >
+              onClick={handleLogout}>
               تسجيل الخروج
             </button>
           ) : (
             <Link
               to="/login"
-              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo "
-            >
+              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
               تسجيل الدخول
             </Link>
           )}

@@ -8,8 +8,7 @@ export function ScheduleProvider({ children }) {
 
   return (
     <ScheduleContext
-      value={{ scheduleCourses, setscheduleCourses, GPA, setGPA }}
-    >
+      value={{ scheduleCourses, setscheduleCourses, GPA, setGPA }}>
       {children}
     </ScheduleContext>
   );

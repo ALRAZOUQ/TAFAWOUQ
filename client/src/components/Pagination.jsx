@@ -1,10 +1,12 @@
 import React from "react";
 
-// Pagination component that handles page navigation
-// Props:
-// - currentPage: Current active page number
-// - totalPages: Total number of pages available
-// - setCurrentPage: Function to update the current page
+/**
+ * Pagination component that handles page navigation
+ * @param  currentPage Current active page number
+ * @param  totalPages Total number of pages available
+ * @param  setCurrentPage Function to update the current page
+ */
+
 export default function Pagination({
   currentPage,
   totalPages,
