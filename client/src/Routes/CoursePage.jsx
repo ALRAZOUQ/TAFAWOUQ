@@ -63,6 +63,17 @@ const CommentList = () => {
     }
   }, [filterTag, sortBy, searchQuery, comments]);
 
+  /** */
+  /**
+   * Filters and sorts an array of comments based on search query, tag, and sort criteria.
+   *
+   * notes all params are states above this function so we can not use this function in other file
+   * @param {Array} comments - The array of comment objects to be filtered and sorted.
+   * @param {string} searchQuery - The search query to filter comments by content.
+   * @param {string} filterTag - The tag to filter comments by. If not provided, all tags are included.
+   * @param {string} sortBy - The criteria to sort comments by. Can be "recent", "mostLikes", or "mostReplies".
+   * @returns {Array} - The filtered and sorted array of comments.
+   */
   const filteredAndSortedComments = comments
     .filter((comment) =>
       comment.content.toLowerCase().includes(searchQuery.toLowerCase())
