@@ -100,7 +100,7 @@ export default function MainHeader() {
             isOpen ? "flex flex-col gap-4" : "hidden"
           } md:flex-row md:justify-center`}>
             {/*isAuthorized i why we need to hide the search bar if the user not logged in*/}
-          {true && (
+          {isAuthorized && (
             <div className="w-full md:w-1/2 xl:w-1/4 relative">
               <div className="relative flex items-center">
                 <Search className="absolute left-3 h-5 w-5 text-gray-400" />

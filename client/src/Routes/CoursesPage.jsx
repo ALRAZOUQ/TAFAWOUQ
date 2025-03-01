@@ -45,20 +45,22 @@ export default function CoursesPage() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen max-h-max bg-gradient-to-b from-TAF-200 via-white to-TAF-200 grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 gap-6">
-      {courses.map((course) => (
-        <Link key={course.id} to={`/courses/${course.id}`}>
-          <Course
-            // TODO Razouq: The long text should be truncated, we must maintain a consistent card size
-            name={course.name}
-            avgRating={course.avgRating}
-            code={course.code}
-            // TODO Razouq: The long text should be truncated, we must maintain a consistent card size
-            overview={course.overview}
-          />
-        </Link>
-      ))}
-      {user.isAdmin && <CreateCourse />}
+    <div className="w-full h-screen bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
+      <div className="w-full h-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 gap-6">
+        {courses.map((course) => (
+          <Link key={course.id} to={`/courses/${course.id}`}>
+            <Course
+              // TODO Razouq: The long text should be truncated, we must maintain a consistent card size
+              name={course.name}
+              avgRating={course.avgRating}
+              code={course.code}
+              // TODO Razouq: The long text should be truncated, we must maintain a consistent card size
+              overview={course.overview}
+            />
+          </Link>
+        ))}
+        {user.isAdmin && <CreateCourse />}
+      </div>
     </div>
   );
 }
