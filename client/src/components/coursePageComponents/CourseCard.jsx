@@ -5,7 +5,7 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
   if (!course) return <div className="text-center py-4">Loading...</div>;
 
   return (
-    <div className="w-full h-auto bg-white shadow-lg rounded-lg p-6 border border-gray-200 hover:shadow-xl transition-shadow">
+    <div className="w-full h-auto bg-white shadow-lg rounded-lg p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300 hover:shadow-xl transition-shadow">
       <div className="space-y-4">
         <div className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">

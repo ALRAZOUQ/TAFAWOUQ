@@ -1,27 +1,49 @@
-import { Star } from "lucide-react";
-export default function Course({ code, name, overview, avgRating }) {
+import { Star, MoreVertical } from "lucide-react";
+import { Link } from "react-router-dom";
+import { useState } from "react";
+
+export default function Course({ id, code, name, avgRating }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <div className="bg-white shadow-lg rounded-2xl p-4 border border-gray-200 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
-      {/* Course Code */}
-      <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">
-        {code}
-      </h3>
-      {/* Course Name */}
-      <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-1 text-center sm:text-left">
-        {name}
-      </h2>
-      {/* actually we don't need overview in the courses page we will just show name and code and rate and maybe avg grade Hassan is writing it  */}
-      <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mt-2">
-        {/*<p className="text-gray-600 text-xs sm:text-sm w-full sm:w-3/4 text-center sm:text-left">
-          {overview}
-        </p>*/}
-        <div className="flex items-center text-yellow-500 mt-2 sm:mt-0">
-          <Star size={16} fill="currentColor" />
-          <span className="text-xs sm:text-sm font-medium text-gray-700 ml-1">
-            {avgRating}
-          </span>
-        </div>
+    <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
+      {/* Kebab Menu */}
+      <div className="absolute top-3 right-3">
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="p-1 rounded-full hover:bg-gray-100"
+        >
+          <MoreVertical size={20} />
+        </button>
+        {menuOpen && (
+          <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
+            <button className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-cairo">
+              أضف المادة الى الجدول
+            </button>
+          </div>
+        )}
       </div>
+
+      <Link to={`/courses/${id}`}>
+        <div>
+          {/* Course Code */}
+          <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">
+            {code}
+          </h3>
+          {/* Course Name */}
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-1 text-center sm:text-left">
+            {name}
+          </h2>
+          <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mt-2">
+            <div className="flex items-center text-yellow-500 mt-2 sm:mt-0">
+              <Star size={16} fill="currentColor" />
+              <span className="text-xs sm:text-sm font-medium text-gray-700 ml-1">
+                {avgRating}
+              </span>
+            </div>
+          </div>
+        </div>
+      </Link>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { features } from "../non-changeable-data/features.jsx";
 
 export default function Landing() {
   return (
-    <div className="bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200 text-gray-800 font-sans min-h-screen flex flex-col items-center justify-center p-6 mt-0 ">
+    <div className="bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200 text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm">
       <div className="w-full max-w-[400px] min-w-[100px] mx-auto mt-12">
         <motion.img
           src={main_logo}
@@ -20,7 +20,7 @@ export default function Landing() {
         />
       </div>
 
-      <p className="text-center mb-10 text-2xl">
+      <p className="text-center mb-10 text-2xl font-alm">
         بيئة تفاعلية تجمع طلاب الجامعة لتبادل الخبرات والمعارف ومشاركة الآراء
         حول المسارات الدراسية والمقررات الأكاديمية.
       </p>
@@ -29,7 +29,7 @@ export default function Landing() {
         {features.map((feature, index) => (
           <motion.div
             key={index}
-            className="bg-gray-100 shadow-lg rounded-xl px-4 py-8 flex items-center gap-4 text-xl border-x-4 border-TAF-300 w-full md:w-2/5"
+            className="bg-gray-100 shadow-lg rounded-xl px-4 py-8 flex items-center gap-4 text-xl border-x-4 border-TAF-300 w-full md:w-2/5 font-alm"
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -41,10 +41,10 @@ export default function Landing() {
         ))}
       </div>
 
-      <p className="text-center text-2xl font-semibold mt-8">
+      <p className="text-center text-2xl font-semibold mt-8 font-alm">
         📢 انضم إلينا الآن وساهم في بناء مجتمع طلابي أكثر تفاعلًا ونجاحًا! 💙
       </p>
-      <p className="text-center text-2xl font-bold mt-2">
+      <p className="text-center text-2xl font-bold mt-2 font-alm">
         ⚡ تعلم، شارك، وانطلق نحو النجاح!
       </p>
     </div>

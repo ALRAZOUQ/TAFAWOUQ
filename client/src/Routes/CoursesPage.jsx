@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import {  useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
@@ -27,7 +27,6 @@ export default function CoursesPage() {
       setProgress(0);
       try {
         const response = await axios.get("auth/courses", {
-          
           onDownloadProgress: (progressEvent) => {
             const total = progressEvent.total || 100;
             const percentCompleted = Math.round(
@@ -58,7 +57,7 @@ export default function CoursesPage() {
   }, []);
 
   return (
-    <div className="w-full h-screen bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
+    <div className="w-full min-h-screen bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200">
       {loading && (
         <div className="w-full flex justify-center items-center h-full">
           <CircularProgressBar progress={progress} />
@@ -71,17 +70,16 @@ export default function CoursesPage() {
       )}
       {!loading && !error && (
         <div className="w-full h-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 gap-6">
-          {courses.map((course) => (
-            <Link key={course.id} to={`/courses/${course.id}`}>
-              <Course
-                name={course.name}
-                avgRating={course.avgRating}
-                code={course.code}
-                overview={course.overview}
-              />
-            </Link>
-          ))}
           {user.isAdmin && <CreateCourse />}
+          {courses.map((course) => (
+            <Course
+              id={course.id}
+              name={course.name}
+              avgRating={course.avgRating}
+              code={course.code}
+              overview={course.overview}
+            />
+          ))}
         </div>
       )}
     </div>
