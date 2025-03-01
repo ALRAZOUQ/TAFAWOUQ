@@ -100,9 +100,9 @@ router.put("/updateCourse", async (req, res) => {
   }
 });
 
-router.delete("/deleteCourse", async (req, res) => {
+router.delete("/deleteCourse/:courseId", async (req, res) => {
   try {
-    const { courseId } = req.body;
+    const { courseId } = req.params;
 
     // Check if the course exists
     const existingCourse = await db.query(
