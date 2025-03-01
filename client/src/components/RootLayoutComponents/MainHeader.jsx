@@ -99,7 +99,8 @@ export default function MainHeader() {
           className={`w-full md:flex md:items-center md:gap-8  ${
             isOpen ? "flex flex-col gap-4" : "hidden"
           } md:flex-row md:justify-center`}>
-          {isAuthorized && (
+            {/*isAuthorized i why we need to hide the search bar if the user not logged in*/}
+          {true && (
             <div className="w-full md:w-1/2 xl:w-1/4 relative">
               <div className="relative flex items-center">
                 <Search className="absolute left-3 h-5 w-5 text-gray-400" />
@@ -129,6 +130,7 @@ export default function MainHeader() {
                             key={course.id}
                             className="px-3 py-2 hover:bg-gray-100 group/searchResult">
                             <Link
+                            onClick={() => setSearchInput("")}
                               to={`/courses/${course.id}`}
                               className="block font-cairo text-lg  ">
                               <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
