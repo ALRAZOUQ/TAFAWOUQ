@@ -1,6 +1,6 @@
-import express from 'express';
-import { checkAuth } from '../middleware/authMiddleware.js';
-import db from '../config/db.js';
+import express from "express";
+import { checkAuth } from "../middleware/authMiddleware.js";
+import db from "../config/db.js";
 
 const router = express.Router();
 
@@ -8,21 +8,18 @@ const router = express.Router();
 // each roter here not allowed to be accessed without authentication. no need to do any thing. the middleware will do the job
 router.use(checkAuth);
 
-router.get('/userData', async (req, res) => {
+router.get("/userData", async (req, res) => {
   try {
     const { rows } = await db.query(
       'SELECT id, name,email, isadmin FROM "user" WHERE id = $1',
       [req.user.id]
     );
-    
+
     res.json(rows[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
 });
-
-
-
 
 //==================================================
 //================= schedule ========================
@@ -30,47 +27,50 @@ router.get('/userData', async (req, res) => {
 
 router.get("/currentSchedule", async (req, res) => {
   try {
-    
     //const studentId = 2;
     const studentId = req.user.id;
-    const course = await db.query(`WITH latest_term AS (
+    const course = await db.query(
+      `WITH latest_term AS (
     SELECT name
     FROM term
     ORDER BY startDate DESC
     LIMIT 1
 )
-SELECT course.* , schedule.id as scheduleId
+SELECT course.* , schedule.id as scheduleId , schedule.termName
 FROM schedule
 JOIN latest_term ON schedule.termName = latest_term.name
 JOIN schedule_course ON schedule.id = schedule_course.scheduleId
 JOIN course ON schedule_course.courseId = course.id
-WHERE schedule.studentId = $1;`,[studentId]);
+WHERE schedule.studentId = $1;`,
+      [studentId]
+    );
     if (course.rows.length === 0) {
       //console.log(course.rows)
-      return res.status(404).json({success: false, message: "No schedule associated with the current term was found" });
+      return res
+        .status(404)
+        .json({
+          success: false,
+          message: "No schedule associated with the current term was found",
+        });
     }
-    const camelCaseCourses = course.rows.map(course => (
-      {
+    const camelCaseCourses = course.rows.map((course) => ({
       id: course.id,
       name: course.name,
       code: course.code,
       overview: course.overview,
-      creditHours: course.credithours
-      
-      
+      creditHours: course.credithours,
     }));
     res.status(200).json({
       success: true,
       message: "Courses retrieved successfully",
       scheduleId: course.rows[0].scheduleid,
+      scheduleName: course.rows[0].termname,
       courses: camelCaseCourses,
     });
   } catch (error) {
-    res.status(500).json({success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
-
-
 
 router.post("/addCourseToSchedule", async (req, res) => {
   try {
@@ -84,19 +84,23 @@ router.post("/addCourseToSchedule", async (req, res) => {
     );
 
     if (userSchedule.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Schedule not found for the user" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Schedule not found for the user" });
     }
 
-// Check if the course is already in the schedule
-// we can delete this
-const courseInSchedule = await db.query(
-  `SELECT * FROM schedule_course WHERE scheduleId = $1 AND courseId = $2`,
-  [scheduleId, courseId]
-);
+    // Check if the course is already in the schedule
+    // we can delete this
+    const courseInSchedule = await db.query(
+      `SELECT * FROM schedule_course WHERE scheduleId = $1 AND courseId = $2`,
+      [scheduleId, courseId]
+    );
 
-if (courseInSchedule.rows.length > 0) {
-  return res.status(400).json({ success: false, message: "Course already in the schedule" });
-}
+    if (courseInSchedule.rows.length > 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Course already in the schedule" });
+    }
     // Check if the course is already registered in one of the student's schedules
     const existingCourse = await db.query(
       `SELECT sc.courseId, COALESCE(g.value, 0) AS grade
@@ -109,9 +113,16 @@ if (courseInSchedule.rows.length > 0) {
 
     if (existingCourse.rows.length > 0) {
       const grade = existingCourse.rows[0].grade;
-      console.log(grade)
-      if (grade !== 1) {// 1 means he did not pass the course, meaning he got an F grade
-        return res.status(401).json({ success: false, message: "Course already registered in past terms with a grade value more than 1" });
+      console.log(grade);
+      if (grade !== 1) {
+        // 1 means he did not pass the course, meaning he got an F grade
+        return res
+          .status(401)
+          .json({
+            success: false,
+            message:
+              "Course already registered in past terms with a grade value more than 1",
+          });
       }
     }
 
@@ -131,7 +142,6 @@ if (courseInSchedule.rows.length > 0) {
   }
 });
 
-
 router.delete("/deleteCourseFromSchedule", async (req, res) => {
   try {
     const { scheduleId, courseId } = req.body;
@@ -144,7 +154,9 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
     );
 
     if (userSchedule.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Schedule not found for the user" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Schedule not found for the user" });
     }
 
     // Check if the course is in the schedule
@@ -154,10 +166,12 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
     );
 
     if (courseInSchedule.rows.length === 0) {
-      return res.status(404).json({ success: false, message: "Course not found in the schedule" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found in the schedule" });
     }
-//**********opthonal**********
-/*
+    //**********opthonal**********
+    /*
     // Get the current term's end date
     const currentTerm = await db.query(
       `SELECT endDate FROM term
@@ -178,7 +192,7 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
     }
 */
 
-//******************************* 
+    //*******************************
     // Delete the course from the schedule
     await db.query(
       `DELETE FROM schedule_course WHERE scheduleId = $1 AND courseId = $2`,

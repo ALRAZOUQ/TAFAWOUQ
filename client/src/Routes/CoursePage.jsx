@@ -70,7 +70,7 @@ const CoursePage = () => {
       const response = await axios.delete(`admin/deleteCourse/${courseId}`);
       if (response.status === 200) {
         toast.success('تم حذف المقرر بنجاح');
-        setCoursesData(prevCourses => prevCourses.filter(course => course.id != courseId))
+        setCoursesData(prevCourses => prevCourses.filter(course => course.id != courseId)) // Update the courses data (used in the search bar and the courses pageF)
         navigate("/home");
       }
     } catch (error) {
