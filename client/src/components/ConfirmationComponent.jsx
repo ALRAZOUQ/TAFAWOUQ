@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-
 /**
  * @typedef {Object} ConfirmationComponentProps
  * @property {string} [title="Confirm Action"] - The title displayed in the confirmation dialog header
@@ -38,9 +37,9 @@ const ConfirmationComponent = ({
   onConfirm, 
   onCancel,
   isRTL = false,
-  isOpen = false  // Add this prop
+  isOpen = false  
 }) => {
-  // Remove the internal isOpen state since we're controlling it from parent
+ 
   if (!isOpen) return null;
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
@@ -76,4 +75,4 @@ const ConfirmationComponent = ({
     </div>
   );
 };
-export default ConfirmationComponent;  // Add this line at the end
+export default ConfirmationComponent;  
