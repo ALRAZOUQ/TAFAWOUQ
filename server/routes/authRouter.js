@@ -22,12 +22,10 @@ router.post("/register", async (req, res) => {
     );
 
     if (existingUser.rows.length > 0) {
-      return res
-        .status(409)
-        .json({
-          success: false,
-          message: "An account with this already exists",
-        }); // 409 Conflict
+      return res.status(409).json({
+        success: false,
+        message: "An account with this already exists",
+      }); // 409 Conflict
     }
 
     // Hash password

@@ -170,7 +170,7 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
         .status(404)
         .json({ success: false, message: "Course not found in the schedule" });
     }
-    //**********opthonal**********
+    //**********optional**********
     /*
     // Get the current term's end date
     const currentTerm = await db.query(
