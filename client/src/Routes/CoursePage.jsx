@@ -1,54 +1,93 @@
 /*stiil need to work on it*/
 import React, { useState, useEffect } from "react";
 import axios from "../api/axios";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import 'react-confirm-alert/src/react-confirm-alert.css';
+import { useAuth } from "../context/authContext";
+import ConfirmDialog from "../components/ConfirmationComponent";
+ import { useCourseData } from "../context/CourseContext";
+// Components
 import CourseCard from "../components/coursePageComponents/CourseCard";
 import Comment from "../components/coursePageComponents/Comment";
 import FilterControls from "../components/coursePageComponents/FilterControls";
 import Pagination from "../components/Pagination";
 
-const CommentList = () => {
+const CoursePage = () => {
+  // Hooks
   const { courseId } = useParams();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const { setCoursesData } = useCourseData(); //To update the fetched course data used in the search bar and courses page
+
+  // State
   const [course, setCourse] = useState(null);
   const [comments, setComments] = useState([]);
   const [filterTag, setFilterTag] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false); // Move this here
   const commentsPerPage = 8;
 
+  // API Calls
+  const fetchCourse = async () => {
+    try {
+      const response = await axios.get(`auth/course/${courseId}`);
+      if (response.status === 200) {
+        setCourse(response.data.course[0]);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.error("Error fetching course:", error);
+      setCourse(null);
+        toast.error("المقرر غير موجود");
+        navigate("/home");
+      }
+      
+    }
+  };
+
+  const fetchComments = async () => {
+    try {
+      const response = await axios.get(`auth/comments/${courseId}`);
+      if (response.status === 200) {
+        setComments(response.data.comments);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        toast.error("لا توجد تعليقات على هذا المقرر بعد");
+        setComments([]);
+      }
+      // Todo :Razouq:  we dont show an error msg to the user here !
+      console.error("Error fetching comments:", error);
+    }
+  };
+
+  // Event Handlers
+  const deleteCourse = async () => {
+    try {
+      const response = await axios.delete(`admin/deleteCourse/${courseId}`);
+      if (response.status === 200) {
+        toast.success('تم حذف المقرر بنجاح');
+        setCoursesData(prevCourses => prevCourses.filter(course => course.id != courseId))
+        navigate("/home");
+      }
+    } catch (error) {
+      toast.error('حدث خطأ أثناء حذف المقرر');
+      console.error('Error deleting course:', error);
+    } finally {
+      setIsConfirmOpen(false);
+      
+    }
+  };
+  
+  // Effects
   useEffect(() => {
     fetchCourse();
-    fetchComments();
-
-    async function fetchCourse() {
-      try {
-        const response = await axios.get(`auth/course/${courseId}`);
-        if (response.status === 200) {
-          setCourse(response.data.course[0]);
-        }
-      } catch (error) {
-        console.error("Error fetching course:", error);
-        setCourse(null);
-      }
-    }
-
-    async function fetchComments() {
-      try {
-        const response = await axios.get(`auth/comments/${courseId}`);
-        if (response.status === 200) {
-          setComments(response.data.comments);
-        }
-      } catch (error) {
-        if (error.response?.status === 404) {
-          toast.error("لا توجد تعليقات على هذا المقرر بعد");
-          setComments([]);
-        }
-        // Todo :Razouq:  we dont show an error msg to the user here !
-        console.error("Error fetching comments:", error);
-      }
-    }
+    //  make sure that the course is fetched before fetching the comments
+    if(course){
+      fetchComments();}
   }, [courseId]);
 
   //  handle page reset when number of comments changes
@@ -63,7 +102,6 @@ const CommentList = () => {
     }
   }, [filterTag, sortBy, searchQuery, comments]);
 
-  /** */
   /**
    * Filters and sorts an array of comments based on search query, tag, and sort criteria.
    *
@@ -87,6 +125,7 @@ const CommentList = () => {
       return 0;
     });
 
+  // Pagination calculations
   const currentComments = filteredAndSortedComments.slice(
     (currentPage - 1) * commentsPerPage,
     currentPage * commentsPerPage
@@ -98,9 +137,20 @@ const CommentList = () => {
 
   return (
     <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
-      <div className=" w-auto mx-auto container p-4">
-        <CourseCard course={course} />
-
+      <div className="w-auto mx-auto container p-4">
+        <CourseCard 
+          course={course} 
+          isAdmin={user?.isAdmin} 
+          onDelete={() => setIsConfirmOpen(true)} 
+        />
+        <ConfirmDialog
+          title="حذف المقرر"
+          message="هل انت متأكد بانك تريد حذف المقرر؟"
+          onConfirm={deleteCourse}
+          onCancel={() => setIsConfirmOpen(false)}
+          isRTL={true}
+          isOpen={isConfirmOpen}
+        />
         <FilterControls
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
@@ -121,9 +171,10 @@ const CommentList = () => {
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
         />
+        
       </div>
     </div>
   );
 };
 
-export default CommentList;
+export default CoursePage;
