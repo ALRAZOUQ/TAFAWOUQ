@@ -81,7 +81,7 @@ export default function HomePage() {
           {scheduleData.courses && renderedCourses}
         </div>
 
-        {scheduleData.courses && (
+        {!scheduleData.courses && (
           <Link to="/courses" className="col-span-full w-full mt-auto">
             <div
               className="flex flex-col items-center justify-center bg-gray-200 border-2 border-dotted border-gray-400 p-3 rounded-lg cursor-pointer 

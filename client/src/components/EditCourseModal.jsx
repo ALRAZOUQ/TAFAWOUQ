@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useActionState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function EditCourseModal({
@@ -10,12 +10,18 @@ export default function EditCourseModal({
   onClose,
   onSave,
 }) {
-  const [formData, setFormData] = useState({
+  const updateFormData = (prevState, { name, value }) => ({
+    ...prevState,
+    [name]: value,
+  });
+
+  const [formData, dispatch] = useActionState(updateFormData, {
     overview,
     code,
     name,
     creditHours,
   });
+
   const dialogRef = useRef(null);
 
   useEffect(() => {
@@ -25,11 +31,6 @@ export default function EditCourseModal({
       dialogRef.current?.close();
     }
   }, [isOpen]);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -79,7 +80,9 @@ export default function EditCourseModal({
                   id="code"
                   name="code"
                   value={formData.code}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    dispatch({ name: e.target.name, value: e.target.value })
+                  }
                   required
                   className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -97,7 +100,9 @@ export default function EditCourseModal({
                   id="name"
                   name="name"
                   value={formData.name}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    dispatch({ name: e.target.name, value: e.target.value })
+                  }
                   required
                   className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -116,7 +121,9 @@ export default function EditCourseModal({
                   name="creditHours"
                   type="number"
                   value={formData.creditHours}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    dispatch({ name: e.target.name, value: e.target.value })
+                  }
                   required
                   className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
@@ -134,7 +141,9 @@ export default function EditCourseModal({
                   id="overview"
                   name="overview"
                   value={formData.overview}
-                  onChange={handleChange}
+                  onChange={(e) =>
+                    dispatch({ name: e.target.name, value: e.target.value })
+                  }
                   className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none h-24 resize-none"
                 ></textarea>
               </div>
