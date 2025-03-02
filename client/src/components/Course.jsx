@@ -29,14 +29,14 @@ export default function Course({
         >
           <MoreVertical size={20} />
         </button>
-        {!user.isAdmin && menuOpen && (
+        {!user?.isAdmin && menuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-cairo">
               أضف المادة الى الجدول
             </button>
           </div>
         )}
-        {user.isAdmin && menuOpen && (
+        {user?.isAdmin && menuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={handleEditCourse}
@@ -70,7 +70,7 @@ export default function Course({
           <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mt-2">
             <div className="flex items-center text-yellow-500 mt-2 sm:mt-0">
               <Star size={16} fill="currentColor" />
-              <span className="text-xs sm:text-sm font-medium text-gray-700 ml-1">
+              <span className="text-xs sm:text-sm font-medium text-gray-700 ml-1 mr-1">
                 {avgRating}
               </span>
             </div>

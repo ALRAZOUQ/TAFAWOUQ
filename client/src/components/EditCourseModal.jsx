@@ -42,22 +42,38 @@ export default function EditCourseModal({
       {isOpen && (
         <dialog
           ref={dialogRef}
-          className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm p-4"
+          className="fixed inset-0 flex items-center justify-center backdrop-blur-md p-4 
+                  w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-3xl 
+                  bg-white shadow-2xl rounded-2xl border border-gray-200"
         >
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
-            className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg"
+            className="w-full"
           >
-            <h2 className="text-xl font-bold mb-4">Edit Course</h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
+            {/* Modal Header */}
+            <div className="flex justify-between items-center pb-3">
+              <h2 className="text-2xl font-semibold text-gray-800">
+                تعديل المقرر
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-gray-500 hover:text-gray-800 text-xl"
+              >
+                &times;
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5 mt-4">
+              {/* Course Code */}
+              <div className="flex flex-col">
                 <label
                   htmlFor="code"
-                  className="block text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700"
                 >
-                  Course Code
+                  رمز المقرر
                 </label>
                 <input
                   id="code"
@@ -65,15 +81,17 @@ export default function EditCourseModal({
                   value={formData.code}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded"
+                  className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
-              <div>
+
+              {/* Course Name */}
+              <div className="flex flex-col">
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700"
                 >
-                  Course Name
+                  إسم المقرر
                 </label>
                 <input
                   id="name"
@@ -81,15 +99,17 @@ export default function EditCourseModal({
                   value={formData.name}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded"
+                  className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
-              <div>
+
+              {/* Credit Hours */}
+              <div className="flex flex-col">
                 <label
                   htmlFor="creditHours"
-                  className="block text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700"
                 >
-                  Credit Hours
+                  الساعات
                 </label>
                 <input
                   id="creditHours"
@@ -98,37 +118,41 @@ export default function EditCourseModal({
                   value={formData.creditHours}
                   onChange={handleChange}
                   required
-                  className="w-full p-2 border rounded"
+                  className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
                 />
               </div>
-              <div>
+
+              {/* Course Overview */}
+              <div className="flex flex-col">
                 <label
                   htmlFor="overview"
-                  className="block text-sm font-medium text-gray-700"
+                  className="text-sm font-medium text-gray-700"
                 >
-                  Overview
+                  وصف المقرر
                 </label>
                 <textarea
                   id="overview"
                   name="overview"
                   value={formData.overview}
                   onChange={handleChange}
-                  className="w-full p-2 border rounded"
+                  className="mt-1 p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none h-24 resize-none"
                 ></textarea>
               </div>
-              <div className="flex justify-end space-x-2">
+
+              {/* Action Buttons */}
+              <div className="flex justify-end space-x-3 border-t pt-3">
                 <button
                   type="button"
-                  className="px-4 py-2 bg-gray-300 rounded"
+                  className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition ml-6"
                   onClick={onClose}
                 >
-                  Cancel
+                  إلغاء
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                 >
-                  Save
+                  حفظ
                 </button>
               </div>
             </form>

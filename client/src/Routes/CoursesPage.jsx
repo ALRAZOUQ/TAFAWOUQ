@@ -41,7 +41,7 @@ export default function CoursesPage() {
       } catch (error) {
         if (error.response) {
           if (error.response.status === 404) {
-            setError("حدث خطأ. لا تقلق ليس الأمر بسببك");
+            setError("حدث خطأ. لا داعي للقلق ليس الأمر بسببك");
           } else {
             setError(error.response.data.message || "حدث خطأ غير معروف");
           }
@@ -70,9 +70,10 @@ export default function CoursesPage() {
       )}
       {!loading && !error && (
         <div className="w-full h-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 gap-6">
-          {user.isAdmin && <CreateCourse />}
+          {user?.isAdmin && <CreateCourse />}
           {courses.map((course) => (
             <Course
+              key={course.id}
               id={course.id}
               name={course.name}
               avgRating={course.avgRating}
