@@ -1,10 +1,24 @@
 import { Star, MoreVertical } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useAuth } from "../context/authContext";
+import EditCourseModal from "../components/EditCourseModal";
 
-export default function Course({ id, code, name, avgRating }) {
+export default function Course({
+  id,
+  code,
+  name,
+  avgRating,
+  creditHours,
+  overview,
+}) {
   const [menuOpen, setMenuOpen] = useState(false);
-
+  const { user } = useAuth();
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  function handleEditCourse() {
+    setIsEditModalOpen(true);
+  }
+  function handleSave() {}
   return (
     <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
       {/* Kebab Menu */}
@@ -15,14 +29,33 @@ export default function Course({ id, code, name, avgRating }) {
         >
           <MoreVertical size={20} />
         </button>
-        {menuOpen && (
+        {!user.isAdmin && menuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-cairo">
               أضف المادة الى الجدول
             </button>
           </div>
         )}
+        {user.isAdmin && menuOpen && (
+          <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
+            <button
+              onClick={handleEditCourse}
+              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-cairo"
+            >
+              تعديل المادة
+            </button>
+          </div>
+        )}
       </div>
+      <EditCourseModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleSave}
+        code={code}
+        name={name}
+        creditHours={creditHours}
+        overview={overview}
+      />
 
       <Link to={`/courses/${id}`}>
         <div>

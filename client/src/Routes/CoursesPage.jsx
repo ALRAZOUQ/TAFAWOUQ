@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
@@ -78,6 +78,7 @@ export default function CoursesPage() {
               avgRating={course.avgRating}
               code={course.code}
               overview={course.overview}
+              creditHours={course.creditHours}
             />
           ))}
         </div>
