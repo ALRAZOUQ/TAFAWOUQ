@@ -1,7 +1,13 @@
 import { createContext, useState, useContext } from "react";
 import axios from "../api/axios";
-
-const ScheduleContext = createContext();
+//HASSAN:here we don't need to set the default values and these values don't affect the context and we can remove it but to make VS code give us auto completion we add it
+const ScheduleContext = createContext({
+  scheduleCourses: {},
+  GPA: 0.0,
+  setGPA: () => {},
+  addCourseToSchedule: () => {},
+  removeCoursefromSchedule: () => {},
+});
 
 export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
@@ -13,9 +19,12 @@ export function ScheduleProvider({ children }) {
         scheduleId,
         courseId,
       });
-      
+
       if (response.data.success) {
-        setScheduleCourses((prevCourses) => [...prevCourses, { scheduleId, courseId }]);
+        setScheduleCourses((prevCourses) => [
+          ...prevCourses,
+          { scheduleId, courseId },
+        ]);
       } else {
         console.error(response.data.message || "Failed to add course");
       }
@@ -23,9 +32,17 @@ export function ScheduleProvider({ children }) {
       console.error(error.response?.data?.message || "Failed to add course");
     }
   }
-
+  async function removeCoursefromSchedule() {}
   return (
-    <ScheduleContext.Provider value={{ scheduleCourses, GPA, setGPA, addCourseToSchedule }}>
+    <ScheduleContext.Provider
+      value={{
+        scheduleCourses,
+        GPA,
+        setGPA,
+        addCourseToSchedule,
+        removeCoursefromSchedule,
+      }}
+    >
       {children}
     </ScheduleContext.Provider>
   );
