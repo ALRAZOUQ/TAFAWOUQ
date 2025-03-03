@@ -107,7 +107,7 @@ export default function MainHeader() {
                 <input
                   type="text"
                   placeholder="إبحث عن المواد"
-                  className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all font-cairo"
+                  className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   value={searchInput}
                   onChange={onSearch}
                   onFocus={() => setShowResults(searchInput.length > 0)}
@@ -120,7 +120,7 @@ export default function MainHeader() {
                 <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
                   <div className="max-h-60 overflow-y-auto">
                     {filterdCourses?.length === 0 ? (
-                      <div className="p-3 text-gray-500 font-cairo">
+                      <div className="p-3 text-gray-500">
                         لا توجد نتائج
                       </div>
                     ) : (
@@ -132,7 +132,7 @@ export default function MainHeader() {
                             <Link
                             onClick={() => setSearchInput("")}
                               to={`/courses/${course.id}`}
-                              className="block font-cairo text-lg  ">
+                              className="block text-lg  ">
                               <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
                                 {course.name} |{" "}
                                 <span className="font-bold text-gray-900">
@@ -155,7 +155,7 @@ export default function MainHeader() {
                 isOpen ? "flex flex-col gap-4" : "hidden"
               } md:flex-row md:justify-center`}>
               <NavLink
-                className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center font-cairo "
+                className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center "
                 to="/courses"
                 end>
                 {({ isActive }) => (
@@ -173,13 +173,13 @@ export default function MainHeader() {
           {/* Additional Links */}
           {/*
   <div className="flex flex-col md:flex-row gap-2 md:gap-8 mt-4 md:mt-0 justify-center items-center ">
-  <Link to="/" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo">
+  <Link to="/" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0">
        القائمة الرئيسية
   </Link>
-  <Link to="/about" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo">
+  <Link to="/about" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0">
     حول
   </Link>
-  <Link to="/contact" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0 font-cairo">
+  <Link to="/contact" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0">
     التواصل
   </Link>
   </div>
@@ -189,14 +189,14 @@ export default function MainHeader() {
 
           {isAuthorized ? (
             <button
-              className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo  "
+              className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
               onClick={handleLogout}>
               تسجيل الخروج
             </button>
           ) : (
             <Link
               to="/login"
-              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors font-cairo ">
+              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors">
               تسجيل الدخول
             </Link>
           )}

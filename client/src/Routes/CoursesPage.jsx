@@ -64,7 +64,7 @@ export default function CoursesPage() {
         </div>
       )}
       {error && (
-        <div className="w-full text-center p-4 text-red-500 font-cairo">
+        <div className="w-full text-center p-4 text-red-500">
           <p>{error}</p>
         </div>
       )}

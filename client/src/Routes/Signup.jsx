@@ -105,7 +105,7 @@ export default function Signup() {
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto border-y-8 border-TAF-300 bg-gray-50 rounded-lg shadow-md mt-6">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">
           {/* Responsive heading */}
-          <h2 className="text-xl sm:text-2xl font-semibold text-center text-gray-700 mb-4 sm:mb-6 font-cairo">
+          <h2 className="text-xl sm:text-2xl font-semibold text-center text-gray-700 mb-4 sm:mb-6">
             التسجيل
           </h2>
           <form action={formAction}>
@@ -113,7 +113,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="username"
-                className="block text-sm sm:text-base text-gray-600 font-cairo"
+                className="block text-sm sm:text-base text-gray-600"
               >
                 الإسم
               </label>
@@ -128,7 +128,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm sm:text-base text-gray-600 font-cairo"
+                className="block text-sm sm:text-base text-gray-600"
               >
                 الإيميل
               </label>
@@ -143,7 +143,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm sm:text-base text-gray-600 font-cairo"
+                className="block text-sm sm:text-base text-gray-600"
               >
                 كلمة المرور
               </label>
@@ -158,7 +158,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm sm:text-base text-gray-600 font-cairo"
+                className="block text-sm sm:text-base text-gray-600"
               >
                 تأكيد كلمة المرور
               </label>
@@ -176,7 +176,7 @@ export default function Signup() {
                 <ul className="list-decimal w-full p-2 sm:p-3 mt-1 sm:mt-2">
                   {formState.errors.map((error) => (
                     <li
-                      className="text-red-600 text-sm sm:text-base font-cairo"
+                      className="text-red-600 text-sm sm:text-base"
                       key={error}
                     >
                       {errorMapping(error)}
@@ -186,14 +186,14 @@ export default function Signup() {
               )}
             </div>
             {/* Submit button */}
-            <button className="w-full p-2 sm:p-3 mt-4 sm:mt-6 bg-TAF-100 text-white font-semibold rounded-lg hover:opacity-70 active:opacity-50 hover:outline-TAF-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base font-cairo">
+            <button className="w-full p-2 sm:p-3 mt-4 sm:mt-6 bg-TAF-100 text-white font-semibold rounded-lg hover:opacity-70 active:opacity-50 hover:outline-TAF-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base">
               تسجيل
             </button>
             {/* Login link */}
             <div className="flex justify-center mt-4 sm:mt-6">
               <Link
                 to="/login"
-                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none font-cairo"
+                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
               >
                 لديك حساب؟ تسجيل الدخول
               </Link>

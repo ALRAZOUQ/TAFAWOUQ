@@ -32,7 +32,7 @@ export default function CreateCourse() {
     <>
       <button
         onClick={() => dialogRef.current.showModal()}
-        className=" bg-gray-50 border-2 border-TAF-100 border-dotted text-gray-700 shadow-lg rounded-2xl hover:opacity-75 active:opacity-55 px-4 py-2 font-cairo"
+        className=" bg-gray-50 border-2 border-TAF-100 border-dotted text-gray-700 shadow-lg rounded-2xl hover:opacity-75 active:opacity-55 px-4 py-2"
       >
         إنشاء مادة جديدة
       </button>

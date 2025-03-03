@@ -31,7 +31,7 @@ export default function Course({
         </button>
         {!user?.isAdmin && menuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
-            <button className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-cairo">
+            <button className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
               أضف المادة الى الجدول
             </button>
           </div>
@@ -40,7 +40,7 @@ export default function Course({
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={handleEditCourse}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 font-cairo"
+              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
               تعديل المادة
             </button>
