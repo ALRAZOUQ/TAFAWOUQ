@@ -6,13 +6,13 @@ import { useSchedule } from "../context/ScheduleContext";
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
-  const { scheduleCourses, fetchCourses } = useSchedule(); // Using context data
+  const { scheduleCourses, fetchCourses } = useSchedule();
 
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/");
     } else {
-      fetchCourses(); // Fetch schedule courses when user logs in
+      fetchCourses();
     }
     if (user?.isAdmin) {
       navigate("/admin/admin-home");
