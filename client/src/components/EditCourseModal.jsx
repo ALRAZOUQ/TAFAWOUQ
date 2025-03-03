@@ -1,14 +1,17 @@
 import { useEffect, useRef, useActionState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "../api/axios";
+import { toast } from "react-toastify";
 
 export default function EditCourseModal({
+  id,
   overview,
   code,
   name,
   creditHours,
   isOpen,
   onClose,
-  onSave,
+  handleCourseUpdate,
 }) {
   const updateFormData = (prevState, { name, value }) => ({
     ...prevState,
@@ -32,10 +35,27 @@ export default function EditCourseModal({
     }
   }, [isOpen]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onSave(formData);
-    onClose();
+    try {
+      const response = await axios.put("admin/updateCourse", {
+        courseId: id,
+        name: formData.name,
+        code: formData.code,
+        overview: formData.overview,
+        creditHours: parseInt(formData.creditHours),
+      });
+
+      if (response.status === 200) {
+        toast.success("تم تحديث المقرر بنجاح");
+        handleCourseUpdate(formData); //  update parent state(the course Data)
+        onClose(); // Close the modal
+      }
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message || "حدث خطأ أثناء تحديث المقرر";
+      toast.error(errorMessage);
+    }
   };
 
   return (
