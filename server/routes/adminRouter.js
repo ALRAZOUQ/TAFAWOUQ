@@ -23,9 +23,9 @@ router.get("/users", async (req, res) => {
 
 router.post("/addCourse", async (req, res) => {
   try {
-const { name, code, overview, creditHours } = req.body;
-const creatorId = req.user.id;
-const lowerCode = code.toLowerCase();
+    const { name, code, overview, creditHours } = req.body;
+    const creatorId = req.user.id;
+    const lowerCode = code.toLowerCase();
     // Check if the course already exists
     const existingCourse = await db.query(
       `SELECT * FROM course WHERE code = $1`,
@@ -54,6 +54,18 @@ const lowerCode = code.toLowerCase();
     res.status(201).json({
       success: true,
       message: "Course added successfully",
+      course: {
+        id: newCourse.rows[0].id,
+        name: newCourse.rows[0].name,
+        code: newCourse.rows[0].code,
+        overview: newCourse.rows[0].overview,
+        creditHours: newCourse.rows[0].credithours,
+        creatorId: newCourse.rows[0].creatorid,
+        //becuse it is not in the database before this time
+        avgRating: 0,
+        avgGrade: 0,
+        numOfRaters: 0,
+      },
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -134,7 +146,9 @@ router.post("/addCourseToSchedule", async (req, res) => {
     const { scheduleId, courseId } = req.body;
     const userId = req.user.id;
 
-    console.log(`scheduleId: ${scheduleId}, courseId: ${courseId}, userId: ${userId}`);
+    console.log(
+      `scheduleId: ${scheduleId}, courseId: ${courseId}, userId: ${userId}`
+    );
 
     // Check if the user has the schedule
     const userSchedule = await db.query(
@@ -144,7 +158,9 @@ router.post("/addCourseToSchedule", async (req, res) => {
 
     if (userSchedule.rows.length === 0) {
       console.log("Schedule not found for the user");
-      return res.status(404).json({ success: false, message: "Schedule not found for the user" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Schedule not found for the user" });
     }
 
     // Check if the course is already registered in one of the student's schedules
@@ -189,6 +205,5 @@ router.post("/addCourseToSchedule", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 export default router;
