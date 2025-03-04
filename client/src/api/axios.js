@@ -9,6 +9,8 @@ const axiosInstance = axios.create({
   },
 });
 
+
+
 axiosInstance.interceptors.request.use(
   (config) => {
     document.getElementById("loadingSpinnerContainer")?.classList.remove("hidden")
@@ -35,5 +37,6 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+
 
 export default axiosInstance;
