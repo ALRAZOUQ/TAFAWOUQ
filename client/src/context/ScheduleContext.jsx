@@ -6,7 +6,7 @@ import {
   useCallback,
 } from "react";
 import axios from "../api/axios";
-// actually we don't need to assign default values and these values don't affect the context but its benifit is to provide auto completion in the VS code
+// actually we don't need to assign default values and these values don't affect the context but its benifit is to provide auto completion in the VS code so don't remove it it will help us //HASSAN
 const ScheduleContext = createContext({
   scheduleCourses: [],
   GPA: 0.0,
