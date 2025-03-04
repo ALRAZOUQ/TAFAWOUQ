@@ -24,48 +24,52 @@ router.get("/userData", async (req, res) => {
 //==================================================
 //================= schedule ========================
 //==================================================
-
 router.get("/currentSchedule", async (req, res) => {
   try {
-    //const studentId = 2;
     const studentId = req.user.id;
-    const course = await db.query(
+    const scheduleQuery = await db.query(
       `WITH latest_term AS (
-    SELECT name
-    FROM term
-    ORDER BY startDate DESC
-    LIMIT 1
-)
-SELECT course.* , schedule.id as scheduleId , schedule.termName
-FROM schedule
-JOIN latest_term ON schedule.termName = latest_term.name
-JOIN schedule_course ON schedule.id = schedule_course.scheduleId
-JOIN course ON schedule_course.courseId = course.id
-WHERE schedule.studentId = $1;`,
+        SELECT name, startDate, endDate
+        FROM term
+        ORDER BY startDate DESC
+        LIMIT 1
+      )
+      SELECT schedule.id as scheduleId, schedule.termName, 
+             latest_term.startDate, latest_term.endDate,
+             COALESCE(json_agg(
+               json_build_object(
+                 'id', course.id,
+                 'name', course.name,
+                 'code', course.code,
+                 'overview', course.overview,
+                 'creditHours', course.credithours
+               )
+             ) FILTER (WHERE course.id IS NOT NULL), '[]') as courses
+      FROM schedule
+      JOIN latest_term ON schedule.termName = latest_term.name
+      LEFT JOIN schedule_course ON schedule.id = schedule_course.scheduleId
+      LEFT JOIN course ON schedule_course.courseId = course.id
+      WHERE schedule.studentId = $1
+      GROUP BY schedule.id, schedule.termName, latest_term.startDate, latest_term.endDate;`,
       [studentId]
     );
-    if (course.rows.length === 0) {
-      //console.log(course.rows)
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No schedule associated with the current term was found",
-        });
+
+    if (scheduleQuery.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No schedule associated with the current term was found",
+      });
     }
-    const camelCaseCourses = course.rows.map((course) => ({
-      id: course.id,
-      name: course.name,
-      code: course.code,
-      overview: course.overview,
-      creditHours: course.credithours,
-    }));
+
+    const schedule = scheduleQuery.rows[0];
     res.status(200).json({
       success: true,
-      message: "Courses retrieved successfully",
-      scheduleId: course.rows[0].scheduleid,
-      scheduleName: course.rows[0].termname,
-      courses: camelCaseCourses,
+      message: "Schedule retrieved successfully",
+      scheduleId: schedule.scheduleid,
+      scheduleName: schedule.termname,
+      startDate: schedule.startdate,
+      endDate: schedule.enddate,
+      courses: schedule.courses,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -143,6 +147,65 @@ router.post("/addCourseToSchedule", async (req, res) => {
   }
 });
 */
+
+router.post("/createSchedule", async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get the latest term
+    const latestTerm = await db.query(
+      `SELECT name , startDate , endDate FROM term ORDER BY startDate DESC LIMIT 1`
+    );
+
+    if (latestTerm.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No terms found in the system",
+      });
+    }
+
+    const termName = latestTerm.rows[0].name;
+
+    // Check if user already has a schedule for this term
+    const existingSchedule = await db.query(
+      `SELECT id FROM schedule 
+       WHERE studentId = $1 AND termName = $2`,
+      [userId, termName]
+    );
+
+    if (existingSchedule.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "Schedule already exists for the current term",
+      });
+    }
+
+    // Create new schedule
+    const newSchedule = await db.query(
+      `INSERT INTO schedule (studentId, termName)
+       VALUES ($1, $2)
+       RETURNING id`,
+      [userId, termName]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Schedule created successfully",
+      /*i comment this data because i do not want be to have to sourse to get the schedule at the frontend
+      scheduleId: newSchedule.rows[0].id,
+      scheduleName: termName,//term name
+      endDate: latestTerm.rows[0].enddate, 
+      startDate: latestTerm.rows[0].startdate,
+      courses: [], //empty array no courses*/
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+});
+
 router.post("/addCourseToLastSchedule", async (req, res) => {
   try {
     const { courseId } = req.body;
@@ -183,27 +246,29 @@ router.post("/addCourseToLastSchedule", async (req, res) => {
       if (grade !== 1) {
         return res.status(409).json({
           success: false,
-          message: "Course already registered in past terms with a grade value more than 1",
+          message:
+            "Course already registered in past terms with a grade value more than 1",
         });
       }
     }
 
-   // Add the course to the schedule
-   try {
-    await db.query(
-      `INSERT INTO schedule_course (scheduleId, courseId)
+    // Add the course to the schedule
+    try {
+      await db.query(
+        `INSERT INTO schedule_course (scheduleId, courseId)
        VALUES ($1, $2)`,
-      [scheduleId, courseId]
-    );
-  } catch (error) {
-    if (error.constraint === "schedule_course_courseid_fkey") {// it happens when the courseId is not found in the database
-      return res.status(404).json({
-        success: false,
-        message: "Invalid courseId: Course does not exist in the database",
-      });
+        [scheduleId, courseId]
+      );
+    } catch (error) {
+      if (error.constraint === "schedule_course_courseid_fkey") {
+        // it happens when the courseId is not found in the database
+        return res.status(404).json({
+          success: false,
+          message: "Invalid courseId: Course does not exist in the database",
+        });
+      }
+      throw error; // If it's another error, throw it to be caught by the outher catch block
     }
-    throw error; // If it's another error, throw it to be caught by the outher catch block 
-  }
 
     res.status(200).json({
       success: true,
