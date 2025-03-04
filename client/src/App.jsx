@@ -10,6 +10,7 @@ import CoursePage from "./Routes/CoursePage";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
 import { ToastContainer } from "react-toastify";
 import AdminHomePage from "./Routes/AdminHomePage";
+import DummyRoute from "./Routes/dummyRoute";
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,7 @@ const router = createBrowserRouter([
       { path: "courses", element: <CoursesPage /> },
       { path: "admin/admin-home", element: <AdminHomePage /> },
       { path: "courses/:courseId", element: <CoursePage /> },
+      { path: "dummy", element: <DummyRoute /> },
     ],
   },
   //relative paths so we can navigate to it easily without clashes
@@ -32,6 +34,11 @@ const router = createBrowserRouter([
 function App() {
   return (
     <>
+      <div
+        id="loadingSpinnerContainer"
+        className=" hidden w-screen h-screen fixed z-50">
+        <span className="loadingSpinner"></span>
+      </div>
       <RouterProvider router={router} />
       <ToastContainer
         position="top-center"
