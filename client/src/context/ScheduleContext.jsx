@@ -14,6 +14,7 @@ const ScheduleContext = createContext({
   addCourseToSchedule: () => {},
   removeCoursefromSchedule: () => {},
   fetchScheduleCourses: () => {},
+  createSchedule: () => {},
 });
 
 export function ScheduleProvider({ children }) {
@@ -82,6 +83,7 @@ export function ScheduleProvider({ children }) {
         addCourseToSchedule,
         removeCoursefromSchedule,
         fetchScheduleCourses,
+        createSchedule,
       }}
     >
       {children}

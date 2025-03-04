@@ -6,18 +6,19 @@ import { useSchedule } from "../context/ScheduleContext";
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
-  const { scheduleCourses, fetchCourses, hasSchedule } = useSchedule(); // Assuming hasSchedule tells if a schedule exists
+  const { scheduleCourses, fetchScheduleCourses, hasSchedule } = useSchedule(); // Assuming hasSchedule tells if a schedule exists
 
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/");
     } else {
-      fetchCourses();
+      fetchScheduleCourses();
     }
     if (user?.isAdmin) {
       navigate("/admin/admin-home");
     }
-  }, [isAuthorized, navigate, user, fetchCourses]);
+  }, [isAuthorized, navigate, user, fetchScheduleCourses]);
+  function createScheduleHandler() {}
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
@@ -64,7 +65,7 @@ export default function HomePage() {
             </p>
             <p className="text-gray-500">قم بإنشاء جدولك الآن</p>
             <button
-              to="/create-schedule"
+              onClick={createScheduleHandler}
               className="mt-4 bg-TAF-100 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
             >
               إنشاء جدول دراسي
