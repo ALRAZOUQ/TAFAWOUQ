@@ -35,8 +35,7 @@ export default function Course({
       <div className="absolute top-3 right-3">
         <button
           onClick={() => setMenuOpen(!menuOpen)}
-          className="p-1 rounded-full hover:bg-gray-100"
-        >
+          className="p-1 rounded-full hover:bg-gray-100">
           <MoreVertical size={20} />
         </button>
         {!user?.isAdmin && menuOpen && (
@@ -50,8 +49,7 @@ export default function Course({
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={() => setIsEditModalOpen(true)}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-            >
+              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
               تعديل المادة
             </button>
           </div>

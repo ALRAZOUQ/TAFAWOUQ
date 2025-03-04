@@ -11,22 +11,27 @@ const axiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(
   (config) => {
-    document.getElementById("loadingSpinnerContainer").classList.toggle("hidden")
+    document.getElementById("loadingSpinnerContainer")?.classList.remove("hidden")
+    console.log("Sending an axios request.. 🟠")
     return config;
   },
   (error) => {
-    document.getElementById("loadingSpinnerContainer").classList.toggle("hidden")
+    document.getElementById("loadingSpinnerContainer")?.classList.add("hidden")
+    console.error(error)
     return Promise.reject(error);
   }
 );
 
 axiosInstance.interceptors.response.use(
   (response) => {
-    document.getElementById("loadingSpinnerContainer").classList.toggle("hidden")
+    document.getElementById("loadingSpinnerContainer")?.classList.add("hidden")
+    console.log("received axios response 🟢")
     return response;
   },
   (error) => {
-    document.getElementById("loadingSpinnerContainer").classList.toggle("hidden")
+    document.getElementById("loadingSpinnerContainer")?.classList.add("hidden")
+    console.error(error)
+
     return Promise.reject(error);
   }
 );
