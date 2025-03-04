@@ -8,7 +8,7 @@ const axiosInstance = axios.create({
     "Content-Type": "application/json",
   },
 });
-
+/*
 axiosInstance.interceptors.request.use(
   (config) => {
     document
@@ -38,9 +38,9 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
+*/
 
 
-/*
 const toggleLoadingSpinner = (show) => {
   const spinner = document.getElementById("loadingSpinnerContainer");
   if (spinner) {
@@ -73,6 +73,6 @@ axiosInstance.interceptors.response.use(
     return Promise.reject(error);
   }
 );
-*/
+
 
 export default axiosInstance;
