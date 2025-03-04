@@ -39,4 +39,40 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+
+/*
+const toggleLoadingSpinner = (show) => {
+  const spinner = document.getElementById("loadingSpinnerContainer");
+  if (spinner) {
+    if (show) {
+      spinner.classList.remove("hidden");
+    } else {
+      spinner.classList.add("hidden");
+    }
+  }
+};
+
+axiosInstance.interceptors.request.use(
+  (config) => {
+    toggleLoadingSpinner(true);
+    return config;
+  },
+  (error) => {
+    toggleLoadingSpinner(false);
+    return Promise.reject(error);
+  }
+);
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    toggleLoadingSpinner(false);
+    return response;
+  },
+  (error) => {
+    toggleLoadingSpinner(false);
+    return Promise.reject(error);
+  }
+);
+*/
+
 export default axiosInstance;
