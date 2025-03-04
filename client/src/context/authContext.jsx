@@ -1,3 +1,4 @@
+import LoadingScreen from "../components/LoadingScreen";
 // authContext.js
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "../api/axios";
@@ -122,12 +123,13 @@ export const AuthProvider = ({ children }) => {
    * The remainaing function instructions
    */
   if (authState.isLoading) {
-    return <div>Loading...</div>;
+    return <LoadingScreen />;
   }
 
   return (
     <AuthContext.Provider
-      value={{ ...authState, setUserStateLogin, logout, checkAuthStatus }}>
+      value={{ ...authState, setUserStateLogin, logout, checkAuthStatus }}
+    >
       {children}
     </AuthContext.Provider>
   );

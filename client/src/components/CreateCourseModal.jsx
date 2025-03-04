@@ -1,15 +1,17 @@
 import { useRef, useActionState } from "react";
 import { isEmpty } from "../util/validation.js";
-
-export default function CreateCourse() {
+import axios from "../api/axios";
+import { toast } from "react-toastify";
+export default function CreateCourse({ handleAddNewCourse }) {
   const dialogRef = useRef(null);
 
-  function createCourseHandler(prevState, formData) {
+  async function createCourseHandler(prevState, formData) {
     const courseCode = formData.get("courseCode");
     const courseName = formData.get("courseName");
     const overview = formData.get("overview");
     const creditHours = formData.get("creditHours");
-    let errors = [];
+    let errors = []; // Return an array with the error message it will be helpful when we going to show the error inside the form but for now it is usles(we might delete it)
+
     if (
       isEmpty(courseCode) ||
       isEmpty(courseName) ||
@@ -22,8 +24,39 @@ export default function CreateCourse() {
       return errors;
     }
 
-    return null;
+    try {
+      const requestData = {
+        code: courseCode,
+        name: courseName,
+        overview: overview,
+        creditHours: parseInt(creditHours),
+      };
+
+      const response = await axios.post("admin/addCourse", requestData);
+      if (response.status === 201) {
+        const newCourseData = response.data.course;
+        handleAddNewCourse(newCourseData); // to add the new course to the courses list
+        dialogRef.current.close();
+        toast.success("تم إنشاء المقرر بنجاح");
+        return null;
+      }
+    } catch (error) {
+      dialogRef.current?.close(); // to close the dialog to see the eror in tost notifcation
+      // Handle specific error cases
+      if (error.response?.status === 401) {
+        const duplicateError = "هذا المقرر موجود بالفعل";
+        toast.error(duplicateError);
+        return [duplicateError]; // Return an array with the error message it will be helpful we going to show the error in the form
+      }
+      // Handle generic errors
+      const errorMessage =
+        error.response?.data?.message || "حدث خطأ أثناء إنشاء المقرر";
+      // Close dialog and show error notification
+      toast.error(errorMessage);
+      return [errorMessage]; // Return an array with the error message it will be helpful we going to show the error in the form
+    }
   }
+
   const [formState, formAction, pending] = useActionState(createCourseHandler, {
     errors: null,
   });
@@ -32,7 +65,7 @@ export default function CreateCourse() {
     <>
       <button
         onClick={() => dialogRef.current.showModal()}
-        className=" bg-transparent border-4 border-gray-700 border-dashed text-gray-700  rounded hover:opacity-75 active:opacity-55 px-4 py-2"
+        className=" bg-gray-50 border-2 border-TAF-100 border-dotted text-gray-700 shadow-lg rounded-2xl hover:opacity-75 active:opacity-55 px-4 py-2"
       >
         إنشاء مادة جديدة
       </button>
@@ -47,7 +80,7 @@ export default function CreateCourse() {
             <label className="block text-sm font-medium mb-3">رمز المقرر</label>
             <input
               id="courseCode"
-              name="username"
+              name="courseCode"
               required
               className="w-full border p-2 rounded"
             />
@@ -62,7 +95,9 @@ export default function CreateCourse() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-3">نبذة عن المقرر</label>
+            <label className="block text-sm font-medium mb-3">
+              نبذة عن المقرر
+            </label>
             <textarea
               required
               id="overview"
@@ -71,15 +106,18 @@ export default function CreateCourse() {
             ></textarea>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-3">ساعات المقرر</label>
+            <label className="block text-sm font-medium mb-3">
+              ساعات المقرر
+            </label>
             <input
               type="number"
               id="creditHours"
-              name="courseName"
+              name="creditHours"
               required
               className="w-full border p-2 rounded"
             />
           </div>
+
           <div className="flex justify-end space-x-2">
             <button
               type="button"
