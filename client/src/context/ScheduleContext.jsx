@@ -13,14 +13,14 @@ const ScheduleContext = createContext({
   setGPA: () => {},
   addCourseToSchedule: () => {},
   removeCoursefromSchedule: () => {},
-  fetchCourses: () => {},
+  fetchScheduleCourses: () => {},
 });
 
 export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
   const [GPA, setGPA] = useState(0);
 
-  const fetchCourses = useCallback(async () => {
+  const fetchScheduleCourses = useCallback(async () => {
     try {
       const response = await axios.get("protected/currentSchedule");
       if (response.status === 200) {
@@ -34,8 +34,9 @@ export function ScheduleProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
+    fetchScheduleCourses();
+  }, [fetchScheduleCourses]);
+  async function createSchedule() {}
 
   async function addCourseToSchedule(course, scheduleId) {
     try {
@@ -80,7 +81,7 @@ export function ScheduleProvider({ children }) {
         setGPA,
         addCourseToSchedule,
         removeCoursefromSchedule,
-        fetchCourses,
+        fetchScheduleCourses,
       }}
     >
       {children}
