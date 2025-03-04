@@ -6,21 +6,22 @@ import {
   useCallback,
 } from "react";
 import axios from "../api/axios";
-// actually we don't need to assign default values and these values don't affect the context but its benifit is to provide auto completion in the VS code
+// actually we don't need to assign default values and these values don't affect the context but its benifit is to provide auto completion in the VS code so don't remove it it will help us //HASSAN
 const ScheduleContext = createContext({
   scheduleCourses: [],
   GPA: 0.0,
   setGPA: () => {},
   addCourseToSchedule: () => {},
   removeCoursefromSchedule: () => {},
-  fetchCourses: () => {},
+  fetchScheduleCourses: () => {},
+  createSchedule: () => {},
 });
 
 export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
   const [GPA, setGPA] = useState(0);
 
-  const fetchCourses = useCallback(async () => {
+  const fetchScheduleCourses = useCallback(async () => {
     try {
       const response = await axios.get("protected/currentSchedule");
       if (response.status === 200) {
@@ -34,8 +35,9 @@ export function ScheduleProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    fetchCourses();
-  }, [fetchCourses]);
+    fetchScheduleCourses();
+  }, [fetchScheduleCourses]);
+  async function createSchedule() {}
 
   async function addCourseToSchedule(course, scheduleId) {
     try {
@@ -80,7 +82,8 @@ export function ScheduleProvider({ children }) {
         setGPA,
         addCourseToSchedule,
         removeCoursefromSchedule,
-        fetchCourses,
+        fetchScheduleCourses,
+        createSchedule,
       }}
     >
       {children}
