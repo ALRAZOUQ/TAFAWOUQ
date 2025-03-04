@@ -84,10 +84,12 @@ const CoursePage = () => {
   
   // Effects
   useEffect(() => {
-    fetchCourse();
-    //  make sure that the course is fetched before fetching the comments
-    if(course){
-      fetchComments();}
+    const loadData = async () => {
+      await fetchCourse();
+      await fetchComments(); // Fetch comments after course is loaded
+    };
+    
+    loadData();
   }, [courseId]);
 
   //  handle page reset when number of comments changes

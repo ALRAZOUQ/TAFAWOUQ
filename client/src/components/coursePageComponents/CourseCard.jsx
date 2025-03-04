@@ -1,7 +1,35 @@
 import React from "react";
-import { Trash2 } from "lucide-react";
-
+import { Trash2, SquarePlus } from "lucide-react";
+import axios from "../../api/axios";
+import { toast } from "react-toastify";
 export default function CourseCard({ course, isAdmin, onDelete }) {
+  async function addCourseToSchedule(courseId) {
+    try {
+      const response = await axios.post("protected/addCourseToLastSchedule", {
+        courseId: courseId,
+      });
+      if (response.status === 200) {
+        toast.success("تمت إضافة المادة الى الجدول بنجاح");
+      }
+    } catch (error) {
+      if(error.response){
+      if(error.response.status === 400){
+        toast.error("الرجاء إضافة جدول دراسي جديد");
+      }else if(error.response.status === 404){
+        toast.error("انت تحاول اضافة مقرر غير موجود في قاعدة البيانات")
+      }else if(error.response.status === 409){
+        toast.error("هذاالمقرر مسجل لديك بالفعل في احدى جداولك");
+      }else{
+        toast.error(error.response.data.message);
+        console.error("Unexpected error while adding course to schedule:", error);
+      }
+    }else{
+      console.error("Unexpected error while sending the request adding course to schedule:", error);
+    }
+      
+    }
+    
+  }
   if (!course) return <div className="text-center py-4">Loading...</div>;
 
   return (
@@ -10,12 +38,19 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
         <div className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">{course.code}</h2>
-            {isAdmin && (
+            {isAdmin ? (
               <button
                 onClick={() => onDelete(course.id)}
                 className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
               >
                 <Trash2 size={20} />
+              </button>
+            ):(
+              <button
+                onClick={() => addCourseToSchedule(course.id)}
+                className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
+              >
+                <SquarePlus size={20} />
               </button>
             )}
           </div>
