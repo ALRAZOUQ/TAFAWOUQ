@@ -6,26 +6,35 @@ import { useSchedule } from "../context/ScheduleContext";
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
-  const { scheduleCourses, fetchScheduleCourses, hasSchedule } = useSchedule(); // Assuming hasSchedule tells if a schedule exists
-
+  const { scheduleCourses, fetchScheduleCourses, scheduleId, createSchedule } =
+    useSchedule();
+  console.log(scheduleId);
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/");
     } else {
-      fetchScheduleCourses();
+      fetchScheduleCourses(); // Fetch schedule and courses
     }
     if (user?.isAdmin) {
       navigate("/admin/admin-home");
     }
   }, [isAuthorized, navigate, user, fetchScheduleCourses]);
-  function createScheduleHandler() {}
+
+  function createScheduleHandler() {
+    try {
+      createSchedule(); // Call createSchedule from context
+      fetchScheduleCourses(); // Fetch the newly created schedule
+    } catch (error) {
+      console.error("Failed to create schedule:", error);
+    }
+  }
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
       <div className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 min-h-[400px] flex flex-col">
-        {hasSchedule ? (
+        {scheduleId ? (
           scheduleCourses.length > 0 ? (
-            // User has a schedule and courses
+            // User has a schedule with courses
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 flex-1">
               {scheduleCourses.map((course) => (
                 <Link key={course.id} to={`/courses/${course.id}`}>
@@ -58,7 +67,7 @@ export default function HomePage() {
             </div>
           )
         ) : (
-          // User has no schedule at all
+          // User has no schedule
           <div className="flex flex-col items-center justify-center text-center p-6">
             <p className="text-gray-600 text-lg font-semibold">
               لا يوجد لديك جدول دراسي

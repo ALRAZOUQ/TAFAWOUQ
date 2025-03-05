@@ -5,8 +5,9 @@ import {
   useEffect,
   useCallback,
 } from "react";
+import { toast } from "react-toastify";
 import axios from "../api/axios";
-// actually we don't need to assign default values and these values don't affect the context but its benifit is to provide auto completion in the VS code so don't remove it it will help us //HASSAN
+
 const ScheduleContext = createContext({
   scheduleCourses: [],
   GPA: 0.0,
@@ -20,12 +21,14 @@ const ScheduleContext = createContext({
 export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
   const [GPA, setGPA] = useState(0);
+  const [scheduleId, setScheduleId] = useState(null);
 
   const fetchScheduleCourses = useCallback(async () => {
     try {
-      const response = await axios.get("protected/currentSchedule");
+      const response = await axios.get("/protected/currentSchedule");
       if (response.status === 200) {
         setScheduleCourses(response.data.courses || []);
+        setScheduleId(response.data.scheduleId || null);
       }
     } catch (error) {
       console.error(
@@ -37,26 +40,63 @@ export function ScheduleProvider({ children }) {
   useEffect(() => {
     fetchScheduleCourses();
   }, [fetchScheduleCourses]);
-  async function createSchedule() {}
 
-  async function addCourseToSchedule(course, scheduleId) {
+  async function createSchedule(userId) {
     try {
-      const response = await axios.post("/addCourseToSchedule", {
-        scheduleId,
-        courseId: course.id,
-      });
+      const response = await axios.post("/protected/createSchedule", {});
 
       if (response.data.success) {
-        setScheduleCourses((prevCourses) => [...prevCourses, course]);
+        toast.success("تم إنشاء الجدول بنجاح");
+        setScheduleId(response.data.scheduleId);
+        setScheduleCourses([]); // Initially, no courses in the schedule
       } else {
-        console.error(response.data.message || "Failed to add course");
+        console.error(response.data.message || "Failed to create schedule");
       }
     } catch (error) {
-      console.error(error.response?.data?.message || "Failed to add course");
+      console.error(
+        error.response?.data?.message || "Failed to create schedule"
+      );
     }
   }
 
-  async function removeCoursefromSchedule(courseId, scheduleId) {
+  async function addCourseToSchedule(courseId) {
+    try {
+      const response = await axios.post("protected/addCourseToLastSchedule", {
+        courseId: courseId,
+      });
+      if (response.status === 200) {
+        toast.success("تمت إضافة المادة الى الجدول بنجاح");
+      }
+    } catch (error) {
+      if (error.response) {
+        if (error.response.status === 400) {
+          toast.error("الرجاء إضافة جدول دراسي جديد");
+        } else if (error.response.status === 404) {
+          toast.error("انت تحاول اضافة مقرر غير موجود في قاعدة البيانات");
+        } else if (error.response.status === 409) {
+          toast.error("هذاالمقرر مسجل لديك بالفعل في احدى جداولك");
+        } else {
+          toast.error(error.response.data.message);
+          console.error(
+            "Unexpected error while adding course to schedule:",
+            error
+          );
+        }
+      } else {
+        console.error(
+          "Unexpected error while sending the request adding course to schedule:",
+          error
+        );
+      }
+    }
+  }
+
+  async function removeCoursefromSchedule(courseId) {
+    if (!scheduleId) {
+      console.error("No schedule exists. Please create a schedule first.");
+      return;
+    }
+
     try {
       const response = await axios.delete("/deleteCourseFromSchedule", {
         data: { scheduleId, courseId },
@@ -79,6 +119,7 @@ export function ScheduleProvider({ children }) {
       value={{
         scheduleCourses,
         GPA,
+        scheduleId,
         setGPA,
         addCourseToSchedule,
         removeCoursefromSchedule,

@@ -1,34 +1,10 @@
 import React from "react";
 import { Trash2, SquarePlus } from "lucide-react";
-import axios from "../../api/axios";
-import { toast } from "react-toastify";
+import { useSchedule } from "../../context/ScheduleContext";
 export default function CourseCard({ course, isAdmin, onDelete }) {
-  async function addCourseToSchedule(courseId) {
-    try {
-      const response = await axios.post("protected/addCourseToLastSchedule", {
-        courseId: courseId,
-      });
-      if (response.status === 200) {
-        toast.success("تمت إضافة المادة الى الجدول بنجاح");
-      }
-    } catch (error) {
-      if(error.response){
-      if(error.response.status === 400){
-        toast.error("الرجاء إضافة جدول دراسي جديد");
-      }else if(error.response.status === 404){
-        toast.error("انت تحاول اضافة مقرر غير موجود في قاعدة البيانات")
-      }else if(error.response.status === 409){
-        toast.error("هذاالمقرر مسجل لديك بالفعل في احدى جداولك");
-      }else{
-        toast.error(error.response.data.message);
-        console.error("Unexpected error while adding course to schedule:", error);
-      }
-    }else{
-      console.error("Unexpected error while sending the request adding course to schedule:", error);
-    }
-      
-    }
-    
+  const { addCourseToSchedule } = useSchedule();
+  async function handleAddCourseToSchedule(courseId) {
+    addCourseToSchedule(courseId);
   }
   if (!course) return <div className="text-center py-4">Loading...</div>;
 
@@ -45,9 +21,9 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
               >
                 <Trash2 size={20} />
               </button>
-            ):(
+            ) : (
               <button
-                onClick={() => addCourseToSchedule(course.id)}
+                onClick={() => handleAddCourseToSchedule(course.id)}
                 className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
               >
                 <SquarePlus size={20} />
