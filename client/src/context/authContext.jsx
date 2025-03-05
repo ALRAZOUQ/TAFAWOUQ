@@ -109,6 +109,7 @@ export const AuthProvider = ({ children }) => {
           user: null,
           isLoading: false,
         });
+
         // You might want to redirect to login page here
         return true;
       }

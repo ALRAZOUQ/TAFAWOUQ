@@ -3,10 +3,12 @@ import { FiMoreVertical } from "react-icons/fi";
 import { useAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useSchedule } from "../../context/ScheduleContext";
 
 export default function ThreeDotMenu() {
   const navigate = useNavigate();
   const { logout, isAuthorized } = useAuth();
+  const { resetSchedule } = useSchedule();
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false); // New state to prevent unmounting
   const handleLogout = async () => {
@@ -14,6 +16,7 @@ export default function ThreeDotMenu() {
       const flag = await logout();
       console.log("Logout successful"); // Debugging log
       if (flag) {
+        resetSchedule();
         toast.success("تم تسجيل الخروج بنجاح");
       }
     } catch (error) {

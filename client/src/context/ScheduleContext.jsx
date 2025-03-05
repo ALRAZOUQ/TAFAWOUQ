@@ -7,21 +7,33 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
+const scheduleInitialState = {
+  GPA: 0.0,
+  scheduleId: null,
+  scheduleCourses: [],
+};
 
 const ScheduleContext = createContext({
   scheduleCourses: [],
   GPA: 0.0,
+  scheduleId: null,
   setGPA: () => {},
   addCourseToSchedule: () => {},
   removeCoursefromSchedule: () => {},
   fetchScheduleCourses: () => {},
   createSchedule: () => {},
+  resetSchedule: () => {},
 });
 
 export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
   const [GPA, setGPA] = useState(0);
   const [scheduleId, setScheduleId] = useState(null);
+  function resetSchedule() {
+    setScheduleCourses(scheduleInitialState.scheduleCourses);
+    setScheduleId(scheduleInitialState.scheduleId);
+    setGPA(scheduleInitialState.GPA);
+  }
 
   const fetchScheduleCourses = useCallback(async () => {
     try {
@@ -41,7 +53,7 @@ export function ScheduleProvider({ children }) {
     fetchScheduleCourses();
   }, [fetchScheduleCourses]);
 
-  async function createSchedule(userId) {
+  async function createSchedule() {
     try {
       const response = await axios.post("/protected/createSchedule", {});
 
@@ -92,17 +104,16 @@ export function ScheduleProvider({ children }) {
   }
 
   async function removeCoursefromSchedule(courseId) {
-    if (!scheduleId) {
-      console.error("No schedule exists. Please create a schedule first.");
-      return;
-    }
-
     try {
-      const response = await axios.delete("/deleteCourseFromSchedule", {
-        data: { scheduleId, courseId },
-      });
+      const response = await axios.delete(
+        "/protected/deleteCourseFromSchedule",
+        {
+          data: { scheduleId, courseId },
+        }
+      );
 
       if (response.data.success) {
+        toast.success("تمت إزالة المادة من الجدول بنجاح");
         setScheduleCourses((prevCourses) =>
           prevCourses.filter((course) => course.id !== courseId)
         );
@@ -125,6 +136,7 @@ export function ScheduleProvider({ children }) {
         removeCoursefromSchedule,
         fetchScheduleCourses,
         createSchedule,
+        resetSchedule,
       }}
     >
       {children}

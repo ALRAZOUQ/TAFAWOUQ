@@ -1,19 +1,26 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
+import { FiMoreVertical } from "react-icons/fi";
 
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
-  const { scheduleCourses, fetchScheduleCourses, scheduleId, createSchedule } =
-    useSchedule();
-  console.log(scheduleId);
+  const {
+    scheduleCourses,
+    fetchScheduleCourses,
+    scheduleId,
+    createSchedule,
+    removeCoursefromSchedule,
+  } = useSchedule();
+  const [menuOpen, setMenuOpen] = useState(null); // Track which menu is open
+
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/");
     } else {
-      fetchScheduleCourses(); // Fetch schedule and courses
+      fetchScheduleCourses();
     }
     if (user?.isAdmin) {
       navigate("/admin/admin-home");
@@ -22,11 +29,21 @@ export default function HomePage() {
 
   function createScheduleHandler() {
     try {
-      createSchedule(); // Call createSchedule from context
-      fetchScheduleCourses(); // Fetch the newly created schedule
+      createSchedule();
+      fetchScheduleCourses();
     } catch (error) {
       console.error("Failed to create schedule:", error);
     }
+  }
+
+  const toggleMenu = (courseId) => {
+    setMenuOpen(menuOpen === courseId ? null : courseId);
+  };
+
+  function handleRemoveCourse(courseId) {
+    removeCoursefromSchedule(courseId);
+    fetchScheduleCourses();
+    setMenuOpen(null);
   }
 
   return (
@@ -34,25 +51,51 @@ export default function HomePage() {
       <div className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 min-h-[400px] flex flex-col">
         {scheduleId ? (
           scheduleCourses.length > 0 ? (
-            // User has a schedule with courses
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 flex-1">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 flex-1 text-left">
               {scheduleCourses.map((course) => (
-                <Link key={course.id} to={`/courses/${course.id}`}>
-                  <div className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-all h-full flex flex-col">
-                    <h2 className="text-xl font-semibold text-gray-800">
-                      {course.code}
-                    </h2>
-                    <p className="text-gray-600 mt-2">{course.name}</p>
-                    <p className="text-gray-600 mt-2">
-                      <span>عدد الساعات : </span>
-                      {course.creditHours}
-                    </p>
-                  </div>
-                </Link>
+                <div key={course.id} className="relative">
+                  <Link to={`/courses/${course.id}`}>
+                    <div className="bg-white border-x-4 border-TAF-300 p-4 rounded-lg shadow-md hover:shadow-lg transition-all h-full flex flex-col">
+                      <h2 className="text-xl font-semibold text-gray-800">
+                        {course.code}
+                      </h2>
+                      <p className="text-gray-600 mt-2">{course.name}</p>
+                      <p className="text-gray-600 mt-2 text-right">
+                        <span>عدد الساعات : </span>
+                        {course.creditHours}
+                      </p>
+                    </div>
+                  </Link>
+
+                  {/* Kebab Menu */}
+                  <button
+                    onClick={() => toggleMenu(course.id)}
+                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+                  >
+                    <FiMoreVertical size={20} />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {menuOpen === course.id && (
+                    <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-40 z-10">
+                      <Link
+                        to={`/courses/${course.id}`}
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                      >
+                        عرض المادة
+                      </Link>
+                      <button
+                        onClick={() => handleRemoveCourse(course.id)}
+                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                      >
+                        إزالة من الجدول
+                      </button>
+                    </div>
+                  )}
+                </div>
               ))}
             </div>
           ) : (
-            // User has a schedule but no courses
             <div className="flex flex-col items-center justify-center text-center p-6">
               <p className="text-gray-600 text-lg font-semibold">
                 لا يوجد لديك مواد مضافة
@@ -67,7 +110,6 @@ export default function HomePage() {
             </div>
           )
         ) : (
-          // User has no schedule
           <div className="flex flex-col items-center justify-center text-center p-6">
             <p className="text-gray-600 text-lg font-semibold">
               لا يوجد لديك جدول دراسي
