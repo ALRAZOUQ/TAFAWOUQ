@@ -14,7 +14,7 @@ export default function HomePage() {
     createSchedule,
     removeCoursefromSchedule,
   } = useSchedule();
-  const [menuOpen, setMenuOpen] = useState(null); // Track which menu is open
+  const [menuOpen, setMenuOpen] = useState(null); // Hassan: this implementation is to track which course id is active so that it will open its menu
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -36,9 +36,9 @@ export default function HomePage() {
     }
   }
 
-  const toggleMenu = (courseId) => {
+  function toggleMenu(courseId) {
     setMenuOpen(menuOpen === courseId ? null : courseId);
-  };
+  }
 
   function handleRemoveCourse(courseId) {
     removeCoursefromSchedule(courseId);
@@ -80,13 +80,13 @@ export default function HomePage() {
                     <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-40 z-10">
                       <Link
                         to={`/courses/${course.id}`}
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-right"
                       >
                         عرض المادة
                       </Link>
                       <button
                         onClick={() => handleRemoveCourse(course.id)}
-                        className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
+                        className="block w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-right"
                       >
                         إزالة من الجدول
                       </button>

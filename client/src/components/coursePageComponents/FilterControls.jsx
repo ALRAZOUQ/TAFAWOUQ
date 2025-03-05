@@ -10,14 +10,14 @@ export default function FilterControls({ searchQuery, setSearchQuery, filterTag,
       value={searchQuery}
       onChange={(e) => setSearchQuery(e.target.value)}
       placeholder="البحث في التعليقات"
-      className="w-full p-2 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+      className="w-full p-2 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent border-y border-y-gray-300 border-x-4 border-x-TAF-300 transition-all"
     />
   </div>
 
   <select
     value={filterTag}
     onChange={(e) => setFilterTag(e.target.value)}
-    className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="p-2 rounded-lg border-y border-y-gray-300 border-x-4 border-x-TAF-300 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
   >
     <option value="">كل التصنيفات</option>
     <option value="مراجعة">مراجعة</option>
@@ -30,7 +30,7 @@ export default function FilterControls({ searchQuery, setSearchQuery, filterTag,
   <select
     value={sortBy}
     onChange={(e) => setSortBy(e.target.value)}
-    className="p-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+    className="p-2 rounded-lg border border-y border-y-gray-300 border-x-4 border-x-TAF-300 border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
   >
     <option value="recent">الأحدث</option>
     <option value="mostLikes">الأكثر إعجاباً</option>
