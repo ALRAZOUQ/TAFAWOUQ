@@ -56,7 +56,10 @@ export default function Course({
         {user?.isAdmin && menuOpen && (
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
-              onClick={() => setIsEditModalOpen(true)}
+              onClick={() => {
+                setIsEditModalOpen(true);
+                setMenuOpen(false);
+              }}
               className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
             >
               تعديل المادة
