@@ -20,6 +20,7 @@ export default function Course({
   const { addCourseToSchedule } = useSchedule();
   function handleAddCourseToSchedule() {
     addCourseToSchedule(id);
+    setMenuOpen(false);
   }
   function handleCourseUpdate(updatedData) {
     onUpdate({
