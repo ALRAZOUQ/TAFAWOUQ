@@ -12,7 +12,6 @@ export default function Course({
   avgRating,
   creditHours,
   overview,
-  onUpdate,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
@@ -21,18 +20,6 @@ export default function Course({
   function handleAddCourseToSchedule() {
     addCourseToSchedule(id);
     setMenuOpen(false);
-  }
-  function handleCourseUpdate(updatedData) {
-    onUpdate({
-      // Pass the updated data to the parent component
-      id,
-      code,
-      name,
-      avgRating,
-      creditHours,
-      overview,
-      ...updatedData, // Merge updated data with existing data any redundent will be overwritten
-    });
   }
   return (
     <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
@@ -72,7 +59,6 @@ export default function Course({
         id={id}
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}
-        handleCourseUpdate={handleCourseUpdate}
         code={code}
         name={name}
         creditHours={creditHours}

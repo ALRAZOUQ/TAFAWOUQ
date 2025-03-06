@@ -28,19 +28,6 @@ export default function HomePage() {
     }
   }, [isAuthorized, navigate, user, fetchScheduleCourses]);
 
-  /*
-  useEffect(() => {
-    if (isAuthorized) {
-     if (user?.isAdmin) {
-      navigate("/admin/admin-home");
-    }else {
-      fetchScheduleCourses();
-    }
-  }else{
-    navigate("/");
-  }
-  }, [isAuthorized]); */
-
   function createScheduleHandler() {
     try {
       createSchedule();
@@ -59,7 +46,6 @@ export default function HomePage() {
     fetchScheduleCourses();
     setMenuOpen(null);
   }
-
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
       <div className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 min-h-[400px] flex flex-col">
