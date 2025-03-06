@@ -2,7 +2,6 @@ import { useState, useEffect, useContext } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
-import axios from "../../api/axios";
 import { useCourseData } from "../../context/CourseContext";
 import { useAuth } from "../../context/authContext";
 import ThreeDotMenu from "./ThreeDotMenu";
@@ -17,26 +16,14 @@ export default function MainHeader() {
   const [filterdCourses, setfilterdCourses] = useState(null);
   const [showResults, setShowResults] = useState(false);
   // Use the context to get courses data
-  const { coursesData, setCoursesData } = useCourseData();
+  const { coursesData, fetchCoursesContext } = useCourseData();
 
   // Only fetch the data one time then use
   useEffect(() => {
     if (!coursesData) {
-      axios
-        .get("auth/coursesTiteles")
-        .then((response) => {
-          const coursesArray = Array.isArray(response.data)
-            ? response.data
-            : [];
-          // console.log(response.data);
-          setCoursesData(coursesArray);
-          setfilterdCourses(coursesArray);
-        })
-        .catch((error) => {
-          console.error("API Error:", error);
-        });
+      fetchCoursesContext();
     }
-  }, [coursesData, setCoursesData]);
+  }, [coursesData]);
 
   /*note if the admin create new course we have to update the data stored in the context CourseContext */
 

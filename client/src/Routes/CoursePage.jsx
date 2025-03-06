@@ -18,7 +18,7 @@ const CoursePage = () => {
   const { courseId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { setCoursesData } = useCourseData(); //To update the fetched course data used in the search bar and courses page
+  const { deleteCourseFromContext } = useCourseData(); //To update the fetched course data used in the search bar and courses page
 
   // State
   const [course, setCourse] = useState(null);
@@ -27,7 +27,7 @@ const CoursePage = () => {
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false); // Move this here
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false); 
   const commentsPerPage = 8;
 
   // API Calls
@@ -36,13 +36,16 @@ const CoursePage = () => {
       const response = await axios.get(`auth/course/${courseId}`);
       if (response.status === 200) {
         setCourse(response.data.course[0]);
+        return true;
       }
     } catch (error) {
       if (error.response?.status === 404) {
         console.error("Error fetching course:", error);
       setCourse(null);
         toast.error("المقرر غير موجود");
-        navigate("/home");
+       // navigate("/home");
+       setTimeout(() => {navigate("/home"); console.log("test")}, 0); // Defer navigation
+        return false;
       }
       
     }
@@ -56,7 +59,7 @@ const CoursePage = () => {
       }
     } catch (error) {
       if (error.response?.status === 404) {
-        toast.error("لا توجد تعليقات على هذا المقرر بعد");
+        toast.info("لا توجد تعليقات على هذا المقرر بعد");
         setComments([]);
       }
       // Todo :Razouq:  we dont show an error msg to the user here !
@@ -70,7 +73,7 @@ const CoursePage = () => {
       const response = await axios.delete(`admin/deleteCourse/${courseId}`);
       if (response.status === 200) {
         toast.success('تم حذف المقرر بنجاح');
-        setCoursesData(prevCourses => prevCourses.filter(course => course.id != courseId)) // Update the courses data (used in the search bar and the courses pageF)
+        deleteCourseFromContext(courseId); // Update the courses data (used in the search bar and the courses pageF)
         navigate("/home");
       }
     } catch (error) {
@@ -84,12 +87,27 @@ const CoursePage = () => {
   
   // Effects
   useEffect(() => {
+    let mounted = true; // when we use strictmode in react to perform useeffect twice so i use mounted to track if the
+   // console.log("mounted1:",mounted)
     const loadData = async () => {
-      await fetchCourse();
-      await fetchComments(); // Fetch comments after course is loaded
+      if (mounted) {
+       // console.log("mounted2:",mounted)
+        const courseResult = await fetchCourse(); // after fetch the course unmount happen i do not no why but for now it is work fine
+      //  console.log("mounted3:",mounted)
+    //    console.log("corses fetched")
+        if (courseResult !== false && mounted ) {
+      //    console.log("mounted4:",mounted)
+      //    console.log("comment fetched")
+          await fetchComments();
+        }
+      }
     };
     
     loadData();
+    //console.log("mounted5:",mounted)
+    return () => { //this is clean up functun it will work if unmunt (becuse we use strictMode run twice) happen or curseId change
+      mounted = false;
+    };
   }, [courseId]);
 
   //  handle page reset when number of comments changes
