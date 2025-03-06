@@ -2,6 +2,7 @@ import { useEffect, useRef, useActionState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
+import { useCourseData } from "../context/CourseContext";
 
 export default function EditCourseModal({
   id,
@@ -13,6 +14,7 @@ export default function EditCourseModal({
   onClose,
   handleCourseUpdate,
 }) {
+  const {  onUpdateCourseIntoContext } = useCourseData(); 
   const updateFormData = (prevState, { name, value }) => ({
     ...prevState,
     [name]: value,
@@ -38,7 +40,7 @@ export default function EditCourseModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.put("admin/updateCourse", {
+     /* const response = await axios.put("admin/updateCourse", {
         courseId: id,
         name: formData.name,
         code: formData.code,
@@ -48,9 +50,12 @@ export default function EditCourseModal({
 
       if (response.status === 200) {
         toast.success("تم تحديث المقرر بنجاح");
-        handleCourseUpdate(formData); //  update parent state(the course Data)
+        handleCourseUpdate(formData); //  update parent state(the course Data) i replase it with the context
+       
         onClose(); // Close the modal
-      }
+      }*/
+        onUpdateCourseIntoContext(formData,id)//this is the context
+        onClose(); // Close the modal
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "حدث خطأ أثناء تحديث المقرر";

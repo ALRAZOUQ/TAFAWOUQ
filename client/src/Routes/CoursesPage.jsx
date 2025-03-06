@@ -5,14 +5,15 @@ import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
 import CreateCourse from "../components/createCourseModal";
 import CircularProgressBar from "../components/CircularProgressBar";
-
+import { useCourseData } from "../context/CourseContext";
 export default function CoursesPage() {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState(null); 
   const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
+  const { coursesData,addCourseToContext ,fetchCoursesContext, onUpdateCourseIntoContext } = useCourseData(); //To update the fetched course data used in the search bar and courses page
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/");
@@ -20,7 +21,8 @@ export default function CoursesPage() {
   }, [isAuthorized, navigate]);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+  /* Not needed anymore, as I replaced it with the course context, which already has the data. This is the same context used in the search bar
+   const fetchCourses = async () => {
       setLoading(true);
       setError(null);
       setProgress(0);
@@ -51,12 +53,17 @@ export default function CoursesPage() {
         setLoading(false);
       }
     };
-    fetchCourses();
-  }, []);
+    fetchCourses();*/
 
+    fetchCoursesContext();
+  }, []);
+const handelOnUpdate=(newCourse)=>{
+  onUpdateCourseIntoContext(newCourse);
+}
     const handleAddNewCourse = (newCourse) => {
+      addCourseToContext(newCourse);//to update the courses context that used in the search par
       // Add the new course to the existing courses array
-      setCourses((prevCourses) => [...prevCourses, newCourse]);
+      //setCourses((prevCourses) => [...prevCourses, newCourse]);//this will update the local state
     };
 
   /**
@@ -73,6 +80,8 @@ export default function CoursesPage() {
    * @param {number} updatedCourse.creditHours - The credit hours of the course.
    * @param {number} updatedCourse.avgRating - The average rating of the course.
    */
+  /*
+  Not needed anymore, as I replaced it with the course context, which already has the data. This is the same context used in the search bar
   const onUpdate = (updatedCourse) => {
     // to update the course data after editing itF
     setCourses((prevCourses) =>
@@ -80,23 +89,23 @@ export default function CoursesPage() {
         course.id === updatedCourse.id ? updatedCourse : course
       )
     );
-  } 
+  } */
     return (
       <div className="w-full min-h-screen bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200">
-        {loading && (
+        {/*loading */false && (
           <div className="w-full flex justify-center items-center h-full">
             <CircularProgressBar progress={progress} />
           </div>
         )}
-        {error && (
+        {/*error*/false && (
           <div className="w-full text-center p-4 text-red-500">
             <p>{error}</p>
           </div>
         )}
-        {!loading && !error && (
+        {/*!loading && !error*/ coursesData && (
           <div className="w-full h-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 gap-6">
             {user?.isAdmin && <CreateCourse handleAddNewCourse={handleAddNewCourse} />}
-            {courses.map((course) => (
+            {coursesData.map((course) => (
               <Course
                 key={course.id}
                 id={course.id}
@@ -105,7 +114,7 @@ export default function CoursesPage() {
                 code={course.code}
                 overview={course.overview}
                 creditHours={course.creditHours}
-                onUpdate={onUpdate}
+                onUpdate={handelOnUpdate}
               />
             ))}
           </div>

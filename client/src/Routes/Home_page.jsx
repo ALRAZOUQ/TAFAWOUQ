@@ -27,6 +27,19 @@ export default function HomePage() {
     }
   }, [isAuthorized, navigate, user, fetchScheduleCourses]);
 
+  /*
+  useEffect(() => {
+    if (isAuthorized) {
+     if (user?.isAdmin) {
+      navigate("/admin/admin-home");
+    }else {
+      fetchScheduleCourses();
+    }
+  }else{
+    navigate("/");
+  }
+  }, [isAuthorized]); */
+
   function createScheduleHandler() {
     try {
       createSchedule();

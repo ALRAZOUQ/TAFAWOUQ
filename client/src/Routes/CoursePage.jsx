@@ -105,7 +105,7 @@ const CoursePage = () => {
     
     loadData();
     //console.log("mounted5:",mounted)
-    return () => { //this is clean up functun it will work if unmunt (becuse we use strictMode run twice) happen or curseId change
+    return () => { 
       mounted = false;
     };
   }, [courseId]);
