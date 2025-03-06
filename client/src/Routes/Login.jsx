@@ -5,6 +5,7 @@ import { errorMapping } from "../util/errorMapping";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
+import BackButton from "../components/BackButton";
 
 export default function Login() {
   const { setUserStateLogin } = useAuth(); // to update the context of the user
@@ -71,6 +72,7 @@ export default function Login() {
   }, [formState.success, navigate]);
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
+      <BackButton route={".."}/>
       {/* Responsive container */}
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto border-y-8 border-TAF-300 bg-gray-50 rounded-lg shadow-md">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">
@@ -83,7 +85,8 @@ export default function Login() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm sm:text-base text-gray-600">
+                className="block text-sm sm:text-base text-gray-600"
+              >
                 الإيميل
               </label>
               <input
@@ -99,7 +102,8 @@ export default function Login() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm sm:text-base text-gray-600">
+                className="block text-sm sm:text-base text-gray-600"
+              >
                 كلمة المرور
               </label>
               <input
@@ -115,9 +119,7 @@ export default function Login() {
             {formState.errors && (
               <ul>
                 {formState.errors.map((error) => (
-                  <li
-                    className="text-red-600 text-sm sm:text-base"
-                    key={error}>
+                  <li className="text-red-600 text-sm sm:text-base" key={error}>
                     {errorMapping(error)}
                   </li>
                 ))}
@@ -133,7 +135,8 @@ export default function Login() {
             <div className="flex justify-center mt-4 sm:mt-6">
               <Link
                 to="/signup"
-                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none">
+                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
+              >
                 ليس لديك حساب؟ التسجيل
               </Link>
             </div>

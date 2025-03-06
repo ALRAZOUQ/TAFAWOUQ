@@ -1,4 +1,4 @@
-import { Star, MoreVertical } from "lucide-react";
+import { Star, MoreVertical, Pencil } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/authContext";
@@ -47,7 +47,7 @@ export default function Course({
           <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={handleAddCourseToSchedule}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap"
             >
               أضف المادة الى الجدول
             </button>
@@ -60,9 +60,10 @@ export default function Course({
                 setIsEditModalOpen(true);
                 setMenuOpen(false);
               }}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+              className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-orange-400 hover:bg-gray-100"
             >
-              تعديل المادة
+              <Pencil size={16} />
+              <span>تعديل المادة</span>
             </button>
           </div>
         )}

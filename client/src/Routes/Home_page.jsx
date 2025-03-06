@@ -3,6 +3,7 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { FiMoreVertical } from "react-icons/fi";
+import { Trash2 } from "lucide-react";
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -80,7 +81,6 @@ export default function HomePage() {
                     </div>
                   </Link>
 
-                  {/* Kebab Menu */}
                   <button
                     onClick={() => toggleMenu(course.id)}
                     className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
@@ -88,7 +88,6 @@ export default function HomePage() {
                     <FiMoreVertical size={20} />
                   </button>
 
-                  {/* Dropdown Menu */}
                   {menuOpen === course.id && (
                     <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-40 z-10">
                       <Link
@@ -99,8 +98,9 @@ export default function HomePage() {
                       </Link>
                       <button
                         onClick={() => handleRemoveCourse(course.id)}
-                        className="block w-full px-4 py-2 text-red-600 hover:bg-gray-100 text-right"
+                        className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-gray-100 hover:text-red-700"
                       >
+                        <Trash2 size={16} />
                         إزالة من الجدول
                       </button>
                     </div>

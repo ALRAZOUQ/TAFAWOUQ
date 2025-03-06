@@ -18,6 +18,7 @@ export default function ThreeDotMenu() {
       if (flag) {
         resetSchedule();
         toast.success("تم تسجيل الخروج بنجاح");
+        setIsOpen(false);
       }
     } catch (error) {
       console.error("Logout failed:", error);
@@ -51,7 +52,10 @@ export default function ThreeDotMenu() {
             </button>
           ) : (
             <button
-              onClick={() => navigate("/login")}
+              onClick={() => {
+                navigate("/login");
+                setIsOpen(false);
+              }}
               className="block w-full text-center px-4 py-2 hover:bg-gray-100"
             >
               تسجيل الدخول
