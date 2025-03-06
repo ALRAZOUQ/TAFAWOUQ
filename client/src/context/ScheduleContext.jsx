@@ -86,7 +86,7 @@ export function ScheduleProvider({ children }) {
         } else if (error.response.status === 404) {
           toast.error("انت تحاول اضافة مقرر غير موجود في قاعدة البيانات");
         } else if (error.response.status === 409) {
-          toast.error("هذاالمقرر مسجل لديك بالفعل في احدى جداولك");
+          toast.error("هذا المقرر مسجل لديك بالفعل في احدى جداولك");
         } else {
           toast.error(error.response.data.message);
           console.error(
