@@ -12,7 +12,7 @@ export default function EditCourseModal({
   isOpen,
   onClose,
 }) {
-  const {  onUpdateCourseIntoContext } = useCourseData(); 
+  const { onUpdateCourseIntoContext } = useCourseData();
   const updateFormData = (prevState, { name, value }) => ({
     ...prevState,
     [name]: value,
@@ -38,8 +38,8 @@ export default function EditCourseModal({
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-        onUpdateCourseIntoContext(formData,id)//this is the context
-        onClose(); // Close the modal
+      onUpdateCourseIntoContext(formData, id); //this is the context
+      onClose(); // Close the modal
     } catch (error) {
       const errorMessage =
         error.response?.data?.message || "حدث خطأ أثناء تحديث المقرر";
@@ -48,7 +48,7 @@ export default function EditCourseModal({
   };
 
   return (
-    <AnimatePresence>
+    <>
       {isOpen && (
         <dialog
           ref={dialogRef}
@@ -177,6 +177,6 @@ export default function EditCourseModal({
           </motion.div>
         </dialog>
       )}
-    </AnimatePresence>
+    </>
   );
 }
