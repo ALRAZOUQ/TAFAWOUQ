@@ -1,4 +1,4 @@
-import { Star, MoreVertical, Pencil } from "lucide-react";
+import { Star, MoreVertical, Pencil,SquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/authContext";
@@ -31,11 +31,12 @@ export default function Course({
           <MoreVertical size={20} />
         </button>
         {!user?.isAdmin && menuOpen && (
-          <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
+          <div className="absolute right-0 mt-2 w-fit bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={handleAddCourseToSchedule}
-              className="block w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap"
+              className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap"
             >
+              <SquarePlus size={20} />
               أضف المادة الى الجدول
             </button>
           </div>
