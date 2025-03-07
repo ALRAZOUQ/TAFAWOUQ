@@ -1,77 +1,125 @@
 // Libraries imports
-import express from "express"
-import session from "express-session";
-import passport from "passport";
-import { Strategy } from "passport-local";
+
+import express from 'express';
+import passport from 'passport';
+import session from 'express-session';
+import { Strategy as LocalStrategy } from 'passport-local';
+import bcrypt from 'bcrypt';
+import db from './config/db.js'; // database conection
 import env from 'dotenv'
-env.config()
 import flash from 'connect-flash'
-import bcryptjs from "bcryptjs"
+import errorHandler from "./middleware/errorHandler.js";
+import cors from 'cors';
 
+const app = express();
 
-
-const app = express()
-
-
-
+app.use(flash());
 // start coding
-
-
-import db from "./config/db.js"
-
-//import connectDb from './config/db.js';  // to conect with database
-//let db =connectDb()
-let  port = process.env.PORT
-
+app.use(express.urlencoded({ extended: true }))
+env.config()
+app.use(express.json());
+const port = process.env.PORT
 const error505msg = "Sorry! It seems we have a problem with our servers. Please try again later."
+// Session configuration
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'your-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+}))
 
-const sessionMiddleware = session({
-    secret: process.env.SESSION_SECRET ,
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 30
-    }
-})
 
 
 
-
-// middlewares
-app.use(sessionMiddleware)
+// Passport initialization
 app.use(passport.initialize())
 app.use(passport.session())
-app.use(express.urlencoded({ extended: true }))
-app.use(express.json());
-app.use((req, res, next) => {
+
+
+// Local Strategy with bcrypt
+passport.use(new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+}, async (email, password, done) => {
+  try {
+    const { rows } = await db.query(
+      'SELECT * FROM "user" WHERE email = $1',
+      [email]
+    );
+
+    if (!rows.length) return done(null, false);
+
+    const user = rows[0];
+    const isValid = await bcrypt.compare(password, user.password);
+
+    if (!isValid) return done(null, false);
+
+    return done(null, { id: user.id, email: user.email, isadmin: user.isadmin, name: user.name });
+  } catch (error) {
+    return done(error);
+  }
+}));
+
+// Serialization/Deserialization
+passport.serializeUser((user, done) => done(null, user.id));
+passport.deserializeUser(async (id, done) => {
+  try {
+    const { rows } = await db.query(
+      'SELECT id, email , isadmin ,name FROM "user" WHERE id = $1',
+      [id]
+    );
+    //console.log("test values" , rows[0])
+    done(null, rows[0]);
+  } catch (error) {
+    done(error);
+  }
+});
+
+/*app.use((req, res, next) => {
+
     // Assuming `req.user` is set by passport or some authentication middleware
     res.locals.currentPath = req.path
     res.locals.session = req.user;
     next();
-});
-app.use(flash());
+});*/
+
+
+
+
+
+// cross to prepare communicate with client server (React)
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://nwsb8x0b-5173.inc1.devtunnels.ms'], //React link. we have to check if will work normally or not
+  credentials: true
+}));
+
 
 
 
 db.on('error', error => {
-    console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
-    console.log(error)
+
+  console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
+  console.log(error)
 })
+
+
 
 app.get("/", (req, res) => {
-    res.json("Home page :) ")
+  res.json("Home page :) ")
 })
 
-
-// routers import:
-import coursesRouter from "./routers/courses_page.js"
-import registrationRouter from "./routers/registration_page.js"
-import userRouter from "./routers/user.js"
-
-// routers   middlewares
-app.use(coursesRouter)
-app.use(registrationRouter)
-app.use(userRouter)
+// routes import:
+import mainRouter from './routes/mainRouter.js' // one router for all routes n need any route in index.js file
 
 
+// routes middlewares
+app.use("/api", mainRouter)
+
+
+// Error handling
+app.use(errorHandler);
 app.listen(port, () => console.log(`Server listen to the port ${port}`))
+
