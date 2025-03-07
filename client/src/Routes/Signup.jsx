@@ -8,7 +8,7 @@ import { useActionState } from "react";
 import { Link } from "react-router-dom";
 import { errorMapping } from "../util/errorMapping";
 export default function Signup() {
-  function handleSignupSubmission(prevFormState, formData) {
+  async function handleSignupSubmission(prevFormState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
     const confirmPassword = formData.get("confirmPassword");
@@ -77,7 +77,7 @@ export default function Signup() {
   }
 
   const [formState, formAction, pending] = useActionState(
-    handle_Signup_Submission,
+    handleSignupSubmission,
     { errors: null }
   );
 
@@ -90,7 +90,7 @@ export default function Signup() {
 
   return (
     <div className="h-screen flex items-center justify-center flex-col bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
-      <BackButton route={-1}/>
+      <BackButton route={-1} />
       {/* Responsive container */}
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto border-y-8 border-TAF-300 bg-gray-50 rounded-lg shadow-md mt-6">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">
@@ -135,14 +135,12 @@ export default function Signup() {
                 htmlFor="password"
                 className="block text-sm sm:text-base text-gray-600"
               >
-
                 كلمة المرور
               </label>
               <input
                 type="password"
                 id="password"
                 name="password"
-
                 defaultValue={formState.enteredValues?.password}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -152,14 +150,12 @@ export default function Signup() {
                 htmlFor="confirmPassword"
                 className="block text-sm sm:text-base text-gray-600"
               >
-
                 تأكيد كلمة المرور
               </label>
               <input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
-
                 defaultValue={formState.enteredValues?.confirmPassword}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -188,7 +184,6 @@ export default function Signup() {
               <Link
                 to="/login"
                 className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
-
               >
                 لديك حساب؟ تسجيل الدخول
               </Link>
