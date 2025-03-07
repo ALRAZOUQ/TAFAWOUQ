@@ -1,4 +1,5 @@
 // Libraries imports
+
 import express from 'express';
 import passport from 'passport';
 import session from 'express-session';
@@ -8,10 +9,9 @@ import db from './config/db.js'; // database conection
 import env from 'dotenv'
 import flash from 'connect-flash'
 import errorHandler from "./middleware/errorHandler.js";
-
 import cors from 'cors';
 
-const app = express()
+const app = express();
 
 app.use(flash());
 // start coding
@@ -79,6 +79,7 @@ passport.deserializeUser(async (id, done) => {
 });
 
 /*app.use((req, res, next) => {
+
     // Assuming `req.user` is set by passport or some authentication middleware
     res.locals.currentPath = req.path
     res.locals.session = req.user;
@@ -97,10 +98,13 @@ app.use(cors({
 
 
 
+
 db.on('error', error => {
+
   console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
   console.log(error)
 })
+
 
 
 app.get("/", (req, res) => {
@@ -114,6 +118,8 @@ import mainRouter from './routes/mainRouter.js' // one router for all routes n n
 // routes middlewares
 app.use("/api", mainRouter)
 
+
 // Error handling
 app.use(errorHandler);
 app.listen(port, () => console.log(`Server listen to the port ${port}`))
+
