@@ -147,12 +147,14 @@ export default function Signup() {
                 htmlFor="password"
                 className="block text-sm sm:text-base text-gray-600"
               >
+
                 كلمة المرور
               </label>
               <input
                 type="password"
                 id="password"
                 name="password"
+
                 defaultValue={formState.enteredValues?.password}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -162,12 +164,14 @@ export default function Signup() {
                 htmlFor="confirmPassword"
                 className="block text-sm sm:text-base text-gray-600"
               >
+
                 تأكيد كلمة المرور
               </label>
               <input
                 type="password"
                 id="confirmPassword"
                 name="confirmPassword"
+
                 defaultValue={formState.enteredValues?.confirmPassword}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -196,6 +200,7 @@ export default function Signup() {
               <Link
                 to="/login"
                 className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
+
               >
                 لديك حساب؟ تسجيل الدخول
               </Link>

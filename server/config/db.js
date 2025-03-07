@@ -5,7 +5,6 @@ env.config()
 
 
 let db;
-
 try {
     db = new Pool({
         connectionString: process.env.DATABASE_URL, // Use DATABASE_URL for Heroku
@@ -59,6 +58,7 @@ db.on('error', (error) => {
 });
 
 return db;
+
 };
 // Create and export a shared `db` instance
 const db = connectDb();

@@ -87,12 +87,14 @@ export default function Login() {
                 htmlFor="email"
                 className="block text-sm sm:text-base text-gray-600"
               >
+
                 الإيميل
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
+
                 defaultValue={formState.enteredValues?.email}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -104,12 +106,14 @@ export default function Login() {
                 htmlFor="password"
                 className="block text-sm sm:text-base text-gray-600"
               >
+
                 كلمة المرور
               </label>
               <input
                 type="password"
                 id="password"
                 name="password"
+
                 defaultValue={formState.enteredValues?.password}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -136,6 +140,7 @@ export default function Login() {
               <Link
                 to="/signup"
                 className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
+
               >
                 ليس لديك حساب؟ التسجيل
               </Link>
