@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Trash2, SquarePlus, MoreVertical } from "lucide-react";
+import { Trash2, SquarePlus, MoreVertical,Pencil } from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
+import EditCourseModal from "../../components/EditCourseModal";
 
 export default function CourseCard({ course, isAdmin, onDelete }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   async function handleAddCourseToSchedule(courseId) {
     addCourseToSchedule(courseId);
@@ -14,6 +16,15 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
 
   return (
     <div className="w-full h-auto bg-white shadow-lg rounded-lg p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300 hover:shadow-xl transition-shadow">
+      <EditCourseModal
+        id={course.id}
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        code={course.code}
+        name={course.name}
+        creditHours={course.creditHours}
+        overview={course.overview}
+      />
       <div className="space-y-4">
         <div className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
@@ -35,21 +46,33 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
 
                 {menuOpen && (
                   <div
-                    className="absolute right-0 mt-2 w-fit bg-white shadow-lg border border-gray-200 rounded-lg z-10"
+                    className="absolute left-0 mt-2 w-fit bg-white shadow-lg border border-gray-200 rounded-lg z-10"
                     onMouseLeave={() => setMenuOpen(false)}
                   >
                     {isAdmin ? (
-                      <button
-                        onClick={() => onDelete(course.id)}
-                        className="flex items-center gap-2 whitespace-nowrap text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
-                      >
-                        <Trash2 size={20} />
-                        حذف المادة
-                      </button>
+                      <>
+                        <button
+                          onClick={() => onDelete(course.id)}
+                          className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-gray-100 whitespace-nowrap"
+                        >
+                          <Trash2 size={20} />
+                          حذف المادة
+                        </button>
+                        <button
+                          onClick={() => {
+                            setIsEditModalOpen(true);
+                            setMenuOpen(false);
+                          }}
+                          className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-orange-400 hover:bg-gray-100 whitespace-nowrap"
+                        >
+                          <Pencil size={16} />
+                          <span>تعديل المادة</span>
+                        </button>
+                      </>
                     ) : (
                       <button
                         onClick={() => handleAddCourseToSchedule(course.id)}
-                        className="flex items-center gap-2 whitespace-nowrap w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
+                        className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
                       >
                         <SquarePlus size={20} />
                         أضف المادة إلى الجدول

@@ -1,13 +1,10 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
 import CreateCourse from "../components/createCourseModal";
-import CircularProgressBar from "../components/CircularProgressBar";
 import { useCourseData } from "../context/CourseContext";
 export default function CoursesPage() {
-  const [progress, setProgress] = useState(0);
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
   const {
