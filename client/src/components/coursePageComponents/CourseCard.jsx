@@ -1,11 +1,15 @@
-import React from "react";
-import { Trash2, SquarePlus } from "lucide-react";
+import React, { useState } from "react";
+import { Trash2, SquarePlus, MoreVertical } from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
+
 export default function CourseCard({ course, isAdmin, onDelete }) {
   const { addCourseToSchedule } = useSchedule();
+  const [menuOpen, setMenuOpen] = useState(false);
+
   async function handleAddCourseToSchedule(courseId) {
     addCourseToSchedule(courseId);
   }
+
   if (!course) return <div className="text-center py-4">Loading...</div>;
 
   return (
@@ -14,22 +18,49 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
         <div className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">{course.code}</h2>
-            {isAdmin ? (
-              <button
-                onClick={() => onDelete(course.id)}
-                className="text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
-              >
-                <Trash2 size={20} />
-              </button>
-            ) : (
-              <button
-                onClick={() => handleAddCourseToSchedule(course.id)}
-                className="text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
-              >
-                <SquarePlus size={20} />
-              </button>
-            )}
+
+            {/* Action Buttons */}
+            <div className="relative flex items-center gap-2">
+              {/* Kebab Menu */}
+              <div className="relative">
+                <button
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="p-2 rounded-full hover:bg-gray-50 transition-colors"
+                >
+                  <MoreVertical
+                    size={20}
+                    className="text-gray-500 hover:text-gray-700"
+                  />
+                </button>
+
+                {menuOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-fit bg-white shadow-lg border border-gray-200 rounded-lg z-10"
+                    onMouseLeave={() => setMenuOpen(false)}
+                  >
+                    {isAdmin ? (
+                      <button
+                        onClick={() => onDelete(course.id)}
+                        className="flex items-center gap-2 whitespace-nowrap text-red-600 hover:text-red-800 p-2 rounded-full hover:bg-red-50 transition-colors"
+                      >
+                        <Trash2 size={20} />
+                        حذف المادة
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleAddCourseToSchedule(course.id)}
+                        className="flex items-center gap-2 whitespace-nowrap w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
+                      >
+                        <SquarePlus size={20} />
+                        أضف المادة إلى الجدول
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
+
           <div className="flex items-center gap-2 mt-1">
             <h3 className="text-xl text-gray-700">{course.name}</h3>
             <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
