@@ -3,8 +3,9 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { FiMoreVertical } from "react-icons/fi";
-import { Trash2 } from "lucide-react";
-
+import { Trash2, ClipboardList, BarChart } from "lucide-react";
+import EnterGrade from "../components/coursePageComponents/EnterGrade";
+import Rate from "../components/coursePageComponents/Rate";
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
@@ -16,6 +17,16 @@ export default function HomePage() {
     removeCoursefromSchedule,
   } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(null); // Hassan: this implementation is to track which course id is active so that it will open its menu
+  const [isRating, setIsRating] = useState(false);
+  const [isGrading, setIsGrading] = useState(false);
+  function handleRating() {
+    setMenuOpen(null);
+    setIsRating(true);
+  }
+  function handleGrading() {
+    setMenuOpen(null);
+    setIsGrading(true);
+  }
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -74,8 +85,8 @@ export default function HomePage() {
                     <FiMoreVertical size={20} />
                   </button>
 
-                  {menuOpen === course.id && (
-                    <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-40 z-10">
+                  {!isRating && !isGrading && menuOpen === course.id && (
+                    <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-44 z-10">
                       <Link
                         to={`/courses/${course.id}`}
                         className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-right"
@@ -89,6 +100,32 @@ export default function HomePage() {
                         <Trash2 size={16} />
                         إزالة من الجدول
                       </button>
+                      <button
+                        onClick={handleRating}
+                        className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-50 transition-colors"
+                      >
+                        <BarChart size={20} />
+                        قيّم صعوبة المقرر
+                      </button>
+                      <button
+                        onClick={handleGrading}
+                        className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-50 transition-colors"
+                      >
+                        <ClipboardList size={20} />
+                        أضف درجتك
+                      </button>
+                      {isRating && (
+                        <Rate
+                          onClose={() => setIsRating(false)}
+                          courseId={course.id}
+                        />
+                      )}
+                      {isGrading && (
+                        <EnterGrade
+                          onClose={() => setIsGrading(false)}
+                          courseId={course.id}
+                        />
+                      )}
                     </div>
                   )}
                 </div>
