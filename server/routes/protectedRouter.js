@@ -42,13 +42,17 @@ router.get("/currentSchedule", async (req, res) => {
                  'name', course.name,
                  'code', course.code,
                  'overview', course.overview,
-                 'creditHours', course.credithours
+                 'creditHours', course.credithours,
+				         'grade',COALESCE(grade.value, 0),
+				         'rate',COALESCE(rate.value, 0)
                )
              ) FILTER (WHERE course.id IS NOT NULL), '[]') as courses
       FROM schedule
       JOIN latest_term ON schedule.termName = latest_term.name
       LEFT JOIN schedule_course ON schedule.id = schedule_course.scheduleId
       LEFT JOIN course ON schedule_course.courseId = course.id
+      LEFT JOIN grade on course.id= grade.courseid
+      LEFT JOIN rate on course.id= rate.courseid
       WHERE schedule.studentId = $1
       GROUP BY schedule.id, schedule.termName, latest_term.startDate, latest_term.endDate;`,
       [studentId]
@@ -345,4 +349,70 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
   }
 });
 
+router.post("/gradeCourse", async (req, res) => {
+  const { courseId, gradeValue } = req.body;
+  const studentId = req.user.id;
+
+  const allowed = [5, 4.75, 4.5, 4, 3.5, 3, 2.5, 2, 1];
+  if (!allowed.includes(gradeValue)) {
+    return res.status(400).json({
+      success: false,
+      message:
+        "The grade value must be one of these values [5, 4.75, 4.5, 4, 3.5, 3, 2.5, 2, 1]",
+    });
+  }
+  try {
+    // Check if the course exists in the one of the schedules
+    const scheduleCheckQuery = `
+      SELECT 1
+      FROM public.schedule_course sc
+      JOIN public.schedule s ON sc.scheduleid = s.id
+      WHERE s.studentid = $1 AND sc.courseid = $2;
+    `;
+
+    const scheduleCheckResult = await db.query(scheduleCheckQuery, [
+      studentId,
+      courseId,
+    ]);
+
+    if (scheduleCheckResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found in student's schedule.",
+      });
+    }
+
+    try {
+      // Create a new grade
+      const createGradeQuery = `
+    INSERT INTO grade (creatorid, courseid, value)
+    VALUES ($1, $2, $3);
+  `;
+
+      await db.query(createGradeQuery, [studentId, courseId, gradeValue]);
+      res.status(200).json({
+        success: true,
+        message: `The grade has been successfully created with the value ${gradeValue}`,
+      });
+    } catch (error) {
+      console.log(error);
+      if (error.constraint === "grade_pkey") {
+        //that meen the grade already exist
+        // the student already gradeed this,so we just need to update the value of the grade
+        const updateGradeQuery = `
+    UPDATE grade SET "value"=$1
+	WHERE creatorid=$2 and courseid=$3;
+  `;
+        await db.query(updateGradeQuery, [gradeValue, studentId, courseId]);
+        res.status(200).json({
+          success: true,
+          message: `The grade has been successfully updated with the value ${gradeValue}`,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error checking and creating grade:", error);
+    res.status(500).json({ success: false, message: "An error occurred." });
+  }
+});
 export default router;
