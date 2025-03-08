@@ -1,5 +1,5 @@
 import { useEffect, useRef, useActionState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useCourseData } from "../context/CourseContext";
 

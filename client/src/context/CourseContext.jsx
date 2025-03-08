@@ -44,13 +44,15 @@ export function CourseProvider({ children }) {
       if (response.status === 200) {
         toast.success("تم تحديث المقرر بنجاح");
 
-        setCoursesData((prevCourses) =>
-          prevCourses.map((course) =>
+        setCoursesData((prevCourses) => {
+          if (!prevCourses) return null;
+
+          return prevCourses.map((course) =>
             course.id === courseId
-              ? { ...course, ...formData } // Update only the changed values
+              ? { ...course, ...formData } // ✅ Spread formData to ensure updates are applied
               : course
-          )
-        );
+          );
+        });
       }
     } catch (error) {
       const errorMessage =
