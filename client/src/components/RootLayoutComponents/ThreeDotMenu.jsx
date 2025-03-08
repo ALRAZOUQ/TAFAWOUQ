@@ -19,6 +19,7 @@ export default function ThreeDotMenu() {
         resetSchedule();
         toast.success("تم تسجيل الخروج بنجاح");
         setIsOpen(false);
+        navigate("/");
       }
     } catch (error) {
       console.error("Logout failed:", error);

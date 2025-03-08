@@ -1,13 +1,13 @@
-import React, { useState } from "react";
-import { Trash2, SquarePlus, MoreVertical,Pencil } from "lucide-react";
+import React, { useState,useEffect } from "react";
+import { Trash2, SquarePlus, MoreVertical, Pencil } from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
 import EditCourseModal from "../../components/EditCourseModal";
+import Rate from "./Rate";
 
 export default function CourseCard({ course, isAdmin, onDelete }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
   async function handleAddCourseToSchedule(courseId) {
     addCourseToSchedule(courseId);
   }
@@ -43,7 +43,7 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                     className="text-gray-500 hover:text-gray-700"
                   />
                 </button>
-
+                 <Rate/>
                 {menuOpen && (
                   <div
                     className="absolute left-0 mt-2 w-fit bg-white shadow-lg border border-gray-200 rounded-lg z-10"
