@@ -5,21 +5,27 @@ import {
   MoreVertical,
   Pencil,
   BarChart,
+  ClipboardList,
 } from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
 import EditCourseModal from "../../components/EditCourseModal";
 import Rate from "./Rate";
+import EnterGrade from "./EnterGrade";
 
 export default function CourseCard({ course, isAdmin, onDelete }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRating, setIsRating] = useState(false);
+  const [isGrading, setIsGrading] = useState(false);
   async function handleAddCourseToSchedule(courseId) {
     addCourseToSchedule(courseId);
   }
   function handleRating() {
     setIsRating(true);
+  }
+  function handleGrading() {
+    setIsGrading(true);
   }
 
   if (!course) return <div className="text-center py-4">Loading...</div>;
@@ -60,6 +66,7 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                     onMouseLeave={() => {
                       setMenuOpen(false);
                       setIsRating(false);
+                      setIsGrading(false);
                     }}
                   >
                     {isAdmin ? (
@@ -84,7 +91,7 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                       </>
                     ) : (
                       <>
-                        {!isRating && (
+                        {!isRating&&!isGrading && (
                           <>
                             <button
                               onClick={() =>
@@ -102,9 +109,27 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                               <BarChart size={20} />
                               قيّم صعوبة المقرر
                             </button>
+                            <button
+                              onClick={handleGrading}
+                              className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
+                            >
+                              <ClipboardList size={20} />
+                              أضف درجتك
+                            </button>
                           </>
                         )}
-                        {isRating && <Rate onClose={()=>setIsRating(false)}courseId={course.id} />}
+                        {isRating && (
+                          <Rate
+                            onClose={() => setIsRating(false)}
+                            courseId={course.id}
+                          />
+                        )}
+                        {isGrading && (
+                          <EnterGrade
+                            onClose={() => setIsGrading(false)}
+                            courseId={course.id}
+                          />
+                        )}
                       </>
                     )}
                   </div>
