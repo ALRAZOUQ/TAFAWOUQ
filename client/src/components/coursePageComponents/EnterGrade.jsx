@@ -8,25 +8,34 @@ export default function EnterGrade({ courseId, onClose }) {
   const [grade, setGrade] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const allowedGrades = [5, 4.75, 4.5, 4, 3.5, 3, 2.5, 2, 1];
+
   function handleChange(e) {
     setGrade(e.target.value);
   }
 
   async function handleSubmit() {
     if (isSubmitting) return;
+    let gradeValue;
     try {
-      console.log(gradeMapping(grade));
+      gradeValue = gradeMapping(grade);
     } catch (error) {
-      toast.error("يجب ان تكون الدرجة صحيحة");
+      toast.error(
+        "الدرجة يجب أن تكون إحدى القيم المسموح بها. [5, 4.75, 4.5, 4, 3.5, 3, 2.5, 2, 1] او ما يعادلها من الرموز"
+      );
+    }
+
+    if (!allowedGrades.includes(gradeValue)) {
+      toast.error("الدرجة يجب أن تكون إحدى القيم المسموح بها.");
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post("/enterGrade", {
+      const response = await axios.post("/protected/gradeCourse", {
         courseId,
-        grade: gradeValue,
+        gradeValue,
       });
 
       if (response.status === 200) {
@@ -46,7 +55,10 @@ export default function EnterGrade({ courseId, onClose }) {
   }
 
   return (
-    <div className="relative bg-white p-4 rounded-lg shadow-md" dir="rtl">
+    <div
+      className="relative bg-white p-6 rounded-lg shadow-md min-w-[300px] max-w-sm mx-auto"
+      dir="rtl"
+    >
       {/* Close Button */}
       <button
         className="absolute top-2 left-2 text-gray-500 hover:text-red-500 transition"
@@ -55,22 +67,21 @@ export default function EnterGrade({ courseId, onClose }) {
         <CircleX size={24} />
       </button>
 
-      <h3 className="text-lg font-semibold mb-2">أدخل درجتك</h3>
+      <h3 className="text-lg font-semibold mb-4 text-center">أدخل درجتك</h3>
 
       <input
         type="text"
         value={grade}
         onChange={handleChange}
-        placeholder="أدخل الدرجة (0-100)"
+        placeholder="أدخل الدرجة (مثلاً:4.5 او ب+ او B+)"
         className="w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-blue-500 outline-none"
-        min="0"
-        max="100"
         disabled={isSubmitting}
+        step="0.25"
       />
 
       <button
         onClick={handleSubmit}
-        className="mt-4 bg-blue-500 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
+        className="mt-4 w-full bg-blue-500 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
         disabled={isSubmitting}
       >
         {isSubmitting ? "جاري الحفظ..." : "حفظ"}
