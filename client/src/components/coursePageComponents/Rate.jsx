@@ -111,7 +111,6 @@ export default function Rate({ courseId, initialRating, onClose }) {
   );
 }
 
-// Function to get background color based on rating
 const getColor = (rating) => {
   if (rating <= 1) return "bg-green-400";
   if (rating <= 2) return "bg-green-800";
