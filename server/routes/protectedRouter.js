@@ -349,6 +349,10 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
   }
 });
 
+//==================================================
+//=================== grade ========================
+//==================================================
+
 router.post("/gradeCourse", async (req, res) => {
   const { courseId, gradeValue } = req.body;
   const studentId = req.user.id;
@@ -415,4 +419,75 @@ router.post("/gradeCourse", async (req, res) => {
     res.status(500).json({ success: false, message: "An error occurred." });
   }
 });
+
+//==================================================
+//=================== rate =========================
+//==================================================
+
+router.post("/rateCourse", async (req, res) => {
+  const { courseId, rateValue } = req.body;
+  const studentId = req.user.id;
+
+  
+  if (rateValue < 1 || rateValue > 5 || isNaN(rateValue)) {
+    return res.status(400).json({
+      success: false,
+      message:"The rate value must be a number btween 1 and 5",
+    });
+  }
+  try {
+    // Check if the course exists in the one of the schedules
+    const scheduleCheckQuery = `
+      SELECT 1
+      FROM public.schedule_course sc
+      JOIN public.schedule s ON sc.scheduleid = s.id
+      WHERE s.studentid = $1 AND sc.courseid = $2;
+    `;
+
+    const scheduleCheckResult = await db.query(scheduleCheckQuery, [
+      studentId,
+      courseId,
+    ]);
+
+    if (scheduleCheckResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found in student's schedule.",
+      });
+    }
+
+    try {
+      // Create a new rate
+      const createRateQuery = `
+    INSERT INTO rate (creatorid, courseid, value)
+    VALUES ($1, $2, $3);
+  `;
+
+      await db.query(createRateQuery, [studentId, courseId, rateValue]);
+      res.status(200).json({
+        success: true,
+        message: `The rate has been successfully created with the value ${rateValue}`,
+      });
+    } catch (error) {
+      console.log(error);
+      if (error.constraint === "rate_pkey") {
+        //that meen the rate already exist
+        // the student already rated this,so we just need to update the value of the rate
+        const updateRateQuery = `
+    UPDATE rate SET "value"=$1
+	WHERE creatorid=$2 and courseid=$3;
+  `;
+        await db.query(updateRateQuery, [rateValue, studentId, courseId]);
+        res.status(200).json({
+          success: true,
+          message: `The rate has been successfully updated with the value ${rateValue}`,
+        });
+      }
+    }
+  } catch (error) {
+    console.error("Error checking and creating rate:", error);
+    res.status(500).json({ success: false, message: "An error occurred." });
+  }
+});
+
 export default router;
