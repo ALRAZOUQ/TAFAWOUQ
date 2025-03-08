@@ -490,4 +490,44 @@ router.post("/rateCourse", async (req, res) => {
   }
 });
 
+//==================================================
+//=================== like =========================
+//==================================================
+
+router.post('/togoleLikeComment', async (req, res) => {
+  const { commentId } = req.body;
+  const studentId = req.user.id;
+
+  if (!commentId || isNaN(commentId) ) {
+    return res.status(400).json({success: false, message: 'commentId must be a number.' });
+  }
+  try {
+    // Attempt to insert the like
+    const createLikeQuery = `
+      INSERT INTO "like" (creatorid, commentid)
+      VALUES ($1, $2);
+    `;
+
+    await db.query(createLikeQuery, [studentId, commentId]);
+
+    return res.status(200).json({ success: true, message: 'Like added successfully.' });
+  } catch (error) {
+    if (error.constraint === "like_pkey") { 
+      // Duplicate key error, remove the like
+      const deleteLikeQuery = `
+        DELETE FROM "like"
+        WHERE creatorid = $1 AND commentid = $2;
+      `;
+
+      await db.query(deleteLikeQuery, [studentId, commentId]);
+
+      return res.json({ success: true, message: 'Like removed successfully.' });
+    } else {
+      console.error('Error liking/unliking comment:', error);
+      return res.status(500).json({ success: false, message: 'An error occurred.' });
+    }
+  }
+});
+
+
 export default router;

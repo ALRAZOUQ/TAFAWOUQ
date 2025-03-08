@@ -281,6 +281,7 @@ WHERE c.id = $1
 router.get("/comments/:courseId", async (req, res) => {
   try {
     const courseId = parseInt(req.params.courseId);
+    const studentId = req.user?.id;
     const comments = await db.query(
       `SELECT 
   c.id,
@@ -290,7 +291,11 @@ router.get("/comments/:courseId", async (req, res) => {
   u.name AS author,
   u.id AS authorid,
   COALESCE(l.num_likes, 0) AS numOfLikes,
-  COALESCE(r.reply_count, 0) AS numOfReplies
+  COALESCE(r.reply_count, 0) AS numOfReplies,
+  CASE
+  WHEN sl.creatorid = $2 THEN true 
+          ELSE false 
+        END AS isLiked
 FROM comment c
 JOIN "user" u ON c.authorId = u.id
 LEFT JOIN (
@@ -305,11 +310,12 @@ LEFT JOIN (
   GROUP BY parentCommentId
 ) r ON c.id = r.parentCommentId
 LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $2
 WHERE c.courseId = $1  -- Filter by course ID
   AND hc.id IS NULL    -- Exclude hidden comments
   AND c.parentCommentId IS NULL  -- Only top-level comments (no parent)
 ORDER BY c.creationDate DESC;`,
-      [courseId]
+      [courseId,studentId]
     );
 
     if (comments.rows.length === 0) {
@@ -326,6 +332,7 @@ ORDER BY c.creationDate DESC;`,
       creationDate: comment.creationdate,
       numOfLikes: comment.numoflikes,
       numOfReplies: comment.numofreplies,
+      isLiked: comment.isliked, // Add isLiked boolean
     }));
     res.status(200).json({
       success: true,
@@ -337,9 +344,12 @@ ORDER BY c.creationDate DESC;`,
   }
 });
 
+
+
 router.get("/replies/:commentId", async (req, res) => {
   try {
     const commentId = parseInt(req.params.commentId);
+    const studentId = req.user?.id;
     const comments = await db.query(
       `SELECT 
   c.id,
@@ -349,7 +359,11 @@ router.get("/replies/:commentId", async (req, res) => {
   u.name AS author,
   u.id AS authorId,
   COALESCE(l.num_likes, 0) AS numOfLikes,
-  COALESCE(r.numOfReplies, 0) AS numOfReplies
+  COALESCE(r.numOfReplies, 0) AS numOfReplies,
+  CASE 
+          WHEN sl.creatorid = $2 THEN true 
+          ELSE false 
+        END AS isLiked
 FROM comment c
 JOIN "user" u ON c.authorId = u.id
 LEFT JOIN (
@@ -364,10 +378,11 @@ LEFT JOIN (
   GROUP BY parentCommentId
 ) r ON c.id = r.parentCommentId
 LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $2
 WHERE ( c.parentCommentId = $1)  -- Fetch the main comment and its replies
   AND hc.id IS NULL  -- Exclude hidden comments
 ORDER BY c.creationDate ASC;  -- Sort by oldest to maintain thread order`,
-      [commentId]
+      [commentId,studentId]
     );
 
     if (comments.rows.length === 0) {
@@ -384,6 +399,7 @@ ORDER BY c.creationDate ASC;  -- Sort by oldest to maintain thread order`,
       creationDate: comment.creationdate,
       numOfLikes: comment.numoflikes,
       numOfReplies: comment.numofreplies,
+      isLiked: comment.isliked,
     }));
     res.status(200).json({
       success: true,
