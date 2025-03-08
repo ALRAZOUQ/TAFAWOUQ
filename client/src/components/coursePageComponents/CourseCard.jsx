@@ -1,5 +1,11 @@
-import React, { useState,useEffect } from "react";
-import { Trash2, SquarePlus, MoreVertical, Pencil } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import {
+  Trash2,
+  SquarePlus,
+  MoreVertical,
+  Pencil,
+  BarChart,
+} from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
 import EditCourseModal from "../../components/EditCourseModal";
 import Rate from "./Rate";
@@ -8,8 +14,12 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isRating, setIsRating] = useState(false);
   async function handleAddCourseToSchedule(courseId) {
     addCourseToSchedule(courseId);
+  }
+  function handleRating() {
+    setIsRating(true);
   }
 
   if (!course) return <div className="text-center py-4">Loading...</div>;
@@ -43,11 +53,14 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                     className="text-gray-500 hover:text-gray-700"
                   />
                 </button>
-                 <Rate/>
+
                 {menuOpen && (
                   <div
                     className="absolute left-0 mt-2 w-fit bg-white shadow-lg border border-gray-200 rounded-lg z-10"
-                    onMouseLeave={() => setMenuOpen(false)}
+                    onMouseLeave={() => {
+                      setMenuOpen(false);
+                      setIsRating(false);
+                    }}
                   >
                     {isAdmin ? (
                       <>
@@ -70,13 +83,29 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                         </button>
                       </>
                     ) : (
-                      <button
-                        onClick={() => handleAddCourseToSchedule(course.id)}
-                        className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
-                      >
-                        <SquarePlus size={20} />
-                        أضف المادة إلى الجدول
-                      </button>
+                      <>
+                        {!isRating && (
+                          <>
+                            <button
+                              onClick={() =>
+                                handleAddCourseToSchedule(course.id)
+                              }
+                              className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
+                            >
+                              <SquarePlus size={20} />
+                              أضف المادة إلى الجدول
+                            </button>
+                            <button
+                              onClick={handleRating}
+                              className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 rounded-full hover:bg-gray-50 transition-colors"
+                            >
+                              <BarChart size={20} />
+                              قيّم صعوبة المقرر
+                            </button>
+                          </>
+                        )}
+                        {isRating && <Rate onClose={()=>setIsRating(false)}courseId={course.id} />}
+                      </>
                     )}
                   </div>
                 )}

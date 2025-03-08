@@ -102,7 +102,7 @@ export default function HomePage() {
               <p className="text-gray-500">أضف مواد الآن إلى جدولك الدراسي</p>
               <Link
                 to="/courses"
-                className="mt-4 bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all"
+                className="mt-4 bg-TAF-100 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
               >
                 إضافة مواد
               </Link>
@@ -116,7 +116,7 @@ export default function HomePage() {
             <p className="text-gray-500">قم بإنشاء جدولك الآن</p>
             <button
               onClick={createScheduleHandler}
-              className="mt-4 bg-TAF-100 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
+              className="mt-4 bg-green-600 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
             >
               إنشاء جدول دراسي
             </button>
