@@ -6,6 +6,7 @@ import { FiMoreVertical } from "react-icons/fi";
 import { Trash2, ClipboardList, BarChart } from "lucide-react";
 import EnterGrade from "../components/coursePageComponents/EnterGrade";
 import Rate from "../components/coursePageComponents/Rate";
+import GPA from "../components/GPA";
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
@@ -66,7 +67,8 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
+    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center p-6">
+      {/* Schedule Container */}
       <div className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 min-h-[400px] flex flex-col">
         {scheduleId ? (
           scheduleCourses.length > 0 ? (
@@ -172,6 +174,11 @@ export default function HomePage() {
             </button>
           </div>
         )}
+      </div>
+
+      <div className="mt-6 flex flex-wrap justify-center gap-6">
+        <GPA value={4.82} heading={"معدلك الدراسي لهذا الترم"} />
+        <GPA value={4.82} heading={"معدلك الدراسي التراكمي"} />
       </div>
     </div>
   );
