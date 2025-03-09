@@ -2,16 +2,12 @@ import React, { useState, useEffect } from "react";
 import { CircleX } from "lucide-react";
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
+import { useSchedule } from "../../context/ScheduleContext";
 
-export default function Rate({ courseId, initialRating, onClose }) {
-  const [rating, setRating] = useState(initialRating || 0);
+export default function Rate({ courseId, onClose }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  useEffect(() => {
-    if (initialRating) {
-      setRating(initialRating);
-    }
-  }, [initialRating]);
+  const { scheduleCourses,updateCourseRate } = useSchedule();
+  const [rating, setRating] = useState(getCurrentRate(scheduleCourses, courseId));//this state will take the curent rate of the course registerd in the course if founded
 
   function handleRating(value) {
     setRating(value);
@@ -34,6 +30,7 @@ export default function Rate({ courseId, initialRating, onClose }) {
 
       if (response.status === 200) {
         toast.success("تم التقييم بنجاح");
+        updateCourseRate(courseId,rating)//will update the rate of the course inside scheduleContext
       } else {
         toast.error("حدث خطأ غير متوقع.");
       }
@@ -118,3 +115,16 @@ const getColor = (rating) => {
   if (rating <= 4) return "bg-red-500";
   return "bg-red-600";
 };
+
+/**
+ * Gets the current rate for a specific course from the courses array
+ * @param {Array} courses - Array of course objects containing id and rate properties
+ * @param {string|number} courseId - ID of the course to find
+ * @returns {number|null} The rate value if found and not 0, otherwise null
+ */
+function getCurrentRate(courses, courseId) {
+  const foundCourse = courses.find(
+    (course) => course.id === courseId && course.rate !== 0
+  );
+  return foundCourse?.rate ?? null;
+}
