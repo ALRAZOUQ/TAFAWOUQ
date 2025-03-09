@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import { CircleX } from "lucide-react";
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
+import { useSchedule } from "../../context/ScheduleContext";
 import { gradeMapping } from "../../util/gradeMapping";
 
 export default function EnterGrade({ courseId, onClose }) {
-  const [grade, setGrade] = useState(null);
+  
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const { scheduleCourses, updateCourseGrade } = useSchedule();
   const gradeOptions = [
     { label: "A+", value: 5 },
     { label: "A", value: 4.75 },
@@ -20,6 +21,7 @@ export default function EnterGrade({ courseId, onClose }) {
     { label: "F", value: 1 },
   ];
 
+const [grade, setGrade] = useState(getCurrentGrade(scheduleCourses,courseId));//this state will take the curent rate of the course registerd in the course if founded
   async function handleSubmit() {
     if (isSubmitting || grade === null) return;
 
@@ -33,6 +35,7 @@ export default function EnterGrade({ courseId, onClose }) {
 
       if (response.status === 200) {
         toast.success("تم تسجيل الدرجة بنجاح");
+        updateCourseGrade(courseId,grade)//will update the grade of the course inside scheduleContext
         onClose();
       } else {
         toast.error("حدث خطأ غير متوقع.");
@@ -100,3 +103,16 @@ const getColor = (grade) => {
   if (grade === 2) return "bg-red-400";
   if (grade === 1) return "bg-red-600";
 };
+
+/**
+ * Gets the current grade for a specific course from the courses array
+ * @param {Array} courses - Array of course objects containing id and grade properties
+ * @param {string|number} courseId - ID of the course to find
+ * @returns {number|null} The grade value if found and not 0, otherwise null
+ */
+function getCurrentGrade(courses, courseId) {
+  const foundCourse = courses.find(
+    (course) => course.id === courseId && course.grade !== 0
+  );
+  return foundCourse?.grade ?? null;
+}

@@ -29,6 +29,39 @@ export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
   const [GPA, setGPA] = useState(0);
   const [scheduleId, setScheduleId] = useState(null);
+  
+  /**
+   * Updates the grade of a specific course in the schedule
+   * @param {string|number} courseId - The ID of the course to update
+   * @param {string|number} newGradeValue - The new grade value to set
+   * @returns {void} - Updates the schedule courses state with the new grade
+   */
+  function updateCourseGrade(courseId, newGradeValue) {
+    setScheduleCourses(prevCourses => 
+      prevCourses.map(course => 
+        course.id === courseId 
+          ? { ...course, grade: newGradeValue } 
+          : course
+      )
+    );
+  }
+  
+  /**
+   * Updates the rating of a specific course in the schedule
+   * @param {string|number} courseId - The ID of the course to update
+   * @param {string|number} newRateValue - The new rating value to set
+   * @returns {void} - Updates the schedule courses state with the new rating
+   */
+  function updateCourseRate(courseId, newRateValue) {
+    setScheduleCourses(prevCourses => 
+      prevCourses.map(course => 
+        course.id === courseId 
+          ? { ...course, rate: newRateValue } 
+          : course
+      )
+    );
+  }
+  
   function resetSchedule() {
     setScheduleCourses(scheduleInitialState.scheduleCourses);
     setScheduleId(scheduleInitialState.scheduleId);
@@ -124,7 +157,6 @@ export function ScheduleProvider({ children }) {
       console.error(error.response?.data?.message || "Failed to remove course");
     }
   }
-
   return (
     <ScheduleContext.Provider
       value={{
@@ -137,6 +169,8 @@ export function ScheduleProvider({ children }) {
         fetchScheduleCourses,
         createSchedule,
         resetSchedule,
+        updateCourseGrade,
+        updateCourseRate,
       }}
     >
       {children}
