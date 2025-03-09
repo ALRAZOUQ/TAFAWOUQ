@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import { useSchedule } from "../../context/ScheduleContext";
 import { gradeMapping } from "../../util/gradeMapping";
 
-export default function EnterGrade({ courseId, onClose }) {
+export default function EnterGrade({ courseId, onClose,onCourseUpdate }) {
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { scheduleCourses, updateCourseGrade } = useSchedule();
@@ -36,6 +36,7 @@ const [grade, setGrade] = useState(getCurrentGrade(scheduleCourses,courseId));//
       if (response.status === 200) {
         toast.success("تم تسجيل الدرجة بنجاح");
         updateCourseGrade(courseId,grade)//will update the grade of the course inside scheduleContext
+        onCourseUpdate && onCourseUpdate();//will update the course rate inside the course card(refetch the course data) only used in the course card
         onClose();
       } else {
         toast.error("حدث خطأ غير متوقع.");

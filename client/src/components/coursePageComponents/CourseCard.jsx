@@ -122,12 +122,14 @@ export default function CourseCard({ course, isAdmin, onDelete }) {
                           <Rate
                             onClose={() => setIsRating(false)}
                             courseId={course.id}
+                            onCourseUpdate={onCourseUpdate}
                           />
                         )}
                         {isGrading && (
                           <EnterGrade
                             onClose={() => setIsGrading(false)}
                             courseId={course.id}
+                            onCourseUpdate={onCourseUpdate}
                           />
                         )}
                       </>

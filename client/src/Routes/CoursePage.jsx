@@ -47,10 +47,13 @@ const CoursePage = () => {
        setTimeout(() => {navigate("/home"); console.log("test")}, 0); // Defer navigation
         return false;
       }
-      
     }
   };
-
+  // Handler for when course is rated or graded
+  const handleCourseUpdate = async () => {
+    await fetchCourse();
+  };
+  
   const fetchComments = async () => {
     try {
       const response = await axios.get(`auth/comments/${courseId}`);
@@ -162,6 +165,7 @@ const CoursePage = () => {
           course={course} 
           isAdmin={user?.isAdmin} 
           onDelete={() => setIsConfirmOpen(true)} 
+          onCourseUpdate={handleCourseUpdate}
         />
         <ConfirmDialog
           title="حذف المقرر"

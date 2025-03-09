@@ -4,7 +4,7 @@ import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useSchedule } from "../../context/ScheduleContext";
 
-export default function Rate({ courseId, onClose }) {
+export default function Rate({ courseId, onClose,onCourseUpdate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { scheduleCourses,updateCourseRate } = useSchedule();
   const [rating, setRating] = useState(getCurrentRate(scheduleCourses, courseId));//this state will take the curent rate of the course registerd in the course if founded
@@ -31,6 +31,7 @@ export default function Rate({ courseId, onClose }) {
       if (response.status === 200) {
         toast.success("تم التقييم بنجاح");
         updateCourseRate(courseId,rating)//will update the rate of the course inside scheduleContext
+        onCourseUpdate && onCourseUpdate();//will update the course rate inside the course card(refetch the course data) only used in the course card
       } else {
         toast.error("حدث خطأ غير متوقع.");
       }
