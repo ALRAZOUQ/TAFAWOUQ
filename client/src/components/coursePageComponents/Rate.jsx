@@ -4,10 +4,12 @@ import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useSchedule } from "../../context/ScheduleContext";
 
-export default function Rate({ courseId, onClose,onCourseUpdate }) {
+export default function Rate({ courseId, onClose, onCourseUpdate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { scheduleCourses,updateCourseRate } = useSchedule();
-  const [rating, setRating] = useState(getCurrentRate(scheduleCourses, courseId));//this state will take the curent rate of the course registerd in the course if founded
+  const { scheduleCourses, updateCourseRate } = useSchedule();
+  const [rating, setRating] = useState(
+    getCurrentRate(scheduleCourses, courseId)
+  ); //this state will take the curent rate of the course registerd in the course if founded
 
   function handleRating(value) {
     setRating(value);
@@ -30,14 +32,14 @@ export default function Rate({ courseId, onClose,onCourseUpdate }) {
 
       if (response.status === 200) {
         toast.success("تم التقييم بنجاح");
-        updateCourseRate(courseId,rating)//will update the rate of the course inside scheduleContext
-        onCourseUpdate && onCourseUpdate();//will update the course rate inside the course card(refetch the course data) only used in the course card
+        updateCourseRate(courseId, rating); //will update the rate of the course inside scheduleContext
+        onCourseUpdate && onCourseUpdate(); //will update the course rate inside the course card(refetch the course data) only used in the course card
       } else {
         toast.error("حدث خطأ غير متوقع.");
       }
     } catch (error) {
-      if(error?.response?.status===404){
-        toast.error("هذا المقرر غير مسجل في الجدول الخاص بك")
+      if (error?.response?.status === 404) {
+        toast.error("هذا المقرر غير مسجل في الجدول الخاص بك");
         return;
       }
       console.error("Error submitting rating:", error);
@@ -50,7 +52,10 @@ export default function Rate({ courseId, onClose,onCourseUpdate }) {
   }
 
   return (
-    <div className="relative bg-white p-4 rounded-lg shadow-md" dir="rtl">
+    <div
+      className="relative bg-white p-6 pt-10 rounded-lg shadow-md w-80"
+      dir="rtl"
+    >
       {/* Close Button */}
       <button
         className="absolute top-2 left-2 text-gray-500 hover:text-red-500 transition"
@@ -59,9 +64,11 @@ export default function Rate({ courseId, onClose,onCourseUpdate }) {
         <CircleX size={24} />
       </button>
 
-      <h3 className="text-lg font-semibold mb-2">قيّم صعوبة المقرر</h3>
+      <h3 className="text-lg font-semibold mb-2 text-center">
+        قيّم صعوبة المقرر
+      </h3>
 
-      <div className="flex mb-2">
+      <div className="flex mb-2 justify-center">
         {Array.from({ length: 5 }, (_, i) => i + 1).map((num) => (
           <button
             key={num}
@@ -87,7 +94,7 @@ export default function Rate({ courseId, onClose,onCourseUpdate }) {
 
       {rating > 0 && (
         <>
-          <p className="mt-2 font-semibold">
+          <p className="mt-2 font-semibold text-center">
             {rating === 1
               ? "سهل جدا"
               : rating === 2
@@ -102,7 +109,7 @@ export default function Rate({ courseId, onClose,onCourseUpdate }) {
             onClick={handleSubmitting}
             className={`mt-4 ${getColor(
               rating
-            )} text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all`}
+            )} text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all w-full`}
             disabled={isSubmitting}
           >
             {isSubmitting ? "جاري التقييم..." : "قيّم"}

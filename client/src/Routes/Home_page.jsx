@@ -16,17 +16,10 @@ export default function HomePage() {
     createSchedule,
     removeCoursefromSchedule,
   } = useSchedule();
-  const [menuOpen, setMenuOpen] = useState(null); // Hassan: this implementation is to track which course id is active so that it will open its menu
-  const [isRating, setIsRating] = useState(false);
-  const [isGrading, setIsGrading] = useState(false);
-  function handleRating() {
-    setMenuOpen(null);
-    setIsRating(true);
-  }
-  function handleGrading() {
-    setMenuOpen(null);
-    setIsGrading(true);
-  }
+
+  const [menuOpen, setMenuOpen] = useState(null);
+  const [ratingCourseId, setRatingCourseId] = useState(null);
+  const [gradingCourseId, setGradingCourseId] = useState(null);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -50,6 +43,20 @@ export default function HomePage() {
 
   function toggleMenu(courseId) {
     setMenuOpen(menuOpen === courseId ? null : courseId);
+    setRatingCourseId(null);
+    setGradingCourseId(null);
+  }
+
+  function handleRating(courseId) {
+    setRatingCourseId(courseId);
+    setGradingCourseId(null);
+    setMenuOpen(null);
+  }
+
+  function handleGrading(courseId) {
+    setGradingCourseId(courseId);
+    setRatingCourseId(null);
+    setMenuOpen(null);
   }
 
   function handleRemoveCourse(courseId) {
@@ -57,6 +64,7 @@ export default function HomePage() {
     fetchScheduleCourses();
     setMenuOpen(null);
   }
+
   return (
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex justify-center items-center p-6">
       <div className="w-full max-w-screen-xl bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-6 min-h-[400px] flex flex-col">
@@ -85,7 +93,7 @@ export default function HomePage() {
                     <FiMoreVertical size={20} />
                   </button>
 
-                  {!isRating && !isGrading && menuOpen === course.id && (
+                  {menuOpen === course.id && (
                     <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-44 z-10">
                       <Link
                         to={`/courses/${course.id}`}
@@ -101,31 +109,36 @@ export default function HomePage() {
                         إزالة من الجدول
                       </button>
                       <button
-                        onClick={handleRating}
+                        onClick={() => handleRating(course.id)}
                         className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-50 transition-colors"
                       >
                         <BarChart size={20} />
                         قيّم صعوبة المقرر
                       </button>
                       <button
-                        onClick={handleGrading}
+                        onClick={() => handleGrading(course.id)}
                         className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-50 transition-colors"
                       >
                         <ClipboardList size={20} />
                         أضف درجتك
                       </button>
-                      {isRating && (
-                        <Rate
-                          onClose={() => setIsRating(false)}
-                          courseId={course.id}
-                        />
-                      )}
-                      {isGrading && (
-                        <EnterGrade
-                          onClose={() => setIsGrading(false)}
-                          courseId={course.id}
-                        />
-                      )}
+                    </div>
+                  )}
+
+                  {ratingCourseId === course.id && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                      <Rate
+                        onClose={() => setRatingCourseId(null)}
+                        courseId={course.id}
+                      />
+                    </div>
+                  )}
+                  {gradingCourseId === course.id && (
+                    <div className="fixed inset-0 flex items-center justify-center z-50">
+                      <EnterGrade
+                        onClose={() => setGradingCourseId(null)}
+                        courseId={course.id}
+                      />
                     </div>
                   )}
                 </div>
