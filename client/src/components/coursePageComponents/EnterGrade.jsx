@@ -42,6 +42,10 @@ const [grade, setGrade] = useState(getCurrentGrade(scheduleCourses,courseId));//
         toast.error("حدث خطأ غير متوقع.");
       }
     } catch (error) {
+      if(error?.response?.status===404){
+        toast.error("هذا المقرر غير مسجل في الجدول الخاص بك")
+        return;
+      }
       console.error("Error submitting grade:", error);
       toast.error(
         error.response?.data?.message || "حدث خطأ أثناء تسجيل الدرجة."

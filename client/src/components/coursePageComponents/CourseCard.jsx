@@ -12,7 +12,7 @@ import EditCourseModal from "../../components/EditCourseModal";
 import Rate from "./Rate";
 import EnterGrade from "./EnterGrade";
 
-export default function CourseCard({ course, isAdmin, onDelete }) {
+export default function CourseCard({ course, isAdmin, onDelete,onCourseUpdate }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
