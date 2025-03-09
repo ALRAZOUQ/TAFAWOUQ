@@ -428,11 +428,10 @@ router.post("/rateCourse", async (req, res) => {
   const { courseId, rateValue } = req.body;
   const studentId = req.user.id;
 
-  
   if (rateValue < 1 || rateValue > 5 || isNaN(rateValue)) {
     return res.status(400).json({
       success: false,
-      message:"The rate value must be a number btween 1 and 5",
+      message: "The rate value must be a number btween 1 and 5",
     });
   }
   try {
@@ -494,12 +493,14 @@ router.post("/rateCourse", async (req, res) => {
 //=================== like =========================
 //==================================================
 
-router.post('/togoleLikeComment', async (req, res) => {
+router.post("/togoleLikeComment", async (req, res) => {
   const { commentId } = req.body;
   const studentId = req.user.id;
 
-  if (!commentId || isNaN(commentId) ) {
-    return res.status(400).json({success: false, message: 'commentId must be a number.' });
+  if (!commentId || isNaN(commentId)) {
+    return res
+      .status(400)
+      .json({ success: false, message: "commentId must be a number." });
   }
   try {
     // Attempt to insert the like
@@ -510,9 +511,11 @@ router.post('/togoleLikeComment', async (req, res) => {
 
     await db.query(createLikeQuery, [studentId, commentId]);
 
-    return res.status(200).json({ success: true, message: 'Like added successfully.' });
+    return res
+      .status(200)
+      .json({ success: true, message: "Like added successfully." });
   } catch (error) {
-    if (error.constraint === "like_pkey") { 
+    if (error.constraint === "like_pkey") {
       // Duplicate key error, remove the like
       const deleteLikeQuery = `
         DELETE FROM "like"
@@ -521,13 +524,69 @@ router.post('/togoleLikeComment', async (req, res) => {
 
       await db.query(deleteLikeQuery, [studentId, commentId]);
 
-      return res.json({ success: true, message: 'Like removed successfully.' });
+      return res.json({ success: true, message: "Like removed successfully." });
     } else {
-      console.error('Error liking/unliking comment:', error);
-      return res.status(500).json({ success: false, message: 'An error occurred.' });
+      console.error("Error liking/unliking comment:", error);
+      return res
+        .status(500)
+        .json({ success: false, message: "An error occurred." });
     }
   }
 });
 
+//==================================================
+//=================== GPA =========================
+//==================================================
+
+router.get("/viewGpa", async (req, res) => {
+  try {
+    const studentId = req.user.id;
+    if (!studentId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Student ID is required." });
+    }
+
+    const gpaQuery = `
+      SELECT
+        SUM(g.value * c.credithours) AS total_grade_points,
+        SUM(c.credithours) AS total_credit_hours
+      FROM public.grade g
+      JOIN public.course c ON g.courseid = c.id
+      JOIN public.schedule_course sc ON g.courseid = sc.courseid
+      JOIN public.schedule s ON sc.scheduleid = s.id
+      WHERE s.studentid = $1;
+    `;
+
+    const gpaResult = await db.query(gpaQuery, [studentId]);
+
+    if (
+      gpaResult.rows.length > 0 &&
+      gpaResult.rows[0].total_credit_hours !== null &&
+      gpaResult.rows[0].total_grade_points !== null
+    ) {
+      const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
+      const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
+      const averageGPA = parseFloat(
+        (totalGradePoints / totalCreditHours).toFixed(2)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "GPA calculated successfully.",
+        studentId: studentId,
+        averageGPA: averageGPA,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "No grades found for the student or student not found.",
+      });
+    }
+  } catch (error) {
+    console.error("Error calculating GPA:", error);
+    res.status(500).json({ error: "An error occurred." });
+  }
+});
 
 export default router;
