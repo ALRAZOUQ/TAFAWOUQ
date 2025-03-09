@@ -36,6 +36,10 @@ export default function Rate({ courseId, onClose,onCourseUpdate }) {
         toast.error("حدث خطأ غير متوقع.");
       }
     } catch (error) {
+      if(error?.response?.status===404){
+        toast.error("هذا المقرر غير مسجل في الجدول الخاص بك")
+        return;
+      }
       console.error("Error submitting rating:", error);
       toast.error(
         error.response?.data?.message || "حدث خطأ أثناء تسجيل التقييم."
