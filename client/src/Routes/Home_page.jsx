@@ -177,8 +177,8 @@ export default function HomePage() {
       </div>
 
       <div className="mt-6 flex flex-wrap justify-center gap-6">
-        <GPA value={4.82} heading={"معدلك الدراسي لهذا الترم"} />
-        <GPA value={4.82} heading={"معدلك الدراسي التراكمي"} />
+        <GPA  heading={"معدلك الدراسي لهذا الترم"} scheduleId={scheduleId} />
+        <GPA  heading={"معدلك الدراسي التراكمي"} />
       </div>
     </div>
   );
