@@ -3,10 +3,8 @@ import { CircleX } from "lucide-react";
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useSchedule } from "../../context/ScheduleContext";
-import { gradeMapping } from "../../util/gradeMapping";
 
-export default function EnterGrade({ courseId, onClose,onCourseUpdate }) {
-  
+export default function EnterGrade({ courseId, onClose, onCourseUpdate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { scheduleCourses, updateCourseGrade } = useSchedule();
   const gradeOptions = [
@@ -21,7 +19,9 @@ export default function EnterGrade({ courseId, onClose,onCourseUpdate }) {
     { label: "F", value: 1 },
   ];
 
-const [grade, setGrade] = useState(getCurrentGrade(scheduleCourses,courseId));//this state will take the curent rate of the course registerd in the course if founded
+  const [grade, setGrade] = useState(
+    getCurrentGrade(scheduleCourses, courseId)
+  ); //this state will take the curent rate of the course registerd in the course if founded
   async function handleSubmit() {
     if (isSubmitting || grade === null) return;
 
@@ -35,15 +35,15 @@ const [grade, setGrade] = useState(getCurrentGrade(scheduleCourses,courseId));//
 
       if (response.status === 200) {
         toast.success("تم تسجيل الدرجة بنجاح");
-        updateCourseGrade(courseId,grade)//will update the grade of the course inside scheduleContext
-        onCourseUpdate && onCourseUpdate();//will update the course rate inside the course card(refetch the course data) only used in the course card
+        updateCourseGrade(courseId, grade); //will update the grade of the course inside scheduleContext
+        onCourseUpdate && onCourseUpdate(); //will update the course rate inside the course card(refetch the course data) only used in the course card
         onClose();
       } else {
         toast.error("حدث خطأ غير متوقع.");
       }
     } catch (error) {
-      if(error?.response?.status===404){
-        toast.error("هذا المقرر غير مسجل في الجدول الخاص بك")
+      if (error?.response?.status === 404) {
+        toast.error("هذا المقرر غير مسجل في الجدول الخاص بك");
         return;
       }
       console.error("Error submitting grade:", error);
