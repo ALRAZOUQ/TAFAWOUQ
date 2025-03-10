@@ -601,4 +601,55 @@ router.get("/viewGpa", async (req, res) => {
   }
 });
 
+router.get("/viewGpa/:scheduleId", async (req, res) => {
+  try {
+    const scheduleId = parseInt(req.params.scheduleId);
+
+    if (!scheduleId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Schedule ID is required." });
+    }
+
+    const gpaQuery = `
+      SELECT
+        SUM(g.value * c.credithours) AS total_grade_points,
+        SUM(c.credithours) AS total_credit_hours
+      FROM public.grade g
+      JOIN public.course c ON g.courseid = c.id
+      JOIN public.schedule_course sc ON g.courseid = sc.courseid
+      WHERE sc.scheduleid = $1;
+    `;
+
+    const gpaResult = await db.query(gpaQuery, [scheduleId]);
+
+    if (
+      gpaResult.rows.length > 0 &&
+      gpaResult.rows[0].total_credit_hours !== null &&
+      gpaResult.rows[0].total_grade_points !== null
+    ) {
+      const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
+      const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
+      const averageGPA = parseFloat(
+        (totalGradePoints / totalCreditHours).toFixed(2)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "GPA calculated successfully for schedule.",
+        scheduleId: scheduleId,
+        averageGPA: averageGPA,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "No grades found for the schedule or schedule not found.",
+      });
+    }
+  } catch (error) {
+    console.error("Error calculating GPA for schedule:", error);
+    res.status(500).json({ error: "An error occurred." });
+  }
+});
+
 export default router;
