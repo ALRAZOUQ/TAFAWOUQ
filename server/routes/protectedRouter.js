@@ -51,8 +51,8 @@ router.get("/currentSchedule", async (req, res) => {
       JOIN latest_term ON schedule.termName = latest_term.name
       LEFT JOIN schedule_course ON schedule.id = schedule_course.scheduleId
       LEFT JOIN course ON schedule_course.courseId = course.id
-      LEFT JOIN grade on course.id= grade.courseid
-      LEFT JOIN rate on course.id= rate.courseid
+      LEFT JOIN grade ON (course.id = grade.courseid AND grade.creatorid = schedule.studentId)
+      LEFT JOIN rate ON (course.id = rate.courseid AND rate.creatorid = schedule.studentId)
       WHERE schedule.studentId = $1
       GROUP BY schedule.id, schedule.termName, latest_term.startDate, latest_term.endDate;`,
       [studentId]
@@ -340,6 +340,18 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
       [scheduleId, courseId]
     );
 
+  // Delete rate
+  await db.query(
+    `DELETE FROM rate WHERE creatorId = $1 AND courseId = $2`,
+    [userId, courseId]
+  );
+  
+  // Delete grade
+  await db.query(
+    `DELETE FROM grade WHERE creatorId = $1 AND courseId = $2`,
+    [userId, courseId]
+  );
+
     res.status(200).json({
       success: true,
       message: "Course deleted from schedule successfully",
@@ -585,6 +597,57 @@ router.get("/viewGpa", async (req, res) => {
     }
   } catch (error) {
     console.error("Error calculating GPA:", error);
+    res.status(500).json({ error: "An error occurred." });
+  }
+});
+
+router.get("/viewGpa/:scheduleId", async (req, res) => {
+  try {
+    const scheduleId = parseInt(req.params.scheduleId);
+
+    if (!scheduleId) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Schedule ID is required." });
+    }
+
+    const gpaQuery = `
+      SELECT
+        SUM(g.value * c.credithours) AS total_grade_points,
+        SUM(c.credithours) AS total_credit_hours
+      FROM public.grade g
+      JOIN public.course c ON g.courseid = c.id
+      JOIN public.schedule_course sc ON g.courseid = sc.courseid
+      WHERE sc.scheduleid = $1;
+    `;
+
+    const gpaResult = await db.query(gpaQuery, [scheduleId]);
+
+    if (
+      gpaResult.rows.length > 0 &&
+      gpaResult.rows[0].total_credit_hours !== null &&
+      gpaResult.rows[0].total_grade_points !== null
+    ) {
+      const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
+      const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
+      const averageGPA = parseFloat(
+        (totalGradePoints / totalCreditHours).toFixed(2)
+      );
+
+      res.status(200).json({
+        success: true,
+        message: "GPA calculated successfully for schedule.",
+        scheduleId: scheduleId,
+        averageGPA: averageGPA,
+      });
+    } else {
+      res.status(404).json({
+        success: false,
+        message: "No grades found for the schedule or schedule not found.",
+      });
+    }
+  } catch (error) {
+    console.error("Error calculating GPA for schedule:", error);
     res.status(500).json({ error: "An error occurred." });
   }
 });
