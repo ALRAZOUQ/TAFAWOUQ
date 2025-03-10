@@ -11,7 +11,6 @@ export default {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
       },
       fontFamily: {
-        cairo: ["Cairo", "sans-serif"],
         alm: ["Almarai", "sans-serif"],
       },
       colors: {
