@@ -51,8 +51,8 @@ router.get("/currentSchedule", async (req, res) => {
       JOIN latest_term ON schedule.termName = latest_term.name
       LEFT JOIN schedule_course ON schedule.id = schedule_course.scheduleId
       LEFT JOIN course ON schedule_course.courseId = course.id
-      LEFT JOIN grade on course.id= grade.courseid
-      LEFT JOIN rate on course.id= rate.courseid
+      LEFT JOIN grade ON (course.id = grade.courseid AND grade.creatorid = schedule.studentId)
+      LEFT JOIN rate ON (course.id = rate.courseid AND rate.creatorid = schedule.studentId)
       WHERE schedule.studentId = $1
       GROUP BY schedule.id, schedule.termName, latest_term.startDate, latest_term.endDate;`,
       [studentId]
