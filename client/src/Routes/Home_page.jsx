@@ -179,25 +179,34 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      <button className="whitespace-nowrap" onClick={handleShowGPA}>
-        {showGPA ? (
+      {/* GPA Section */}
+      <div className="relative w-full mt-6 flex flex-wrap justify-center gap-6">
+        {/* Show/Hide GPA Button Positioned on Top Right */}
+        <button
+          className="absolute top-0 right-96 flex items-center gap-2 text-gray-700 hover:bg-gray-200 px-3 py-1 rounded-lg transition-all"
+          onClick={handleShowGPA}
+        >
+          {showGPA ? (
+            <>
+              <EyeOff size={16} />
+              إخفاء المعدل
+            </>
+          ) : (
+            <>
+              <Eye size={16} />
+              إظهار المعدل
+            </>
+          )}
+        </button>
+
+        {/* GPA Components */}
+        {showGPA && (
           <>
-            <EyeOff size={16} />
-            إخفاء المعدل{" "}
-          </>
-        ) : (
-          <>
-            {" "}
-            <Eye size={16} /> إظهار المعدل
+            <GPA heading={"معدلك الدراسي لهذا الترم"} scheduleId={scheduleId} />
+            <GPA heading={"معدلك الدراسي التراكمي"} />
           </>
         )}
-      </button>
-      {showGPA && (
-        <div className="mt-6 flex flex-wrap justify-center gap-6">
-          <GPA heading={"معدلك الدراسي لهذا الترم"} scheduleId={scheduleId} />
-          <GPA heading={"معدلك الدراسي التراكمي"} />
-        </div>
-      )}
+      </div>
     </div>
   );
 }
