@@ -21,7 +21,8 @@ export default function GPA({ heading, scheduleId }) {
 
         if (isMounted) setGpa(data.averageGPA);
       } catch (err) {
-        if (isMounted) setError(err.response?.data?.message || "Failed to fetch GPA");
+        if (isMounted)
+          setError(err.response?.data?.message || "Failed to fetch GPA");
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -40,7 +41,7 @@ export default function GPA({ heading, scheduleId }) {
     if (gpa >= 4.75)
       return "bg-gradient-to-r from-green-400 via-lime-500 to-green-500 bg-clip-text text-transparent";
     if (gpa >= 4.25 && gpa <= 4.75)
-      return "bg-gradient-to-right from-green-400 via-lime-500 to-green-500";
+      return "bg-gradient-to-r from-orange-400 via-lime-500 to-orange-500 bg-clip-text text-transparent";
     if (gpa >= 3.5) return "text-blue-500";
     if (gpa >= 2.5) return "text-yellow-500";
     return "text-red-500";

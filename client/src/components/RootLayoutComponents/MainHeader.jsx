@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
@@ -15,6 +15,7 @@ export default function MainHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const [filterdCourses, setfilterdCourses] = useState(null);
   const [showResults, setShowResults] = useState(false);
+
   // Use the context to get courses data
   const { coursesData, fetchCoursesContext } = useCourseData();
 
@@ -75,20 +76,90 @@ export default function MainHeader() {
 
           <button
             className="md:hidden text-TAF-100 focus:outline-none "
-            onClick={() => setIsOpen(!isOpen)}>
+            onClick={() => setIsOpen(!isOpen)}
+          >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
 
         {/* Navigation Links & Search Bar */}
+        {isAuthorized && (
+          <div
+            className={`md:flex md:items-center md:gap-8 md:mx-10 ${
+              isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
+            } md:flex-row md:justify-center`}
+          >
+            <NavLink
+              className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center "
+              to="/home"
+              end
+            >
+              {({ isActive }) => (
+                <div
+                  className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 
+                    border-b-4 border-TAF-100 transition-all duration-300 
+                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}
+                >
+                  الصفحة الرئيسية
+                </div>
+              )}
+            </NavLink>
+            <NavLink
+              className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center "
+              to="/courses"
+              end
+            >
+              {({ isActive }) => (
+                <div
+                  className={`relative w-full md:w-auto text-center py-1 px-3 
+                    border-b-4 border-TAF-100 transition-all duration-300 
+                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}
+                >
+                  المواد
+                </div>
+              )}
+            </NavLink>
+            <NavLink
+              className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center "
+              to="/myquizzes"
+              end
+            >
+              {({ isActive }) => (
+                <div
+                  className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 
+                    border-b-4 border-TAF-100 transition-all duration-300 
+                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}
+                >
+                  إختباراتي القصيرة
+                </div>
+              )}
+            </NavLink>
+            <NavLink
+              className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center "
+              to="/mypreviousschedules"
+              end
+            >
+              {({ isActive }) => (
+                <div
+                  className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 
+                    border-b-4 border-TAF-100 transition-all duration-300 
+                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}
+                >
+                  جداولي السابقة
+                </div>
+              )}
+            </NavLink>
+          </div>
+        )}
 
         <div
           className={`w-full md:flex md:items-center md:gap-8  ${
             isOpen ? "flex flex-col gap-4" : "hidden"
-          } md:flex-row md:justify-center`}>
-            {/*isAuthorized i why we need to hide the search bar if the user not logged in*/}
+          } md:flex-row md:justify-center`}
+        >
+          {/*isAuthorized i why we need to hide the search bar if the user not logged in*/}
           {isAuthorized && (
-            <div className="w-full md:w-1/2 xl:w-1/4 relative">
+            <div className="w-full md:w-1/2 xl:w-1/2 relative">
               <div className="relative flex items-center">
                 <Search className="absolute left-3 h-5 w-5 text-gray-400" />
                 <input
@@ -107,19 +178,19 @@ export default function MainHeader() {
                 <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
                   <div className="max-h-60 overflow-y-auto">
                     {filterdCourses?.length === 0 ? (
-                      <div className="p-3 text-gray-500">
-                        لا توجد نتائج
-                      </div>
+                      <div className="p-3 text-gray-500">لا توجد نتائج</div>
                     ) : (
                       <ul className="py-2">
                         {filterdCourses?.map((course) => (
                           <li
                             key={course.id}
-                            className="px-3 py-2 hover:bg-gray-100 group/searchResult">
+                            className="px-3 py-2 hover:bg-gray-100 group/searchResult"
+                          >
                             <Link
-                            onClick={() => setSearchInput("")}
+                              onClick={() => setSearchInput("")}
                               to={`/courses/${course.id}`}
-                              className="block text-lg  ">
+                              className="block text-lg  "
+                            >
                               <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
                                 {course.name} |{" "}
                                 <span className="font-bold text-gray-900">
@@ -136,54 +207,21 @@ export default function MainHeader() {
               )}
             </div>
           )}
-          {isAuthorized && (
-            <div
-              className={`md:flex md:items-center md:gap-8  ${
-                isOpen ? "flex flex-col gap-4" : "hidden"
-              } md:flex-row md:justify-center`}>
-              <NavLink
-                className="text-gray-700 hover:text-gray-500 transition-colors w-full md:w-auto text-center "
-                to="/courses"
-                end>
-                {({ isActive }) => (
-                  <div
-                    className={`relative w-full md:w-auto text-center py-1 px-3 
-                    border-b-2 border-TAF-100 transition-all duration-300 
-                   ${isActive ? "border-opacity-100" : "border-opacity-0"}`}>
-                    المواد
-                  </div>
-                )}
-              </NavLink>
-            </div>
-          )}
-
-          {/* Additional Links */}
-          {/*
-  <div className="flex flex-col md:flex-row gap-2 md:gap-8 mt-4 md:mt-0 justify-center items-center ">
-  <Link to="/" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0">
-       القائمة الرئيسية
-  </Link>
-  <Link to="/about" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0">
-    حول
-  </Link>
-  <Link to="/contact" className="text-white hover:text-gray-300 transition-colors w-full md:w-auto text-center p-1 md:p-0">
-    التواصل
-  </Link>
-  </div>
-  */}
 
           {/* Sign Up Button mobile */}
 
           {isAuthorized ? (
             <button
               className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-              onClick={handleLogout}>
+              onClick={handleLogout}
+            >
               تسجيل الخروج
             </button>
           ) : (
             <Link
               to="/login"
-              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors">
+              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+            >
               تسجيل الدخول
             </Link>
           )}
