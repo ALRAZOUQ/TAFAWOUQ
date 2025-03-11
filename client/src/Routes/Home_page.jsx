@@ -3,7 +3,7 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { FiMoreVertical } from "react-icons/fi";
-import { Trash2, ClipboardList, BarChart } from "lucide-react";
+import { Trash2, ClipboardList, BarChart, Eye, EyeOff } from "lucide-react";
 import EnterGrade from "../components/coursePageComponents/EnterGrade";
 import Rate from "../components/coursePageComponents/Rate";
 import GPA from "../components/GPA";
@@ -21,6 +21,7 @@ export default function HomePage() {
   const [menuOpen, setMenuOpen] = useState(null);
   const [ratingCourseId, setRatingCourseId] = useState(null);
   const [gradingCourseId, setGradingCourseId] = useState(null);
+  const [showGPA, setShowGPA] = useState(true);
 
   useEffect(() => {
     if (!isAuthorized) {
@@ -64,6 +65,9 @@ export default function HomePage() {
     removeCoursefromSchedule(courseId);
     fetchScheduleCourses();
     setMenuOpen(null);
+  }
+  function handleShowGPA() {
+    setShowGPA((showGPA) => !showGPA);
   }
 
   return (
@@ -175,11 +179,25 @@ export default function HomePage() {
           </div>
         )}
       </div>
-
-      <div className="mt-6 flex flex-wrap justify-center gap-6">
-        <GPA  heading={"معدلك الدراسي لهذا الترم"} scheduleId={scheduleId} />
-        <GPA  heading={"معدلك الدراسي التراكمي"} />
-      </div>
+      <button className="whitespace-nowrap" onClick={handleShowGPA}>
+        {showGPA ? (
+          <>
+            <EyeOff size={16} />
+            إخفاء المعدل{" "}
+          </>
+        ) : (
+          <>
+            {" "}
+            <Eye size={16} /> إظهار المعدل
+          </>
+        )}
+      </button>
+      {showGPA && (
+        <div className="mt-6 flex flex-wrap justify-center gap-6">
+          <GPA heading={"معدلك الدراسي لهذا الترم"} scheduleId={scheduleId} />
+          <GPA heading={"معدلك الدراسي التراكمي"} />
+        </div>
+      )}
     </div>
   );
 }
