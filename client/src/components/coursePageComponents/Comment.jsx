@@ -1,7 +1,29 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { ThumbsUp, MessageCircle, Tag } from "lucide-react";
+import axios from "../../api/axios";
 
 export default function Comment({ comment, isReply = false }) {
+  const [replies, setReplies] = useState([]);
+  useEffect(() => {
+    async function fetchReplies(commentId) {
+      try {
+        const response = await axios.get(`/auth/replies/${commentId}`, {
+          withCredentials: true,
+        });
+
+        if (response.data.success) {
+          return setReplies(response.data.comments);
+        } else {
+          throw new Error(response.data.message || "Failed to fetch replies");
+        }
+      } catch (error) {
+        console.error("Error fetching replies:", error);
+        return setReplies([]);
+      }
+    }
+    fetchReplies(comment.id);
+  }, []);
+
   return (
     <div
       className={`border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow space-y-3 mb-4 ${
@@ -49,9 +71,9 @@ export default function Comment({ comment, isReply = false }) {
       </div>
 
       {/* HASSAN: this code added here to render the replies we want to test if it will be asethetic or not */}
-      {comment.replies && comment.replies.length > 0 && (
+      {replies && replies?.length > 0 && (
         <div className="mt-4 space-y-3">
-          {comment.replies.map((reply) => (
+          {replies.map((reply) => (
             <Comment key={reply.id} comment={reply} isReply={true} />
           ))}
         </div>
