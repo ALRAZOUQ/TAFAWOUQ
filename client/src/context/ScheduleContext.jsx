@@ -27,9 +27,10 @@ const ScheduleContext = createContext({
 
 export function ScheduleProvider({ children }) {
   const [scheduleCourses, setScheduleCourses] = useState([]);
-  const [GPA, setGPA] = useState(0);
+  const [currentScheduleGPA, setcurrentScheduleGPA] = useState(0);
+  const [totalGPA, setTotalGPA] = useState(0);
   const [scheduleId, setScheduleId] = useState(null);
-  
+
   /**
    * Updates the grade of a specific course in the schedule
    * @param {string|number} courseId - The ID of the course to update
@@ -37,15 +38,13 @@ export function ScheduleProvider({ children }) {
    * @returns {void} - Updates the schedule courses state with the new grade
    */
   function updateCourseGrade(courseId, newGradeValue) {
-    setScheduleCourses(prevCourses => 
-      prevCourses.map(course => 
-        course.id === courseId 
-          ? { ...course, grade: newGradeValue } 
-          : course
+    setScheduleCourses((prevCourses) =>
+      prevCourses.map((course) =>
+        course.id === courseId ? { ...course, grade: newGradeValue } : course
       )
     );
   }
-  
+
   /**
    * Updates the rating of a specific course in the schedule
    * @param {string|number} courseId - The ID of the course to update
@@ -53,15 +52,32 @@ export function ScheduleProvider({ children }) {
    * @returns {void} - Updates the schedule courses state with the new rating
    */
   function updateCourseRate(courseId, newRateValue) {
-    setScheduleCourses(prevCourses => 
-      prevCourses.map(course => 
-        course.id === courseId 
-          ? { ...course, rate: newRateValue } 
-          : course
+    setScheduleCourses((prevCourses) =>
+      prevCourses.map((course) =>
+        course.id === courseId ? { ...course, rate: newRateValue } : course
       )
     );
   }
-  
+  async function fetchCurrentScheduleGPA() {
+    if (!scheduleId) {
+      return;
+    }
+    setLoading(true);
+    try {
+      const endpoint = `/protected/viewGpa/${scheduleId}`;
+
+      const { data } = await axios.get(endpoint, {
+        withCredentials: true, // Same as `credentials: "include"`
+        headers: { "Content-Type": "application/json" },
+      });
+      setcurrentScheduleGPA(data.averageGPA);
+    } catch (err) {
+      toast.error("error");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   function resetSchedule() {
     setScheduleCourses(scheduleInitialState.scheduleCourses);
     setScheduleId(scheduleInitialState.scheduleId);
@@ -161,9 +177,9 @@ export function ScheduleProvider({ children }) {
     <ScheduleContext.Provider
       value={{
         scheduleCourses,
-        GPA,
+        currentScheduleGPA,
+        totalGPA,
         scheduleId,
-        setGPA,
         addCourseToSchedule,
         removeCoursefromSchedule,
         fetchScheduleCourses,
