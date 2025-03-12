@@ -1,9 +1,10 @@
-import { Star, MoreVertical, Pencil,SquarePlus } from "lucide-react";
+import { Star, MoreVertical, Pencil, SquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/authContext";
 import EditCourseModal from "../components/EditCourseModal";
 import { useSchedule } from "../context/ScheduleContext";
+import DifficultyProgressBar from "../components/DifficultyProgressBar";
 
 export default function Course({
   id,
@@ -17,10 +18,12 @@ export default function Course({
   const { user } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { addCourseToSchedule } = useSchedule();
+
   function handleAddCourseToSchedule() {
     addCourseToSchedule(id);
     setMenuOpen(false);
   }
+
   return (
     <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
       <div className="absolute top-3 right-3">
@@ -31,7 +34,7 @@ export default function Course({
           <MoreVertical size={20} />
         </button>
         {!user?.isAdmin && menuOpen && (
-          <div className="absolute right-0 mt-2 w-fit bg-white shadow-md rounded-md py-2 border border-gray-200">
+          <div className="absolute right-0 mt-2 w-fit z-10 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={handleAddCourseToSchedule}
               className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap"
@@ -42,7 +45,7 @@ export default function Course({
           </div>
         )}
         {user?.isAdmin && menuOpen && (
-          <div className="absolute right-0 mt-2 w-40 bg-white shadow-md rounded-md py-2 border border-gray-200">
+          <div className="absolute right-0 mt-2 w-40 z-10 bg-white shadow-md rounded-md py-2 border border-gray-200">
             <button
               onClick={() => {
                 setIsEditModalOpen(true);
@@ -77,11 +80,8 @@ export default function Course({
             {name}
           </h2>
           <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mt-2">
-            <div className="flex items-center text-yellow-500 mt-2 sm:mt-0">
-              <Star size={16} fill="currentColor" />
-              <span className="text-xs sm:text-sm font-medium text-gray-700 ml-1 mr-1">
-                {avgRating}
-              </span>
+            <div className="w-full mt-2 sm:mt-0">
+              <DifficultyProgressBar value={avgRating} />
             </div>
           </div>
         </div>
