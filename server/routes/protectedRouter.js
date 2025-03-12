@@ -505,7 +505,7 @@ router.post("/rateCourse", async (req, res) => {
 //=================== like =========================
 //==================================================
 
-router.post("/togoleLikeComment", async (req, res) => {
+router.post("/toggleLikeComment", async (req, res) => {
   const { commentId } = req.body;
   const studentId = req.user.id;
 
