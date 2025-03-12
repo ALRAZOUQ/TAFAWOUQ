@@ -3,15 +3,16 @@ import React, { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import 'react-confirm-alert/src/react-confirm-alert.css';
+import "react-confirm-alert/src/react-confirm-alert.css";
 import { useAuth } from "../context/authContext";
 import ConfirmDialog from "../components/ConfirmationComponent";
- import { useCourseData } from "../context/CourseContext";
+import { useCourseData } from "../context/CourseContext";
 // Components
 import CourseCard from "../components/coursePageComponents/CourseCard";
 import Comment from "../components/coursePageComponents/Comment";
 import FilterControls from "../components/coursePageComponents/FilterControls";
 import Pagination from "../components/Pagination";
+import WriteComment from "../components/coursePageComponents/WriteComment";
 
 const CoursePage = () => {
   // Hooks
@@ -27,7 +28,7 @@ const CoursePage = () => {
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false); 
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const commentsPerPage = 8;
 
   // API Calls
@@ -41,10 +42,13 @@ const CoursePage = () => {
     } catch (error) {
       if (error.response?.status === 404) {
         console.error("Error fetching course:", error);
-      setCourse(null);
+        setCourse(null);
         toast.error("المقرر غير موجود");
-       // navigate("/home");
-       setTimeout(() => {navigate("/home"); console.log("test")}, 0); // Defer navigation
+        // navigate("/home");
+        setTimeout(() => {
+          navigate("/home");
+          console.log("test");
+        }, 0); // Defer navigation
         return false;
       }
     }
@@ -53,7 +57,7 @@ const CoursePage = () => {
   const handleCourseUpdate = async () => {
     await fetchCourse();
   };
-  
+
   const fetchComments = async () => {
     try {
       const response = await axios.get(`auth/comments/${courseId}`);
@@ -75,40 +79,39 @@ const CoursePage = () => {
     try {
       const response = await axios.delete(`admin/deleteCourse/${courseId}`);
       if (response.status === 200) {
-        toast.success('تم حذف المقرر بنجاح');
+        toast.success("تم حذف المقرر بنجاح");
         deleteCourseFromContext(courseId); // Update the courses data (used in the search bar and the courses pageF)
         navigate("/home");
       }
     } catch (error) {
-      toast.error('حدث خطأ أثناء حذف المقرر');
-      console.error('Error deleting course:', error);
+      toast.error("حدث خطأ أثناء حذف المقرر");
+      console.error("Error deleting course:", error);
     } finally {
       setIsConfirmOpen(false);
-      
     }
   };
-  
+
   // Effects
   useEffect(() => {
     let mounted = true; // when we use strictmode in react to perform useeffect twice so i use mounted to track if the
-   // console.log("mounted1:",mounted)
+    // console.log("mounted1:",mounted)
     const loadData = async () => {
       if (mounted) {
-       // console.log("mounted2:",mounted)
+        // console.log("mounted2:",mounted)
         const courseResult = await fetchCourse(); // after fetch the course unmount happen i do not no why but for now it is work fine
-      //  console.log("mounted3:",mounted)
-    //    console.log("corses fetched")
-        if (courseResult !== false && mounted ) {
-      //    console.log("mounted4:",mounted)
-      //    console.log("comment fetched")
+        //  console.log("mounted3:",mounted)
+        //    console.log("corses fetched")
+        if (courseResult !== false && mounted) {
+          //    console.log("mounted4:",mounted)
+          //    console.log("comment fetched")
           await fetchComments();
         }
       }
     };
-    
+
     loadData();
     //console.log("mounted5:",mounted)
-    return () => { 
+    return () => {
       mounted = false;
     };
   }, [courseId]);
@@ -161,10 +164,10 @@ const CoursePage = () => {
   return (
     <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
       <div className="w-auto mx-auto container p-4">
-        <CourseCard 
-          course={course} 
-          isAdmin={user?.isAdmin} 
-          onDelete={() => setIsConfirmOpen(true)} 
+        <CourseCard
+          course={course}
+          isAdmin={user?.isAdmin}
+          onDelete={() => setIsConfirmOpen(true)}
           onCourseUpdate={handleCourseUpdate}
         />
         <ConfirmDialog
@@ -183,6 +186,7 @@ const CoursePage = () => {
           sortBy={sortBy}
           setSortBy={setSortBy}
         />
+        <WriteComment onSubmit={() => {}} />
 
         <div className="space-y-4">
           {currentComments.map((comment) => (
@@ -195,7 +199,6 @@ const CoursePage = () => {
           totalPages={totalPages}
           setCurrentPage={setCurrentPage}
         />
-        
       </div>
     </div>
   );
