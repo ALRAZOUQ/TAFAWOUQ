@@ -62,7 +62,7 @@ export function ScheduleProvider({ children }) {
     if (!scheduleId) {
       return;
     }
-    setLoading(true);
+
     try {
       const endpoint = `/protected/viewGpa/${scheduleId}`;
 
@@ -73,8 +73,19 @@ export function ScheduleProvider({ children }) {
       setcurrentScheduleGPA(data.averageGPA);
     } catch (err) {
       toast.error("error");
-    } finally {
-      setLoading(false);
+    }
+  }
+  async function fetchTotalGPA() {
+    try {
+      const endpoint = `/protected/viewGpa`;
+
+      const { data } = await axios.get(endpoint, {
+        withCredentials: true, // Same as `credentials: "include"`
+        headers: { "Content-Type": "application/json" },
+      });
+      setTotalGPA(data.averageGPA);
+    } catch (err) {
+      toast.error("error");
     }
   }
 
@@ -187,6 +198,8 @@ export function ScheduleProvider({ children }) {
         resetSchedule,
         updateCourseGrade,
         updateCourseRate,
+        fetchCurrentScheduleGPA,
+        fetchTotalGPA,
       }}
     >
       {children}
