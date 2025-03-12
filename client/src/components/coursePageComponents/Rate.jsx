@@ -3,6 +3,7 @@ import { CircleX } from "lucide-react";
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useSchedule } from "../../context/ScheduleContext";
+import { getColor } from "../../util/getColor";
 
 export default function Rate({ courseId, onClose, onCourseUpdate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -120,13 +121,7 @@ export default function Rate({ courseId, onClose, onCourseUpdate }) {
   );
 }
 
-const getColor = (rating) => {
-  if (rating <= 1) return "bg-green-400";
-  if (rating <= 2) return "bg-green-800";
-  if (rating <= 3) return "bg-orange-600";
-  if (rating <= 4) return "bg-red-500";
-  return "bg-red-600";
-};
+
 
 /**
  * Gets the current rate for a specific course from the courses array
