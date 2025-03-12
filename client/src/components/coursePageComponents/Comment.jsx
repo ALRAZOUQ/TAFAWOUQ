@@ -1,9 +1,17 @@
 import { useState, useEffect } from "react";
-import { ThumbsUp, MessageCircle, Tag } from "lucide-react";
+import {
+  ThumbsUp,
+  MessageCircle,
+  Tag,
+  ChevronDown,
+  ChevronUp,
+} from "lucide-react";
 import axios from "../../api/axios";
 
 export default function Comment({ comment, isReply = false }) {
   const [replies, setReplies] = useState([]);
+  const [showReplies, setShowReplies] = useState(false);
+
   useEffect(() => {
     async function fetchReplies(commentId) {
       try {
@@ -12,15 +20,16 @@ export default function Comment({ comment, isReply = false }) {
         });
 
         if (response.data.success) {
-          return setReplies(response.data.comments);
+          setReplies(response.data.comments);
         } else {
           throw new Error(response.data.message || "Failed to fetch replies");
         }
       } catch (error) {
         console.error("Error fetching replies:", error);
-        return setReplies([]);
+        setReplies([]);
       }
     }
+
     fetchReplies(comment.id);
   }, []);
 
@@ -53,25 +62,38 @@ export default function Comment({ comment, isReply = false }) {
 
       <p className="text-gray-700 py-2 text-right">{comment.content}</p>
 
-      <div className="flex gap-6 pt-2 border-t border-gray-100">
-        <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-          <ThumbsUp size={18} />
-          <span className="text-sm">{comment.numOfLikes} إعجاب</span>
-        </button>
-        {!isReply && (
+      <div className="flex justify-between items-center border-t border-gray-100 pt-2">
+        <div className="flex gap-6">
           <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-            <MessageCircle size={18} />
-            <span className="text-sm">{comment.numOfReplies} رد</span>
+            <ThumbsUp size={18} />
+            <span className="text-sm">{comment.numOfLikes} إعجاب</span>
+          </button>
+          {!isReply && (
+            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+              <MessageCircle size={18} />
+              <span className="text-sm">{comment.numOfReplies} رد</span>
+            </button>
+          )}
+          <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+            <Tag size={18} />
+            <span className="text-sm">{comment.tag}</span>
+          </button>
+        </div>
+
+        {/* Toggle Button for Replies */}
+        {replies.length > 0 && (
+          <button
+            onClick={() => setShowReplies(!showReplies)}
+            className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+          >
+            {showReplies ? "إخفاء الردود" : "عرض الردود"}
+            {showReplies ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
         )}
-        <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-          <Tag size={18} />
-          <span className="text-sm">{comment.tag}</span>
-        </button>
       </div>
 
-      {/* HASSAN: this code added here to render the replies we want to test if it will be asethetic or not */}
-      {replies && replies?.length > 0 && (
+      {/* Replies Section */}
+      {showReplies && replies.length > 0 && (
         <div className="mt-4 space-y-3">
           {replies.map((reply) => (
             <Comment key={reply.id} comment={reply} isReply={true} />
