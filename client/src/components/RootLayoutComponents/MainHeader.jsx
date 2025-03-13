@@ -64,13 +64,15 @@ export default function MainHeader() {
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
             <Link to={isAuthorized ? "/home" : "/"}>
-              <motion.img
-                src={main_logo}
-                className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 object-contain"
-                alt="TAFAWOUQ LOGO"
-                whileHover={{ scale: 1.1 }}
-                transition={{ type: "spring" }}
-              />
+              <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 flex items-center justify-center">
+                <motion.img
+                  src={main_logo}
+                  className="object-contain w-full h-full"
+                  alt="TAFAWOUQ LOGO"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ type: "spring" }}
+                />
+              </div>
             </Link>
           </h1>
 
@@ -85,7 +87,7 @@ export default function MainHeader() {
         {/* Navigation Links & Search Bar */}
         {isAuthorized && (
           <div
-            className={`md:flex md:items-center md:gap-8 md:mx-10 ${
+            className={`md:flex md:items-center md:gap-5 md:mx-5 ${
               isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
             } md:flex-row md:justify-center`}
           >
@@ -155,11 +157,11 @@ export default function MainHeader() {
         <div
           className={`w-full md:flex md:items-center md:gap-8  ${
             isOpen ? "flex flex-col gap-4" : "hidden"
-          } md:flex-row md:justify-center`}
+          } md:flex-row md:justify-start`}
         >
           {/*isAuthorized i why we need to hide the search bar if the user not logged in*/}
           {isAuthorized && (
-            <div className="w-full md:w-1/2 xl:w-1/2 relative">
+            <div className="w-full xl:w-1/2 relative">
               <div className="relative flex items-center">
                 <Search className="absolute left-3 h-5 w-5 text-gray-400" />
                 <input
