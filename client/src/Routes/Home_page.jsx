@@ -185,9 +185,8 @@ export default function HomePage() {
           </div>
         )}
       </div>
-      {/* GPA Section */}
+
       <div className="w-full max-w-screen-xl p-6 mt-6 relative">
-        {/* Button Container (Right-Aligned) */}
         <div className="w-full flex justify-start pr-2">
           <button
             className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 px-3 py-1 rounded-lg transition-all"
