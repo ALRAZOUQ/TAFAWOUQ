@@ -8,6 +8,7 @@ import {
   Send,
 } from "lucide-react";
 import axios from "../../api/axios";
+import { toast } from "react-toastify";
 
 // Separate the avatar component for reusability
 const UserAvatar = memo(({ name }) => (
@@ -49,12 +50,6 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
 
     setIsSubmitting(true);
     try {
-      console.log("Posting reply:", {
-        courseId,
-        parentId,
-        content: replyContent,
-        tag: "رد", // Default tag for replies
-      });
       const response = await axios.post("/protected/postComment", {
         courseId,
         parentCommentId: parseInt(parentId),
@@ -63,6 +58,7 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
       });
 
       if (response.data.success && response.data.comment) {
+        toast.success("تم إضافة الرد بنجاح");
         onReplyAdded(response.data.comment);
         setReplyContent("");
         onCancel();
@@ -83,15 +79,8 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
         onChange={(e) => setReplyContent(e.target.value)}
         disabled={isSubmitting}
       ></textarea>
-      <div className="flex justify-between mt-2">
-        <div>
-          <button
-            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            إلغاء
-          </button>
+      <div className=" mt-2">
+        <div className="flex flex-row gap-2">
           <button
             className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
               isSubmitting
@@ -103,13 +92,20 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
           >
             <Send size={14} /> إرسال
           </button>
+          <button
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            إلغاء
+          </button>
         </div>
       </div>
     </div>
   );
 };
 
-export default function Comment({ comment, isReply = false,courseId }) {
+export default function Comment({ comment, isReply = false, courseId }) {
   const [replies, setReplies] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
