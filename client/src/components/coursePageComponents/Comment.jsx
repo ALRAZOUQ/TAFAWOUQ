@@ -1,37 +1,191 @@
-import { useState, useEffect } from "react";
+import { useState, memo } from "react";
 import {
   ThumbsUp,
   MessageCircle,
   Tag,
   ChevronDown,
   ChevronUp,
+  Send,
 } from "lucide-react";
 import axios from "../../api/axios";
 
-export default function Comment({ comment, isReply = false }) {
+// Separate the avatar component for reusability
+const UserAvatar = memo(({ name }) => (
+  <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+    <span className="text-blue-600 font-semibold">{name.charAt(0)}</span>
+  </div>
+));
+
+// Separate the reply toggle button for cleaner code
+const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
+  <button
+    onClick={onClick}
+    className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+    disabled={isLoading}
+  >
+    {isLoading ? (
+      "جاري التحميل..."
+    ) : showReplies ? (
+      <>
+        إخفاء الردود
+        <ChevronUp size={18} />
+      </>
+    ) : (
+      <>
+        عرض الردود
+        <ChevronDown size={18} />
+      </>
+    )}
+  </button>
+);
+
+// Reply form component
+const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
+  const [replyContent, setReplyContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitReply = async () => {
+    if (!replyContent.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      console.log("Posting reply:", {
+        courseId,
+        parentId,
+        content: replyContent,
+        tag: "رد", // Default tag for replies
+      });
+      const response = await axios.post("/protected/postComment", {
+        courseId,
+        parentCommentId: parseInt(parentId),
+        content: replyContent,
+        tag: "رد", // Default tag for replies
+      });
+
+      if (response.data.success && response.data.comment) {
+        onReplyAdded(response.data.comment);
+        setReplyContent("");
+        onCancel();
+      }
+    } catch (error) {
+      console.error("Error posting reply:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 bg-gray-50 p-3 rounded-lg">
+      <textarea
+        className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+        placeholder="اكتب ردك هنا..."
+        value={replyContent}
+        onChange={(e) => setReplyContent(e.target.value)}
+        disabled={isSubmitting}
+      ></textarea>
+      <div className="flex justify-between mt-2">
+        <div>
+          <button
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            إلغاء
+          </button>
+          <button
+            className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
+              isSubmitting
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-blue-600"
+            }`}
+            onClick={handleSubmitReply}
+            disabled={isSubmitting || !replyContent.trim()}
+          >
+            <Send size={14} /> إرسال
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default function Comment({ comment, isReply = false,courseId }) {
   const [replies, setReplies] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
+  const [isLoadingReplies, setIsLoadingReplies] = useState(false);
+  const [repliesLoaded, setRepliesLoaded] = useState(false);
+  const [isLiked, setIsLiked] = useState(comment.isLiked);
+  const [likesCount, setLikesCount] = useState(parseInt(comment.numOfLikes));
+  const [isLikeLoading, setIsLikeLoading] = useState(false);
+  const [showReplyForm, setShowReplyForm] = useState(false);
 
-  useEffect(() => {
-    async function fetchReplies(commentId) {
-      try {
-        const response = await axios.get(`/auth/replies/${commentId}`, {
-          withCredentials: true,
-        });
-
-        if (response.data.success) {
-          setReplies(response.data.comments);
-        } else {
-          throw new Error(response.data.message || "Failed to fetch replies");
-        }
-      } catch (error) {
-        console.error("Error fetching replies:", error);
-        setReplies([]);
-      }
+  const handleToggleReplies = async () => {
+    if (showReplies) {
+      setShowReplies(false);
+      return;
     }
 
-    fetchReplies(comment.id);
-  }, []);
+    if (repliesLoaded) {
+      setShowReplies(true);
+      return;
+    }
+
+    setIsLoadingReplies(true);
+    try {
+      const response = await axios.get(`/auth/replies/${comment.id}`);
+
+      if (response.data.success) {
+        setReplies(response.data.comments);
+        setRepliesLoaded(true);
+      } else {
+        throw new Error(response.data.message || "Failed to fetch replies");
+      }
+    } catch (error) {
+      console.error("Error fetching replies:", error);
+      setReplies([]);
+    } finally {
+      setIsLoadingReplies(false);
+      setShowReplies(true);
+    }
+  };
+
+  // Handle like toggle
+  const handleLikeToggle = async () => {
+    if (isLikeLoading) return;
+
+    setIsLikeLoading(true);
+    try {
+      const response = await axios.post("/protected/toggleLikeComment", {
+        commentId: comment.id,
+      });
+
+      if (response.data.success) {
+        // Toggle like state and update count
+        setIsLiked(!isLiked);
+        setLikesCount((prevCount) => (isLiked ? prevCount - 1 : prevCount + 1));
+      }
+    } catch (error) {
+      console.error("Error toggling like:", error);
+    } finally {
+      setIsLikeLoading(false);
+    }
+  };
+
+  // Handle adding a new reply
+  const handleReplyAdded = (newReply) => {
+    setReplies((prev) => [newReply, ...prev]);
+
+    // Update reply count
+    comment.numOfReplies = (parseInt(comment.numOfReplies) || 0) + 1;
+
+    // Make sure replies are visible after adding a new one
+    if (!showReplies) {
+      setShowReplies(true);
+    }
+
+    // Mark replies as loaded
+    setRepliesLoaded(true);
+  };
 
   return (
     <div
@@ -41,11 +195,7 @@ export default function Comment({ comment, isReply = false }) {
     >
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-            <span className="text-blue-600 font-semibold">
-              {comment.authorName.charAt(0)}
-            </span>
-          </div>
+          <UserAvatar name={comment.authorName} />
           <div>
             <h3 className="font-semibold text-gray-800">
               {comment.authorName}
@@ -64,12 +214,21 @@ export default function Comment({ comment, isReply = false }) {
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
         <div className="flex gap-6">
-          <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+          <button
+            className={`flex items-center gap-2 ${
+              isLiked ? "text-blue-600" : "text-gray-600"
+            } hover:text-blue-600 transition-colors`}
+            onClick={handleLikeToggle}
+            disabled={isLikeLoading}
+          >
             <ThumbsUp size={18} />
-            <span className="text-sm">{comment.numOfLikes} إعجاب</span>
+            <span className="text-sm">{likesCount} إعجاب</span>
           </button>
           {!isReply && (
-            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+            <button
+              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+              onClick={() => setShowReplyForm(!showReplyForm)}
+            >
               <MessageCircle size={18} />
               <span className="text-sm">{comment.numOfReplies} رد</span>
             </button>
@@ -80,17 +239,24 @@ export default function Comment({ comment, isReply = false }) {
           </button>
         </div>
 
-        {/* Toggle Button for Replies */}
-        {replies.length > 0 && (
-          <button
-            onClick={() => setShowReplies(!showReplies)}
-            className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
-          >
-            {showReplies ? "إخفاء الردود" : "عرض الردود"}
-            {showReplies ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </button>
+        {comment.numOfReplies > 0 && (
+          <ReplyToggleButton
+            isLoading={isLoadingReplies}
+            showReplies={showReplies}
+            onClick={handleToggleReplies}
+          />
         )}
       </div>
+
+      {/* Reply Form */}
+      {showReplyForm && !isReply && (
+        <ReplyForm
+          parentId={comment.id}
+          onReplyAdded={handleReplyAdded}
+          onCancel={() => setShowReplyForm(false)}
+          courseId={courseId}
+        />
+      )}
 
       {/* Replies Section */}
       {showReplies && replies.length > 0 && (

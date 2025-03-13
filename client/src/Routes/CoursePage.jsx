@@ -186,11 +186,23 @@ const CoursePage = () => {
           sortBy={sortBy}
           setSortBy={setSortBy}
         />
-        <WriteComment onSubmit={() => {}} />
+        
+        <WriteComment 
+          courseId={courseId} 
+          onCommentAdded={(newComment) => {
+            // Add the new comment to the comments state
+            if (newComment) {
+              setComments(prevComments => [newComment, ...prevComments]);
+            } else {
+              // If no comment is provided, refetch all comments
+              fetchComments();
+            }
+          }} 
+        />
 
         <div className="space-y-4">
           {currentComments.map((comment) => (
-            <Comment key={comment.id} comment={comment} />
+            <Comment key={comment.id} comment={comment} courseId={courseId} />
           ))}
         </div>
 
