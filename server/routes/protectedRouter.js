@@ -652,4 +652,58 @@ router.get("/viewGpa/:scheduleId", async (req, res) => {
   }
 });
 
+//==================================================
+//=================== comment ======================
+//==================================================
+
+router.post("/postComment", async (req, res) => {
+  try {
+    const { courseId, content, tag, parentCommentId } = req.body;
+    const studentId = req.user.id;
+    const anotherName = req.user.name;
+    if (!courseId || !content || !tag) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters (studentId, courseId, content).",
+      });
+    }
+
+    let commentResult;
+    if (parentCommentId) {
+      // If parentCommentId is provided, create a reply
+      commentResult = await db.query(
+        `INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [studentId, courseId, content, tag, parentCommentId]
+      );
+    } else {
+      // If parentCommentId is not provided, create a regular comment
+      commentResult = await db.query(
+        `INSERT INTO public.comment (authorid, courseid, content, tag) VALUES ($1, $2, $3, $4) RETURNING *`,
+        [studentId, courseId, content, tag]
+      );
+    }
+    const newComeent = {
+      id: commentResult.rows[0].id,
+      content: commentResult.rows[0].content,
+      authorId: commentResult.rows[0].authorid,
+      authorName: anotherName,
+      tag: commentResult.rows[0].tag,
+      creationDate: commentResult.rows[0].creationdate,
+      numOfLikes: 0,
+      numOfReplies: 0,
+      isLiked: false,
+    };
+
+    
+    res.status(201).json({
+      success: true,
+      message: "Comment created successfully.",
+      comment: newComeent,
+    });
+  } catch (error) {
+    console.error("Error creating comment:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 export default router;
