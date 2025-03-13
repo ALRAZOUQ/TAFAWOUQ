@@ -340,17 +340,17 @@ router.delete("/deleteCourseFromSchedule", async (req, res) => {
       [scheduleId, courseId]
     );
 
-  // Delete rate
-  await db.query(
-    `DELETE FROM rate WHERE creatorId = $1 AND courseId = $2`,
-    [userId, courseId]
-  );
-  
-  // Delete grade
-  await db.query(
-    `DELETE FROM grade WHERE creatorId = $1 AND courseId = $2`,
-    [userId, courseId]
-  );
+    // Delete rate
+    await db.query(`DELETE FROM rate WHERE creatorId = $1 AND courseId = $2`, [
+      userId,
+      courseId,
+    ]);
+
+    // Delete grade
+    await db.query(`DELETE FROM grade WHERE creatorId = $1 AND courseId = $2`, [
+      userId,
+      courseId,
+    ]);
 
     res.status(200).json({
       success: true,
