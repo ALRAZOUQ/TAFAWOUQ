@@ -238,14 +238,16 @@ export default function MainHeader() {
             </Link>
           )}
         </div>
-        <button
-          onClick={handleSearching}
-          className={`hidden md:block md:ml-12 ${
-            isSearching ? "rounded-xl bg-gray-100 hover:bg-gray-200 w-24" : ""
-          }`}
-        >
-          {isSearching ? "إلغاء" : <Search size={18} />}
-        </button>
+        {isAuthorized && (
+          <button
+            onClick={handleSearching}
+            className={`hidden md:block md:ml-12 ${
+              isSearching ? "rounded-xl bg-gray-100 hover:bg-gray-200 w-24" : ""
+            }`}
+          >
+            {isSearching ? "إلغاء" : <Search size={18} />}
+          </button>
+        )}
         <ThreeDotMenu />
       </nav>
 
