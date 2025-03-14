@@ -8,6 +8,7 @@ export default function Landing() {
     <div className="bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200 text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm">
       <div className="w-full max-w-[400px] min-w-[100px] mx-auto mt-12">
         <motion.img
+          loading="lazy"
           src={main_logo}
           alt="KSU logo"
           className="w-full h-auto"

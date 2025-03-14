@@ -1,4 +1,4 @@
-import { Star, MoreVertical, Pencil, SquarePlus } from "lucide-react";
+import { MoreVertical, Pencil, SquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useAuth } from "../context/authContext";

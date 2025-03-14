@@ -4,10 +4,10 @@ import Signup from "./Routes/Signup";
 import Login from "./Routes/Login";
 // import Error404Page from "./Routes/Error";
 import Landing from "./Routes/Landing";
-import Home_page from "./Routes/Home_page";
+// import Home_page from "./Routes/Home_page";
 import RootLayout from "./Routes/RootLayout";
 // import CoursePage from "./Routes/CoursePage";
-import AdminHomePage from "./Routes/AdminHomePage";
+// import AdminHomePage from "./Routes/AdminHomePage";
 import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
@@ -16,6 +16,8 @@ import "react-toastify/dist/ReactToastify.css"; // Import CSS
 const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
 const CoursePage = lazy(() => import("./Routes/CoursePage"));
 const Error404Page = lazy(() => import("./Routes/Error"));
+const Home_page = lazy(() => import("./Routes/Home_page"));
+const AdminHomePage = lazy(() => import("./Routes/AdminHomePage"));
 // ✅ Define Routes
 const router = createBrowserRouter([
   {
@@ -25,7 +27,7 @@ const router = createBrowserRouter([
     children: [
       { path: "home", element: <Home_page /> },
       { index: true, element: <Landing /> },
-      { path: "courses", element: <CoursesPage /> }, // ✅ Lazy-loaded route
+      { path: "courses", element: <CoursesPage /> },
       { path: "admin/admin-home", element: <AdminHomePage /> },
       { path: "courses/:courseId", element: <CoursePage /> },
       { path: "mypreviousschedules", element: <CoursePage /> },
