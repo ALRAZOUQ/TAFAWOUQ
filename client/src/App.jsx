@@ -1,19 +1,21 @@
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import Signup from "./Routes/Signup";
 import Login from "./Routes/Login";
 import Error404Page from "./Routes/Error";
 import Landing from "./Routes/Landing";
 import Home_page from "./Routes/Home_page";
 import RootLayout from "./Routes/RootLayout";
-import CoursesPage from "./Routes/CoursesPage";
-import CoursePage from "./Routes/CoursePage";
+// import CoursePage from "./Routes/CoursePage";
 import AdminHomePage from "./Routes/AdminHomePage";
 import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
-import DummyRoute from "./Routes/dummyRoute";
 
+// HASSAN: lazy to optimize the performance for the app and load the page in the background
+const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
+const CoursePage = lazy(() => import("./Routes/CoursePage"));
+// ✅ Define Routes
 const router = createBrowserRouter([
   {
     path: "/",
@@ -22,12 +24,11 @@ const router = createBrowserRouter([
     children: [
       { path: "home", element: <Home_page /> },
       { index: true, element: <Landing /> },
-      { path: "courses", element: <CoursesPage /> },
+      { path: "courses", element: <CoursesPage /> }, // ✅ Lazy-loaded route
       { path: "admin/admin-home", element: <AdminHomePage /> },
       { path: "courses/:courseId", element: <CoursePage /> },
       { path: "mypreviousschedules", element: <CoursePage /> },
       { path: "myquizzes", element: <CoursePage /> },
-      { path: "dummy", element: <DummyRoute /> },
     ],
   },
   { path: "signup", element: <Signup /> },
@@ -38,7 +39,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 1000); // Simulate a small delay
+    const timer = setTimeout(() => setLoading(false), 500); // Simulate short loading delay
     return () => clearTimeout(timer);
   }, []);
 
@@ -48,15 +49,15 @@ function App() {
         <LoadingScreen />
       ) : (
         <>
-          <div
-            id="loadingSpinnerContainer"
-            className=" hidden w-screen h-screen fixed z-50">
-            <span className="loadingSpinner"></span>
-          </div>
-          <RouterProvider router={router} />
+          {/* ✅ Suspense wraps the entire router for all lazy-loaded routes */}
+          <Suspense fallback={<LoadingScreen />}>
+            <RouterProvider router={router} />
+          </Suspense>
+
+          {/* ✅ Toast notifications */}
           <ToastContainer
             position="top-center"
-            autoClose={3000}
+            autoClose={2000}
             hideProgressBar={true}
             newestOnTop={false}
             closeOnClick
