@@ -57,8 +57,7 @@ export default function FilterControls({
         ))}
       </div>
 
-      {/* Sorting Options */}
-      <div className="w-full md:w-1/3 min-h-[56px] flex flex-wrap gap-2 justify-center md:justify-start">
+      <div className="w-full md:w-1/3 min-h-[56px] flex flex-wrap gap-2 justify-center md:justify-start md:items-start">
         {sortValues.map(({ label, value }) => (
           <button
             key={value}

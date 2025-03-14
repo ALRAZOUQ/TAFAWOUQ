@@ -4,9 +4,9 @@ import { Menu, X, Search } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
 import { useCourseData } from "../../context/CourseContext";
 import { useAuth } from "../../context/authContext";
-import ThreeDotMenu from "./ThreeDotMenu";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
+import ThreeDotMenu from "./ThreeDotMenu";
 
 export default function MainHeader() {
   const navigate = useNavigate();
@@ -15,6 +15,11 @@ export default function MainHeader() {
   const [isOpen, setIsOpen] = useState(false);
   const [filterdCourses, setfilterdCourses] = useState(null);
   const [showResults, setShowResults] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
+
+  function handleSearching() {
+    setIsSearching(!isSearching);
+  }
 
   // Use the context to get courses data
   const { coursesData, fetchCoursesContext } = useCourseData();
@@ -25,8 +30,6 @@ export default function MainHeader() {
       fetchCoursesContext();
     }
   }, [coursesData]);
-
-  /*note if the admin create new course we have to update the data stored in the context CourseContext */
 
   const onSearch = (e) => {
     const { value } = e.target;
@@ -58,8 +61,8 @@ export default function MainHeader() {
   };
 
   return (
-    <div className="w-full  shadow-md z-50 bg-transparent mb-0">
-      <nav className="p-4 flex flex-col md:flex-row items-center justify-between  bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px]">
+    <div className="w-full shadow-md z-50 bg-transparent mb-0">
+      <nav className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px]">
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
@@ -84,7 +87,7 @@ export default function MainHeader() {
           </button>
         </div>
 
-        {/* Navigation Links & Search Bar */}
+        {/* Navigation Links */}
         {isAuthorized && (
           <div
             className={`md:flex md:items-center md:gap-5 md:mx-5 ${
@@ -154,14 +157,13 @@ export default function MainHeader() {
           </div>
         )}
 
-        <div
-          className={`w-full md:flex md:items-center md:gap-8  ${
-            isOpen ? "flex flex-col gap-4" : "hidden"
-          } md:flex-row md:justify-start`}
-        >
-          {/*isAuthorized i why we need to hide the search bar if the user not logged in*/}
-          {isAuthorized && (
-            <div className="w-full xl:w-1/2 relative">
+        {isAuthorized && (
+          <div
+            className={`w-full md:hidden ${
+              isOpen ? "flex flex-col gap-4 mb-4" : "hidden"
+            }`}
+          >
+            <div className="w-full relative">
               <div className="relative flex items-center">
                 <Search className="absolute left-3 h-5 w-5 text-gray-400" />
                 <input
@@ -189,11 +191,14 @@ export default function MainHeader() {
                             className="px-3 py-2 hover:bg-gray-100 group/searchResult"
                           >
                             <Link
-                              onClick={() => setSearchInput("")}
+                              onClick={() => {
+                                setIsSearching(false);
+                                setSearchInput("");
+                              }}
                               to={`/courses/${course.id}`}
-                              className="block text-lg  "
+                              className="block text-lg"
                             >
-                              <p className="text-gray-700 group-hover/searchResult:text-blue-500 ">
+                              <p className="text-gray-700 group-hover/searchResult:text-blue-500">
                                 {course.name} |{" "}
                                 <span className="font-bold text-gray-900">
                                   {course.code}
@@ -208,13 +213,18 @@ export default function MainHeader() {
                 </div>
               )}
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Sign Up Button mobile */}
-
+        {/* Sign Up Button mobile */}
+        <div
+          className={`w-full md:flex md:items-center md:gap-8 ${
+            isOpen ? "flex flex-col gap-4" : "hidden"
+          } md:flex-row md:justify-start`}
+        >
           {isAuthorized ? (
             <button
-              className=" md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
               onClick={handleLogout}
             >
               تسجيل الخروج
@@ -222,14 +232,89 @@ export default function MainHeader() {
           ) : (
             <Link
               to="/login"
-              className="md:hidden  bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
             >
               تسجيل الدخول
             </Link>
           )}
         </div>
+        <button
+          onClick={handleSearching}
+          className={`hidden md:block md:ml-12 ${
+            isSearching ? "rounded-xl bg-gray-100 hover:bg-gray-200 w-24" : ""
+          }`}
+        >
+          {isSearching ? "إلغاء" : <Search size={18} />}
+        </button>
         <ThreeDotMenu />
       </nav>
+
+      {isAuthorized && isSearching && (
+        <motion.div
+          initial={{ opacity: 0, y: -100 }} // Start above the navigation bar
+          animate={{ opacity: 1, y: 0 }} // Slide down to its position
+          exit={{ opacity: 0, y: -100 }} // Slide back up when exiting
+          transition={{ duration: 0.2, ease: "easeOut" }}
+          className="hidden md:flex md:justify-center md:items-center p-2 border-b border-b-TAF-100 bg-TAF-200 z-50 
+               fixed top-[100px] left-0 w-full shadow-md" // Position below the navigation bar
+        >
+          <div className="w-3/5 relative">
+            <div className="relative flex items-center">
+              <Search className="absolute left-3 h-5 w-5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="إبحث عن المواد"
+                className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none 
+                     focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                value={searchInput}
+                onChange={onSearch}
+                onFocus={() => setShowResults(searchInput.length > 0)}
+                onBlur={() => setTimeout(() => setShowResults(false), 200)}
+              />
+            </div>
+            <div className="relative">
+              <button
+                onClick={handleSearching}
+                className="hidden md:absolute md:top-1 md:right-1"
+              >
+                <X size={18} />
+              </button>
+            </div>
+            {/* Search Results */}
+            {showResults && (
+              <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
+                <div className="max-h-60 overflow-y-auto">
+                  {filterdCourses?.length === 0 ? (
+                    <div className="p-3 text-gray-500">لا توجد نتائج</div>
+                  ) : (
+                    <ul className="py-2">
+                      {filterdCourses?.map((course) => (
+                        <li
+                          key={course.id}
+                          className="px-3 py-2 hover:bg-gray-100 group/searchResult"
+                        >
+                          <Link
+                            onClick={() => setSearchInput("")}
+                            to={`/courses/${course.id}`}
+                            className="block text-lg"
+                          >
+                            <p className="text-gray-700 group-hover/searchResult:text-blue-500">
+                              {course.name} |{" "}
+                              <span className="font-bold text-gray-900">
+                                {course.code}
+                              </span>
+                            </p>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
