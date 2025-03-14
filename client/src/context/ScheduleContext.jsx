@@ -8,16 +8,17 @@ import {
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 const scheduleInitialState = {
-  GPA: 0.0,
+  totalGPA: 0.0,
+  currentScheduleGPA: 0.0,
   scheduleId: null,
   scheduleCourses: [],
 };
 
 const ScheduleContext = createContext({
   scheduleCourses: [],
-  GPA: 0.0,
+  totalGPAGPA: 0.0,
+  currentScheduleGPA: 0.0,
   scheduleId: null,
-  setGPA: () => {},
   addCourseToSchedule: () => {},
   removeCoursefromSchedule: () => {},
   fetchScheduleCourses: () => {},
@@ -92,7 +93,8 @@ export function ScheduleProvider({ children }) {
   function resetSchedule() {
     setScheduleCourses(scheduleInitialState.scheduleCourses);
     setScheduleId(scheduleInitialState.scheduleId);
-    setGPA(scheduleInitialState.GPA);
+    setcurrentScheduleGPA(scheduleInitialState.currentScheduleGPA);
+    setTotalGPA(scheduleInitialState.totalGPA);
   }
 
   const fetchScheduleCourses = useCallback(async () => {
