@@ -2,7 +2,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense } from "react";
 import Signup from "./Routes/Signup";
 import Login from "./Routes/Login";
-import Error404Page from "./Routes/Error";
+// import Error404Page from "./Routes/Error";
 import Landing from "./Routes/Landing";
 import Home_page from "./Routes/Home_page";
 import RootLayout from "./Routes/RootLayout";
@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css"; // Import CSS
 // HASSAN: lazy to optimize the performance for the app and load the page in the background
 const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
 const CoursePage = lazy(() => import("./Routes/CoursePage"));
+const Error404Page = lazy(() => import("./Routes/Error"));
 // ✅ Define Routes
 const router = createBrowserRouter([
   {
