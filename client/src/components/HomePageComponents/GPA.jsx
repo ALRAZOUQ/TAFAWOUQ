@@ -1,6 +1,4 @@
-import { useState, useEffect } from "react";
-import axios from "../api/axios";
-export default function GPA({ heading, value=0 }) {
+export default function GPA({ heading, value = 0 }) {
   // HASSAN:color i changable you can change if you don't like it
 
   return (

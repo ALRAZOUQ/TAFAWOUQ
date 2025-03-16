@@ -1,10 +1,10 @@
 import { MoreVertical, Pencil, SquarePlus } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { useAuth } from "../context/authContext";
-import EditCourseModal from "../components/EditCourseModal";
-import { useSchedule } from "../context/ScheduleContext";
-import DifficultyProgressBar from "../components/DifficultyProgressBar";
+import { useAuth } from "../../context/authContext";
+import EditCourseModal from "../EditCourseModal";
+import { useSchedule } from "../../context/ScheduleContext";
+import DifficultyProgressBar from "../DifficultyProgressBar";
 
 export default function Course({
   id,
