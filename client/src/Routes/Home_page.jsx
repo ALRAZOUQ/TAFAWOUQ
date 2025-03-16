@@ -3,11 +3,19 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { FiMoreVertical } from "react-icons/fi";
-import { Trash2, ClipboardList, BarChart, Eye, EyeOff } from "lucide-react";
+import {
+  Trash2,
+  ClipboardList,
+  BarChart,
+  Eye,
+  EyeOff,
+  BookOpen,
+} from "lucide-react";
 import EnterGrade from "../components/coursePageComponents/EnterGrade";
 import Rate from "../components/coursePageComponents/Rate";
 import GPA from "../components/HomePageComponents/GPA";
 import CourseCardSchedule from "../components/HomePageComponents/CourseCardSchedule";
+import ThreeDotMenuButton from "../components/ThreeDotMenuButton";
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
@@ -95,33 +103,43 @@ export default function HomePage() {
 
                   {menuOpen === course.id && (
                     <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-44 z-10">
-                      <Link
-                        to={`/courses/${course.id}`}
-                        className="block px-4 py-2 text-gray-700 hover:bg-gray-100 text-right"
+                      <ThreeDotMenuButton
+                        textColor={"text-gray-500"}
+                        clickHandler={() => {}}
+                        hoverColor={"hover:text-gray-700"}
                       >
-                        عرض المادة
-                      </Link>
-                      <button
-                        onClick={() => handleRemoveCourse(course.id)}
-                        className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-red-600 hover:bg-gray-100 hover:text-red-700"
-                      >
-                        <Trash2 size={16} />
-                        إزالة من الجدول
-                      </button>
-                      <button
-                        onClick={() => handleRating(course.id)}
-                        className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-50 transition-colors"
+                        <Link
+                          to={`/courses/${course.id}`}
+                          className="flex items-center gap-2 text-right whitespace-nowrap"
+                        >
+                          <BookOpen size={20} /> عرض المادة
+                        </Link>
+                      </ThreeDotMenuButton>
+
+                      <ThreeDotMenuButton
+                        textColor={"text-gray-500"}
+                        clickHandler={() => handleRating(course.id)}
+                        hoverColor={"hover:text-gray-700"}
                       >
                         <BarChart size={20} />
                         قيّم صعوبة المقرر
-                      </button>
-                      <button
-                        onClick={() => handleGrading(course.id)}
-                        className="flex items-center gap-2 whitespace-nowrap px-4 py-2 w-full text-gray-500 hover:text-gray-700 p-2 hover:bg-gray-50 transition-colors"
+                      </ThreeDotMenuButton>
+                      <ThreeDotMenuButton
+                        textColor={"text-gray-500"}
+                        clickHandler={() => handleGrading(course.id)}
+                        hoverColor={"hover:text-gray-700"}
                       >
                         <ClipboardList size={20} />
                         أضف درجتك
-                      </button>
+                      </ThreeDotMenuButton>
+                      <ThreeDotMenuButton
+                        textColor={"text-red-500"}
+                        clickHandler={() => handleRemoveCourse(course.id)}
+                        hoverColor={"hover:text-red-600"}
+                      >
+                        <Trash2 size={20} />
+                        إزالة من الجدول
+                      </ThreeDotMenuButton>
                     </div>
                   )}
 
