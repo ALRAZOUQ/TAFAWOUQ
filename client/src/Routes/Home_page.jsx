@@ -2,20 +2,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
-import { FiMoreVertical } from "react-icons/fi";
-import {
-  Trash2,
-  ClipboardList,
-  BarChart,
-  Eye,
-  EyeOff,
-  BookOpen,
-} from "lucide-react";
-import EnterGrade from "../components/coursePageComponents/EnterGrade";
-import Rate from "../components/coursePageComponents/Rate";
+import { Eye, EyeOff } from "lucide-react";
+
 import GPA from "../components/HomePageComponents/GPA";
 import CourseCardSchedule from "../components/HomePageComponents/CourseCardSchedule";
-import ThreeDotMenuButton from "../components/ThreeDotMenuButton";
+
 export default function HomePage() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
@@ -24,16 +15,12 @@ export default function HomePage() {
     fetchScheduleCourses,
     scheduleId,
     createSchedule,
-    removeCoursefromSchedule,
     fetchTotalGPA,
     fetchCurrentScheduleGPA,
     currentScheduleGPA,
     totalGPA,
   } = useSchedule();
 
-  const [menuOpen, setMenuOpen] = useState(null);
-  const [ratingCourseId, setRatingCourseId] = useState(null);
-  const [gradingCourseId, setGradingCourseId] = useState(null);
   const [showGPA, setShowGPA] = useState(true);
 
   useEffect(() => {
@@ -58,29 +45,6 @@ export default function HomePage() {
     }
   }
 
-  function toggleMenu(courseId) {
-    setMenuOpen(menuOpen === courseId ? null : courseId);
-    setRatingCourseId(null);
-    setGradingCourseId(null);
-  }
-
-  function handleRating(courseId) {
-    setRatingCourseId(courseId);
-    setGradingCourseId(null);
-    setMenuOpen(null);
-  }
-
-  function handleGrading(courseId) {
-    setGradingCourseId(courseId);
-    setRatingCourseId(null);
-    setMenuOpen(null);
-  }
-
-  function handleRemoveCourse(courseId) {
-    removeCoursefromSchedule(courseId);
-    fetchScheduleCourses();
-    setMenuOpen(null);
-  }
   function handleShowGPA() {
     setShowGPA((showGPA) => !showGPA);
   }
@@ -93,73 +57,7 @@ export default function HomePage() {
           scheduleCourses.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 flex-1 text-left">
               {scheduleCourses.map((course) => (
-                <CourseCardSchedule course={course} key={course.id}>
-                  <button
-                    onClick={() => toggleMenu(course.id)}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
-                  >
-                    <FiMoreVertical size={20} />
-                  </button>
-
-                  {menuOpen === course.id && (
-                    <div className="absolute top-8 right-2 bg-white shadow-md rounded-lg w-44 z-10">
-                      <ThreeDotMenuButton
-                        textColor={"text-gray-500"}
-                        clickHandler={() => {}}
-                        hoverColor={"hover:text-gray-700"}
-                      >
-                        <Link
-                          to={`/courses/${course.id}`}
-                          className="flex items-center gap-2 text-right whitespace-nowrap"
-                        >
-                          <BookOpen size={20} /> عرض المادة
-                        </Link>
-                      </ThreeDotMenuButton>
-
-                      <ThreeDotMenuButton
-                        textColor={"text-gray-500"}
-                        clickHandler={() => handleRating(course.id)}
-                        hoverColor={"hover:text-gray-700"}
-                      >
-                        <BarChart size={20} />
-                        قيّم صعوبة المقرر
-                      </ThreeDotMenuButton>
-                      <ThreeDotMenuButton
-                        textColor={"text-gray-500"}
-                        clickHandler={() => handleGrading(course.id)}
-                        hoverColor={"hover:text-gray-700"}
-                      >
-                        <ClipboardList size={20} />
-                        أضف درجتك
-                      </ThreeDotMenuButton>
-                      <ThreeDotMenuButton
-                        textColor={"text-red-500"}
-                        clickHandler={() => handleRemoveCourse(course.id)}
-                        hoverColor={"hover:text-red-600"}
-                      >
-                        <Trash2 size={20} />
-                        إزالة من الجدول
-                      </ThreeDotMenuButton>
-                    </div>
-                  )}
-
-                  {ratingCourseId === course.id && (
-                    <div className="fixed inset-0 flex items-center justify-center z-50">
-                      <Rate
-                        onClose={() => setRatingCourseId(null)}
-                        courseId={course.id}
-                      />
-                    </div>
-                  )}
-                  {gradingCourseId === course.id && (
-                    <div className="fixed inset-0 flex items-center justify-center z-50">
-                      <EnterGrade
-                        onClose={() => setGradingCourseId(null)}
-                        courseId={course.id}
-                      />
-                    </div>
-                  )}
-                </CourseCardSchedule>
+                <CourseCardSchedule course={course} key={course.id} />
               ))}
             </div>
           ) : (

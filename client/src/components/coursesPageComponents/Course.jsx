@@ -5,6 +5,8 @@ import { useAuth } from "../../context/authContext";
 import EditCourseModal from "../EditCourseModal";
 import { useSchedule } from "../../context/ScheduleContext";
 import DifficultyProgressBar from "../DifficultyProgressBar";
+import KababMenu from "../KababMenu";
+import ThreeDotMenuButton from "../ThreeDotMenuButton";
 
 export default function Course({
   id,
@@ -26,39 +28,33 @@ export default function Course({
 
   return (
     <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
-      <div className="absolute top-3 right-3">
-        <button
-          onClick={() => setMenuOpen(!menuOpen)}
-          className="p-1 rounded-full hover:bg-gray-100"
-        >
-          <MoreVertical size={20} />
-        </button>
-        {!user?.isAdmin && menuOpen && (
-          <div className="absolute right-0 mt-2 w-fit z-10 bg-white shadow-md rounded-md py-2 border border-gray-200">
-            <button
-              onClick={handleAddCourseToSchedule}
-              className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 whitespace-nowrap"
-            >
-              <SquarePlus size={20} />
-              أضف المادة الى الجدول
-            </button>
-          </div>
+      <KababMenu
+        setMenuOpen={setMenuOpen}
+        position={"absolute top-3 right-3"}
+        menuOpen={menuOpen}
+      >
+        {!user?.isAdmin && (
+          <ThreeDotMenuButton
+            clickHandler={handleAddCourseToSchedule}
+            purpose={"normal"}
+          >
+            <SquarePlus size={20} />
+            أضف المادة الى الجدول
+          </ThreeDotMenuButton>
         )}
-        {user?.isAdmin && menuOpen && (
-          <div className="absolute right-0 mt-2 w-40 z-10 bg-white shadow-md rounded-md py-2 border border-gray-200">
-            <button
-              onClick={() => {
-                setIsEditModalOpen(true);
-                setMenuOpen(false);
-              }}
-              className="flex items-center gap-2 w-full text-right px-4 py-2 text-sm text-orange-400 hover:bg-gray-100"
-            >
-              <Pencil size={16} />
-              <span>تعديل المادة</span>
-            </button>
-          </div>
+        {user?.isAdmin && (
+          <ThreeDotMenuButton
+            clickHandler={() => {
+              setIsEditModalOpen(true);
+              setMenuOpen(false);
+            }}
+            purpose={"warning"}
+          >
+            <Pencil size={16} />
+            تعديل المادة
+          </ThreeDotMenuButton>
         )}
-      </div>
+      </KababMenu>
       <EditCourseModal
         id={id}
         isOpen={isEditModalOpen}
