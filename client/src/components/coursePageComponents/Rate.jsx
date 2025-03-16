@@ -33,6 +33,7 @@ export default function Rate({ courseId, onClose, onCourseUpdate }) {
 
       if (response.status === 200) {
         toast.success("تم التقييم بنجاح");
+        onClose();
         updateCourseRate(courseId, rating); //will update the rate of the course inside scheduleContext
         onCourseUpdate && onCourseUpdate(); //will update the course rate inside the course card(refetch the course data) only used in the course card
       } else {
@@ -120,8 +121,6 @@ export default function Rate({ courseId, onClose, onCourseUpdate }) {
     </div>
   );
 }
-
-
 
 /**
  * Gets the current rate for a specific course from the courses array
