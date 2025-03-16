@@ -17,7 +17,7 @@ const Comment = lazy(() =>
 const FilterControls = lazy(() =>
   import("../components/coursePageComponents/FilterControls")
 );
-const Pagination = lazy(() => import("../components/Pagination"));
+const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 const WriteComment = lazy(() =>
   import("../components/coursePageComponents/WriteComment")
 );
@@ -45,7 +45,7 @@ const CoursePage = () => {
     import("../components/coursePageComponents/CourseCard");
     import("../components/coursePageComponents/Comment");
     import("../components/coursePageComponents/FilterControls");
-    import("../components/Pagination");
+    import("../components/coursePageComponents/Pagination");
     import("../components/coursePageComponents/WriteComment");
   }, []);
 

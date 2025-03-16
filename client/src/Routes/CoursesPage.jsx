@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/authContext";
-import Course from "../components/Course";
+import Course from "../components/coursesPageComponents/Course";
 import CreateCourse from "../components/createCourseModal";
 import { useCourseData } from "../context/CourseContext";
 export default function CoursesPage() {
