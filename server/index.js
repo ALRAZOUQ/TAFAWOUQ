@@ -92,7 +92,7 @@ passport.deserializeUser(async (id, done) => {
 
 // cross to prepare communicate with client server (React)
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://nwsb8x0b-5173.inc1.devtunnels.ms'], //React link. we have to check if will work normally or not
+  origin: ['https://nwsb8x0b-5173.inc1.devtunnels.ms', process.env.DEVELOPMENT_CLIENT_URL, process.env.PRODUCTION_CLIENT_URL], //React link. we have to check if will work normally or not
   credentials: true
 }));
 
@@ -118,8 +118,25 @@ import mainRouter from './routes/mainRouter.js' // one router for all routes n n
 // routes middlewares
 app.use("/api", mainRouter)
 
-
 // Error handling
 app.use(errorHandler);
+
+// Razouq: this snippet is necassry for the deployment:
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory name in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from React's build folder
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+});
+// Razouq: END OF THE DEPLOYMENT CODE
+
+
 app.listen(port, () => console.log(`Server listen to the port ${port}`))
 
