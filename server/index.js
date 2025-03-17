@@ -2,8 +2,19 @@
 console.log(module.paths);
 console.log('==================')
 console.log(module.paths[0]);
+import('express')
+  .then(express => {
+    console.log('Express loaded successfully.');
+    return import('passport');
+  })
+  .then(passport => {
+    console.log('Passport loaded successfully.');
+  })
+  .catch(err => {
+    console.error('Error loading modules:', err);
+  });
 
-import express from 'express';
+// import express from 'express';
 import passport from 'passport';
 import session from 'express-session';
 import { Strategy as LocalStrategy } from 'passport-local';
