@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import Course from "../components/Course";
-import CreateCourse from "../components/createCourseModal";
+import CreateCourse from "../components/CreateCourseModal";
 import CircularProgressBar from "../components/CircularProgressBar";
 import { useCourseData } from "../context/CourseContext";
 export default function CoursesPage() {
