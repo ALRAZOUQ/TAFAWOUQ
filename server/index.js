@@ -1,4 +1,7 @@
 // Libraries imports
+console.log(module.paths);
+console.log('==================')
+console.log(module.paths[0]);
 
 import express from 'express';
 import passport from 'passport';
