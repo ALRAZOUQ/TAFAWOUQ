@@ -1,16 +1,18 @@
 // Libraries imports
-console.log(module.paths);
 console.log('==================')
 console.log(module.paths[0]);
 import('express')
   .then(express => {
     console.log('Express loaded successfully.');
+    console.log(module.paths);
     return import('passport');
   })
   .then(passport => {
+    console.log(module.paths);
     console.log('Passport loaded successfully.');
   })
   .catch(err => {
+    console.log(module.paths);
     console.error('Error loading modules:', err);
   });
 
