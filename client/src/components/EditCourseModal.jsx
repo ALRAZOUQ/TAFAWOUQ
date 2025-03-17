@@ -2,7 +2,7 @@ import { useEffect, useRef, useActionState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useCourseData } from "../context/CourseContext";
-import { motion } from "framer-motion";
+
 export default function EditCourseModal({
   id,
   overview,
