@@ -7,201 +7,215 @@ import {
 } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
+import { useAuth } from "../context/authContext";
+
+// Initial state
 const scheduleInitialState = {
+  scheduleId: null,
+  scheduleName: null,
+  startDate: null,
+  endDate: null,
+  scheduleCourses: [],
   totalGPA: 0.0,
   currentScheduleGPA: 0.0,
-  scheduleId: null,
-  scheduleCourses: [],
 };
 
+// Context creation
 const ScheduleContext = createContext({
-  scheduleCourses: [],
-  totalGPAGPA: 0.0,
-  currentScheduleGPA: 0.0,
-  scheduleId: null,
+  ...scheduleInitialState,
   addCourseToSchedule: () => {},
-  removeCoursefromSchedule: () => {},
+  removeCourseFromSchedule: () => {},
   fetchScheduleCourses: () => {},
   createSchedule: () => {},
   resetSchedule: () => {},
+  updateGpa: () => {},
+  updateCourseProperty: () => {},
 });
 
 export function ScheduleProvider({ children }) {
-  const [scheduleCourses, setScheduleCourses] = useState([]);
-  const [currentScheduleGPA, setcurrentScheduleGPA] = useState(0);
-  const [totalGPA, setTotalGPA] = useState(0);
-  const [scheduleId, setScheduleId] = useState(null);
+  const [schedule, setSchedule] = useState(scheduleInitialState);
+  const { isAuthorized, user } = useAuth();
 
-  /**
-   * Updates the grade of a specific course in the schedule
-   * @param {string|number} courseId - The ID of the course to update
-   * @param {string|number} newGradeValue - The new grade value to set
-   * @returns {void} - Updates the schedule courses state with the new grade
-   */
-  function updateCourseGrade(courseId, newGradeValue) {
-    setScheduleCourses((prevCourses) =>
-      prevCourses.map((course) =>
-        course.id === courseId ? { ...course, grade: newGradeValue } : course
-      )
-    );
-  }
+  // ===== COURSE MANAGEMENT =====
+  const updateCourseProperty = (courseId, property, value) => {
+    setSchedule((prevSchedule) => ({
+      ...prevSchedule,
+      scheduleCourses: prevSchedule.scheduleCourses.map((course) =>
+        course.id === courseId ? { ...course, [property]: value } : course
+      ),
+    }));
+  };
 
-  /**
-   * Updates the rating of a specific course in the schedule
-   * @param {string|number} courseId - The ID of the course to update
-   * @param {string|number} newRateValue - The new rating value to set
-   * @returns {void} - Updates the schedule courses state with the new rating
-   */
-  function updateCourseRate(courseId, newRateValue) {
-    setScheduleCourses((prevCourses) =>
-      prevCourses.map((course) =>
-        course.id === courseId ? { ...course, rate: newRateValue } : course
-      )
-    );
-  }
-  async function fetchCurrentScheduleGPA() {
-    if (!scheduleId) {
-      return;
-    }
-
+  const addCourseToSchedule = async (courseId) => {
     try {
-      const endpoint = `/protected/viewGpa/${scheduleId}`;
-
-      const { data } = await axios.get(endpoint, {
-        withCredentials: true, // Same as `credentials: "include"`
-        headers: { "Content-Type": "application/json" },
+      const { status } = await axios.post("protected/addCourseToLastSchedule", {
+        courseId,
       });
-      setcurrentScheduleGPA(data.averageGPA);
-    } catch (err) {
-      toast.error("error");
-    }
-  }
-  async function fetchTotalGPA() {
-    try {
-      const endpoint = `/protected/viewGpa`;
-
-      const { data } = await axios.get(endpoint, {
-        withCredentials: true, // Same as `credentials: "include"`
-        headers: { "Content-Type": "application/json" },
-      });
-      setTotalGPA(data.averageGPA);
-    } catch (err) {
-      toast.error("error");
-    }
-  }
-
-  function resetSchedule() {
-    setScheduleCourses(scheduleInitialState.scheduleCourses);
-    setScheduleId(scheduleInitialState.scheduleId);
-    setcurrentScheduleGPA(scheduleInitialState.currentScheduleGPA);
-    setTotalGPA(scheduleInitialState.totalGPA);
-  }
-
-  const fetchScheduleCourses = useCallback(async () => {
-    try {
-      const response = await axios.get("/protected/currentSchedule");
-      if (response.status === 200) {
-        setScheduleCourses(response.data.courses || []);
-        setScheduleId(response.data.scheduleId || null);
-      }
-    } catch (error) {
-      console.error(
-        error.response?.data?.message || "Failed to fetch schedule"
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchScheduleCourses();
-  }, [fetchScheduleCourses]);
-
-  async function createSchedule() {
-    try {
-      const response = await axios.post("/protected/createSchedule", {});
-
-      if (response.data.success) {
-        toast.success("تم إنشاء الجدول بنجاح");
-        setScheduleId(response.data.scheduleId);
-        setScheduleCourses([]); // Initially, no courses in the schedule
-      } else {
-        console.error(response.data.message || "Failed to create schedule");
-      }
-    } catch (error) {
-      console.error(
-        error.response?.data?.message || "Failed to create schedule"
-      );
-    }
-  }
-
-  async function addCourseToSchedule(courseId) {
-    try {
-      const response = await axios.post("protected/addCourseToLastSchedule", {
-        courseId: courseId,
-      });
-      if (response.status === 200) {
+      if (status === 200) {
         toast.success("تمت إضافة المادة الى الجدول بنجاح");
+        fetchScheduleCourses();
       }
     } catch (error) {
-      if (error.response) {
-        if (error.response.status === 400) {
-          toast.error("الرجاء إضافة جدول دراسي جديد");
-        } else if (error.response.status === 404) {
-          toast.error("انت تحاول اضافة مقرر غير موجود في قاعدة البيانات");
-        } else if (error.response.status === 409) {
-          toast.error("هذا المقرر مسجل لديك بالفعل في احدى جداولك");
-        } else {
-          toast.error(error.response.data.message);
-          console.error(
-            "Unexpected error while adding course to schedule:",
-            error
-          );
-        }
+      if (error.response?.status === 400) {
+        toast.error("الرجاء إضافة جدول دراسي جديد");
+      } else if (error.response?.status === 404) {
+        toast.error("انت تحاول اضافة مقرر غير موجود في قاعدة البيانات");
+      } else if (error.response?.status === 409) {
+        toast.error("هذا المقرر مسجل لديك بالفعل في احدى جداولك");
       } else {
-        console.error(
-          "Unexpected error while sending the request adding course to schedule:",
-          error
-        );
+        console.error(error.response?.data?.message || "Failed to add course");
       }
     }
-  }
-
-  async function removeCoursefromSchedule(courseId) {
+  };
+  const removeCourseFromSchedule = async (courseId) => {
     try {
-      const response = await axios.delete(
+      const { data } = await axios.delete(
         "/protected/deleteCourseFromSchedule",
-        {
-          data: { scheduleId, courseId },
-        }
+        { data: { scheduleId: schedule.scheduleId, courseId } }
       );
-
-      if (response.data.success) {
+      if (data.success) {
         toast.success("تمت إزالة المادة من الجدول بنجاح");
-        setScheduleCourses((prevCourses) =>
-          prevCourses.filter((course) => course.id !== courseId)
-        );
-      } else {
-        console.error(response.data.message || "Failed to remove course");
+        setSchedule((prevSchedule) => ({
+          ...prevSchedule,
+          scheduleCourses: prevSchedule.scheduleCourses.filter(
+            (course) => course.id !== courseId
+          ),
+        }));
       }
     } catch (error) {
       console.error(error.response?.data?.message || "Failed to remove course");
     }
-  }
+  };
+
+  // ===== GPA MANAGEMENT =====
+  const fetchGPA = async () => {
+    try {
+      const { data } = await axios.get(`/protected/viewGpa`);
+      setSchedule((prevSchedule) => ({
+        ...prevSchedule,
+        totalGPA: data.averageGPA || 0.0,
+      }));
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.error("GPA: No grades found for the student");
+      } else {
+        console.error(" GPA fetch error:", error);
+      }
+    }
+  };
+
+  const fetchCurrentGPA = async () => {
+    try {
+      if (!schedule.scheduleId) {
+        setSchedule((prevSchedule) => ({
+          ...prevSchedule,
+          currentScheduleGPA: 0.0,
+        }));
+        return;
+      }
+      const { data } = await axios.get(
+        `/protected/viewGpa/${schedule.scheduleId}`
+      );
+      setSchedule((prevSchedule) => ({
+        ...prevSchedule,
+        currentScheduleGPA: data.averageGPA || 0.0,
+      }));
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.error("curentGPA: No grades found for the student");
+      } else {
+        console.error(" curent GPA fetch error:", error);
+      }
+    }
+  };
+
+  const updateGpa = async () => {
+    try {
+      await fetchGPA();
+      await fetchCurrentGPA();
+    } catch (error) {
+      console.error("Error updating GPAs:", error);
+    }
+  };
+
+  // ===== SCHEDULE MANAGEMENT =====
+  const resetSchedule = () => {
+    setSchedule(scheduleInitialState);
+  };
+
+  const fetchScheduleCourses = useCallback(async () => {
+    try {
+      const { data, status } = await axios.get("/protected/currentSchedule");
+      if (status === 200) {
+        setSchedule({
+          scheduleCourses: data.courses || [],
+          scheduleId: data.scheduleId || null,
+          scheduleName: data.scheduleName || null,
+          startDate: data.startDate || null,
+          endDate: data.endDate || null,
+          totalGPA: schedule.totalGPA,
+          currentScheduleGPA: schedule.currentScheduleGPA,
+        });
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        console.error("No schedule found for the student");
+      } else {
+        console.error("Schedule fetch error:", error);
+      }
+      
+    }
+  }, []);
+
+  const createSchedule = async () => {
+    try {
+      const { data } = await axios.post("/protected/createSchedule");
+      if (data.success) {
+        toast.success("تم إنشاء الجدول بنجاح");
+        setSchedule((prevSchedule) => ({
+          ...prevSchedule,
+          scheduleId: data.scheduleId,
+          scheduleName: data.scheduleName,
+          startDate: data.startDate,
+          endDate:data.endDate,
+          scheduleCourses: [],
+        }));
+        
+       // console.log("================", schedule)
+      }
+    } catch (error) {
+      console.error("Failed to create schedule", error);
+    }
+  };
+
+  // this effect to update schedule data
+  useEffect(() => {
+    if (user?.isAdmin === false) {
+      console.log("fetch schedule for the first time");
+      fetchScheduleCourses();
+      updateGpa();
+    }
+  }, [user]);
+
+  // this effect to update current GPA when scheduleId changes
+  useEffect(() => {
+    if (user?.isAdmin === false) {
+      console.log("update gpa ");
+      updateGpa();
+    }
+  }, [schedule.scheduleId]);
+
   return (
     <ScheduleContext.Provider
       value={{
-        scheduleCourses,
-        currentScheduleGPA,
-        totalGPA,
-        scheduleId,
+        ...schedule,
         addCourseToSchedule,
-        removeCoursefromSchedule,
+        removeCourseFromSchedule,
         fetchScheduleCourses,
         createSchedule,
         resetSchedule,
-        updateCourseGrade,
-        updateCourseRate,
-        fetchCurrentScheduleGPA,
-        fetchTotalGPA,
+        updateGpa,
+        updateCourseProperty,
       }}
     >
       {children}

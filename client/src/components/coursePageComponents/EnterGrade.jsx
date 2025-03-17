@@ -6,7 +6,7 @@ import { useSchedule } from "../../context/ScheduleContext";
 
 export default function EnterGrade({ courseId, onClose, onCourseUpdate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { scheduleCourses, updateCourseGrade } = useSchedule();
+  const { scheduleCourses, updateCourseProperty , updateGpa } = useSchedule();
   const gradeOptions = [
     { label: "A+", value: 5 },
     { label: "A", value: 4.75 },
@@ -35,7 +35,8 @@ export default function EnterGrade({ courseId, onClose, onCourseUpdate }) {
 
       if (response.status === 200) {
         toast.success("تم تسجيل الدرجة بنجاح");
-        updateCourseGrade(courseId, grade); //will update the grade of the course inside scheduleContext
+        updateGpa(); //will update the gpa of the schedule inside scheduler Context by fetching them again
+        updateCourseProperty(courseId,"grade", grade); //will update the grade of the course inside scheduleContext
         onCourseUpdate && onCourseUpdate(); //will update the course rate inside the course card(refetch the course data) only used in the course card
         onClose();
       } else {

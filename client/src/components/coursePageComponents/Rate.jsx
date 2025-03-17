@@ -7,7 +7,7 @@ import { getColor } from "../../util/getColor";
 
 export default function Rate({ courseId, onClose, onCourseUpdate }) {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { scheduleCourses, updateCourseRate } = useSchedule();
+  const { scheduleCourses, updateCourseProperty } = useSchedule();
   const [rating, setRating] = useState(
     getCurrentRate(scheduleCourses, courseId)
   ); //this state will take the curent rate of the course registerd in the course if founded
@@ -34,7 +34,7 @@ export default function Rate({ courseId, onClose, onCourseUpdate }) {
       if (response.status === 200) {
         toast.success("تم التقييم بنجاح");
         onClose();
-        updateCourseRate(courseId, rating); //will update the rate of the course inside scheduleContext
+        updateCourseProperty(courseId,"rate", rating); //will update the rate of the course inside scheduleContext
         onCourseUpdate && onCourseUpdate(); //will update the course rate inside the course card(refetch the course data) only used in the course card
       } else {
         toast.error("حدث خطأ غير متوقع.");

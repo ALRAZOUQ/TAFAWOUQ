@@ -15,8 +15,6 @@ export default function HomePage() {
     fetchScheduleCourses,
     scheduleId,
     createSchedule,
-    fetchTotalGPA,
-    fetchCurrentScheduleGPA,
     currentScheduleGPA,
     totalGPA,
   } = useSchedule();
@@ -26,20 +24,19 @@ export default function HomePage() {
   useEffect(() => {
     if (!isAuthorized) {
       navigate("/");
-    } else {
-      fetchScheduleCourses();
-      fetchCurrentScheduleGPA();
-      fetchTotalGPA();
-    }
+      return;
+    }  
     if (user?.isAdmin) {
       navigate("/admin/admin-home");
+      return;
     }
-  }, [isAuthorized, navigate, user, fetchScheduleCourses]);
+}, [isAuthorized, user?.isAdmin, navigate]);
 
-  function createScheduleHandler() {
+
+  async function createScheduleHandler() {
     try {
-      createSchedule();
-      fetchScheduleCourses();
+ await createSchedule();
+     await fetchScheduleCourses();//this will update schedule data after create it (to get the id ,name, startDate , endDate)
     } catch (error) {
       console.error("Failed to create schedule:", error);
     }
