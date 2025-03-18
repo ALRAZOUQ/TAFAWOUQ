@@ -8,13 +8,14 @@ function printTree(dir, prefix = '') {
     const fullPath = path.join(dir, file);
     const isLast = index === files.length - 1;
     console.log(prefix + (isLast ? '└── ' : '├── ') + file);
-    if (fs.statSync(fullPath).isDirectory()) {
+    if (fs.statSync(fullPath).isDirectory() && file == "node_modules") {
       printTree(fullPath, prefix + (isLast ? '    ' : '│   '));
     }
   });
 }
 
-printTree(process.cwd());
+const serverDir = path.join(process.cwd(), 'server');
+printTree(serverDir);
 
 // import express from 'express';
 // import passport from 'passport';
