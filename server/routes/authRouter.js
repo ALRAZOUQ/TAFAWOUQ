@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import db from "../config/db.js";
 
 const router = express.Router();
