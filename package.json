@@ -10,8 +10,8 @@
   "author": "",
   "license": "ISC",
   "engines": {
-    "node": "18.x",
-    "npm": "10.5.0"
+    "node": ">=18.0.0",
+    "npm": ">=10.0.0"
   },
   "main": "server/index.js"
 }
