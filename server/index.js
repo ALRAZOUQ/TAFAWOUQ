@@ -5,6 +5,7 @@ import('express')
   .then(express => {
     console.log('Express loaded successfully.');
     console.log(module.paths);
+
     return import('passport');
   })
   .then(passport => {
@@ -17,15 +18,15 @@ import('express')
   });
 
 // import express from 'express';
-import passport from 'passport';
-import session from 'express-session';
-import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcrypt';
-import db from './config/db.js'; // database conection
-import env from 'dotenv'
-import flash from 'connect-flash'
-import errorHandler from "./middleware/errorHandler.js";
-import cors from 'cors';
+// import passport from 'passport';
+// import session from 'express-session';
+// import { Strategy as LocalStrategy } from 'passport-local';
+// import bcrypt from 'bcrypt';
+// import db from './config/db.js'; // database conection
+// import env from 'dotenv'
+// import flash from 'connect-flash'
+// import errorHandler from "./middleware/errorHandler.js";
+// import cors from 'cors';
 
 const app = express();
 
