@@ -5,7 +5,7 @@
   "devDependencies": {},
   "scripts": {
     "heroku-postbuild": "cd client && npm install && npm run build",
-    "start": "cd server && npm install && npm start"
+    "start": "npm start"
   },
   "author": "",
   "license": "ISC",
