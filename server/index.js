@@ -1,11 +1,6 @@
-// // Libraries imports
-import fs from 'fs';
-import path from 'path';
 
-console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
-
-
-// import express from 'express';
+import express from 'express';
+console.log("WOOOOOOOOOOOOOORKED")
 // import passport from 'passport';
 // import session from 'express-session';
 // import { Strategy as LocalStrategy } from 'passport-local';
@@ -27,13 +22,13 @@ console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
 // const error505msg = "Sorry! It seems we have a problem with our servers. Please try again later."
 // // Session configuration
 // app.use(session({
-//   secret: process.env.SESSION_SECRET || 'your-secret-key',
-//   resave: false,
-//   saveUninitialized: false,
-//   cookie: {
-//     secure: process.env.NODE_ENV === 'production',
-//     maxAge: 24 * 60 * 60 * 1000 // 24 hours
-//   }
+//     secret: process.env.SESSION_SECRET || 'your-secret-key',
+//     resave: false,
+//     saveUninitialized: false,
+//     cookie: {
+//         secure: process.env.NODE_ENV === 'production',
+//         maxAge: 24 * 60 * 60 * 1000 // 24 hours
+//     }
 // }))
 
 
@@ -46,41 +41,41 @@ console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
 
 // // Local Strategy with bcrypt
 // passport.use(new LocalStrategy({
-//   usernameField: 'email',
-//   passwordField: 'password'
+//     usernameField: 'email',
+//     passwordField: 'password'
 // }, async (email, password, done) => {
-//   try {
-//     const { rows } = await db.query(
-//       'SELECT * FROM "user" WHERE email = $1',
-//       [email]
-//     );
+//     try {
+//         const { rows } = await db.query(
+//             'SELECT * FROM "user" WHERE email = $1',
+//             [email]
+//         );
 
-//     if (!rows.length) return done(null, false);
+//         if (!rows.length) return done(null, false);
 
-//     const user = rows[0];
-//     const isValid = await bcrypt.compare(password, user.password);
+//         const user = rows[0];
+//         const isValid = await bcrypt.compare(password, user.password);
 
-//     if (!isValid) return done(null, false);
+//         if (!isValid) return done(null, false);
 
-//     return done(null, { id: user.id, email: user.email, isadmin: user.isadmin, name: user.name });
-//   } catch (error) {
-//     return done(error);
-//   }
+//         return done(null, { id: user.id, email: user.email, isadmin: user.isadmin, name: user.name });
+//     } catch (error) {
+//         return done(error);
+//     }
 // }));
 
 // // Serialization/Deserialization
 // passport.serializeUser((user, done) => done(null, user.id));
 // passport.deserializeUser(async (id, done) => {
-//   try {
-//     const { rows } = await db.query(
-//       'SELECT id, email , isadmin ,name FROM "user" WHERE id = $1',
-//       [id]
-//     );
-//     //console.log("test values" , rows[0])
-//     done(null, rows[0]);
-//   } catch (error) {
-//     done(error);
-//   }
+//     try {
+//         const { rows } = await db.query(
+//             'SELECT id, email , isadmin ,name FROM "user" WHERE id = $1',
+//             [id]
+//         );
+//         //console.log("test values" , rows[0])
+//         done(null, rows[0]);
+//     } catch (error) {
+//         done(error);
+//     }
 // });
 
 // /*app.use((req, res, next) => {
@@ -97,8 +92,8 @@ console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
 
 // // cross to prepare communicate with client server (React)
 // app.use(cors({
-//   origin: ['https://nwsb8x0b-5173.inc1.devtunnels.ms', process.env.DEVELOPMENT_CLIENT_URL, process.env.PRODUCTION_CLIENT_URL], //React link. we have to check if will work normally or not
-//   credentials: true
+//     origin: ['https://nwsb8x0b-5173.inc1.devtunnels.ms', process.env.DEVELOPMENT_CLIENT_URL, process.env.PRODUCTION_CLIENT_URL], //React link. we have to check if will work normally or not
+//     credentials: true
 // }));
 
 
@@ -106,14 +101,14 @@ console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
 
 // db.on('error', error => {
 
-//   console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
-//   console.log(error)
+//     console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
+//     console.log(error)
 // })
 
 
 
 // app.get("/", (req, res) => {
-//   res.json("Home page :) ")
+//     res.json("Home page :) ")
 // })
 
 // // routes import:
@@ -138,7 +133,7 @@ console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
 // app.use(express.static(path.join(__dirname, '../client/dist')));
 
 // app.get('*', (req, res) => {
-//   res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+//     res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
 // });
 // // Razouq: END OF THE DEPLOYMENT CODE
 
