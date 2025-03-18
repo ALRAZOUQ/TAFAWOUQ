@@ -1,7 +1,20 @@
 // // Libraries imports
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-console.log(`WHAT DO I NEED ${require.resolve('express')}`);
+import fs from 'fs';
+import path from 'path';
+
+function printTree(dir, prefix = '') {
+  const files = fs.readdirSync(dir);
+  files.forEach((file, index) => {
+    const fullPath = path.join(dir, file);
+    const isLast = index === files.length - 1;
+    console.log(prefix + (isLast ? '└── ' : '├── ') + file);
+    if (fs.statSync(fullPath).isDirectory()) {
+      printTree(fullPath, prefix + (isLast ? '    ' : '│   '));
+    }
+  });
+}
+
+printTree(process.cwd());
 
 // import express from 'express';
 // import passport from 'passport';
