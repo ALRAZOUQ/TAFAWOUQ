@@ -2,20 +2,8 @@
 import fs from 'fs';
 import path from 'path';
 
-function printTree(dir, prefix = '') {
-  const files = fs.readdirSync(dir);
-  files.forEach((file, index) => {
-    const fullPath = path.join(dir, file);
-    const isLast = index === files.length - 1;
-    console.log(prefix + (isLast ? '└── ' : '├── ') + file);
-    if (fs.statSync(fullPath).isDirectory() && file == "node_modules") {
-      printTree(fullPath, prefix + (isLast ? '    ' : '│   '));
-    }
-  });
-}
+console.log(fs.existsSync(path.join(process.cwd(), 'server/node_modules')));
 
-const serverDir = path.join(process.cwd(), 'server');
-printTree(serverDir);
 
 // import express from 'express';
 // import passport from 'passport';
