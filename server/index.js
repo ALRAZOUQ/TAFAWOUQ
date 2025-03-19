@@ -108,10 +108,10 @@ db.on('error', error => {
 })
 
 
-
-app.get("/", (req, res) => {
-    res.json("Home page :) ")
-})
+// TODO Razouq: After removing this when the user opened our deplyed website or opened the localhost:300 he will see our front end page, if I didnt remove it the user will see this msg "Home page :) " when he open the deployed URL
+// app.get("/", (req, res) => {
+//     res.json("Home page :) ")
+// })
 
 // routes import:
 import mainRouter from './routes/mainRouter.js' // one router for all routes n need any route in index.js file
