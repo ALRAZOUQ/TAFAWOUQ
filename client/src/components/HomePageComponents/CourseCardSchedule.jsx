@@ -18,7 +18,7 @@ export default function CourseCardSchedule({ course, fetchAgain }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [ratingCourse, setRatingCourse] = useState(false);
   const [gradingCourse, setGradingCourse] = useState(false);
-  const { removeCoursefromSchedule, fetchScheduleCourses } = useSchedule();
+  const { removeCourseFromSchedule, fetchScheduleCourses } = useSchedule();
 
   function handleRating() {
     setRatingCourse(true);
@@ -32,11 +32,11 @@ export default function CourseCardSchedule({ course, fetchAgain }) {
     setMenuOpen(false); // Closes the menu
   }
 
-  function handleRemoveCourse() {
-    removeCoursefromSchedule(course.id);
-    fetchScheduleCourses();
+function handleRemoveCourse() {
+  removeCourseFromSchedule(course.id)
+    .then(() => fetchScheduleCourses());
     setMenuOpen(false);
-  }
+}
 
   return (
     <div className="relative">

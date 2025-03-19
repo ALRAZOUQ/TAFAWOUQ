@@ -107,10 +107,6 @@ export function ScheduleProvider({ children }) {
   const fetchCurrentGPA = async () => {
     try {
       if (!schedule.scheduleId) {
-        setSchedule((prevSchedule) => ({
-          ...prevSchedule,
-          currentScheduleGPA: 0.0,
-        }));
         return;
       }
       const { data } = await axios.get(
@@ -118,7 +114,7 @@ export function ScheduleProvider({ children }) {
       );
       setSchedule((prevSchedule) => ({
         ...prevSchedule,
-        currentScheduleGPA: data.averageGPA || 0.0,
+        currentScheduleGPA: data.averageGPA || null,
       }));
     } catch (error) {
       if (error.response?.status === 404) {
@@ -190,19 +186,27 @@ export function ScheduleProvider({ children }) {
 
   // this effect to update schedule data
   useEffect(() => {
-    if (user?.isAdmin === false) {
-      console.log("fetch schedule for the first time");
-      fetchScheduleCourses();
-      updateGpa();
-    }
+    const fetchData = async () => {
+      if (user?.isAdmin === false) {
+        console.log("fetch schedule for the first time");
+        await fetchScheduleCourses();
+        await updateGpa();
+      }
+    };
+  
+    fetchData();
   }, [user]);
 
   // this effect to update current GPA when scheduleId changes
   useEffect(() => {
-    if (user?.isAdmin === false) {
-      console.log("update gpa ");
-      updateGpa();
-    }
+    const fetchData = async () => {
+      if (user?.isAdmin === false) {
+        console.log("update gpa ");
+        await updateGpa();
+      }
+    };
+  
+    fetchData();
   }, [schedule.scheduleId]);
 
   return (
