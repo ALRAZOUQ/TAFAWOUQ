@@ -15,7 +15,9 @@ const app = express();
 app.use(flash());
 // start coding
 app.use(express.urlencoded({ extended: true }))
-env.config({ path: 'server/.env' })
+
+env.config()
+// env.config({ path: 'server/.env' })
 
 app.use(express.json());
 const port = process.env.PORT
