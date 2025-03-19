@@ -206,4 +206,54 @@ router.post("/addCourseToSchedule", async (req, res) => {
   }
 });
 
+//==================================================
+//================= report =========================
+//==================================================
+
+router.get("/reports/comments", async (req, res) => {
+  try {
+    const reports = await db.query(`
+      SELECT
+    r.id AS "reportId",
+    r.authorid AS "authorId",
+    r.content AS "content",
+    r.creationdate AS "creationDate",
+    json_build_object(
+        'id', c.id,
+        'content', c.content,
+        'authorId', c.authorid,
+        'authorName', u.name,
+        'tag', c.tag,
+        'creationDate', c.creationdate,
+        'numOfLikes', COALESCE(l.num_likes, 0),
+        'numOfReplies', COALESCE(rep.reply_count, 0)
+    ) AS comment
+FROM report r
+JOIN report_comment rc ON r.id = rc.reportid
+JOIN comment c ON rc.commentid = c.id
+JOIN "user" u ON c.authorid = u.id
+LEFT JOIN (
+    SELECT commentId, COUNT(*) AS num_likes
+    FROM "like"
+    GROUP BY commentId
+) l ON c.id = l.commentId
+LEFT JOIN (
+    SELECT parentCommentId, COUNT(*) AS reply_count
+    FROM comment
+    WHERE parentCommentId IS NOT NULL
+    GROUP BY parentCommentId
+) rep ON c.id = rep.parentCommentId
+ORDER BY r.creationdate DESC;
+    `);
+
+    res.status(200).json({
+      success: true,
+      reports: reports.rows,
+    });
+  } catch (error) {
+    console.error("Error retrieving comment reports:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 export default router;
