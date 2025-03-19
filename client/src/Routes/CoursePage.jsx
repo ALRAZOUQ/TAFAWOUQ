@@ -88,7 +88,7 @@ const CoursePage = () => {
       if (response.status === 200) {
         toast.success("تم حذف المقرر بنجاح");
         deleteCourseFromContext(courseId);
-        navigate("/home");
+        navigate("/courses");
       }
     } catch (error) {
       toast.error("حدث خطأ أثناء حذف المقرر");
