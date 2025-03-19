@@ -205,6 +205,65 @@ router.post("/addCourseToSchedule", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+//==================================================
+//================= comment =========================
+//==================================================
+router.put("/hideComment", async (req, res) => {
+  try {
+    const { reason, reportId, commentId } = req.body;
+
+    if (!commentId) {
+      return res.status(400).json({
+        success: false,
+        message: "Comment ID is required.",
+      });
+    }
+
+    // Check if the comment is already hidden
+    const existingHide = await db.query(
+      `SELECT 1 FROM hideComment WHERE commentId = $1`,
+      [commentId]
+    );
+
+    if (existingHide.rows.length > 0) {
+      return res.status(409).json({
+        success: true,
+        message: "Comment already hidden.",
+      });
+    }
+
+    let hideCommentResult;
+    if (reportId && reason) {
+      hideCommentResult = await db.query(
+        `INSERT INTO hideComment (commentId, reason, reportId) VALUES ($1, $2, $3) RETURNING *`,
+        [commentId, reason, reportId]
+      );
+    } else if (reason) {
+      hideCommentResult = await db.query(
+        `INSERT INTO hideComment (commentId, reason) VALUES ($1, $2) RETURNING *`,
+        [commentId, reason]
+      );
+    } 
+
+    if (hideCommentResult.rows.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "Comment hidden successfully.",
+        //hiddenComment: hideCommentResult.rows[0],
+        hiddenCommentId: hideCommentResult.rows[0].commentid,
+      });
+    }
+  } catch (error) {
+    if(error.constraint  === "hidecomment_commentid_fkey")
+      return res.status(404).json({
+        success: false,
+        message: "Comment not found in the database.",
+      })
+
+    console.error("Error hiding comment:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 //==================================================
 //================= report =========================
