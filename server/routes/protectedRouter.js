@@ -754,4 +754,48 @@ res.status(500).json({ success: false, message: error.message });
 });
 
 
+router.post("/reportQuiz", async (req, res) => {
+  try {
+    const { quizId, reportContent } = req.body;
+    const userId = req.user.id;
+
+    if (!userId || !quizId || !reportContent) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters (userId, quizId, reportContent).",
+      });
+    }
+
+    // Begin transaction to do the process together or nothing
+    await db.query("BEGIN");
+
+    // Create the report
+    const reportResult = await db.query(
+      `INSERT INTO report (authorid, content) VALUES ($1, $2) RETURNING id`,
+      [userId, reportContent]
+    );
+
+    const reportId = reportResult.rows[0].id;
+
+    // Link the report with the quiz
+    await db.query(
+      `INSERT INTO report_quiz (reportid, quizid) VALUES ($1, $2)`,
+      [reportId, quizId]
+    );
+
+    // Commit transaction
+    await db.query("COMMIT");
+
+    res.status(201).json({
+      success: true,
+      message: "Quiz reported successfully.",
+    });
+  } catch (error) {
+    // Rollback transaction on error
+    await db.query("ROLLBACK");
+    console.error("Error reporting quiz:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 export default router;
