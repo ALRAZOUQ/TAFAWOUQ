@@ -12,7 +12,7 @@ import SearchBarForDesktop from "./SearchBarForDesktop";
 
 export default function MainHeader() {
   const navigate = useNavigate();
-  const { logout, isAuthorized } = useAuth();
+  const { logout, isAuthorized, isAdmin } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -69,16 +69,27 @@ export default function MainHeader() {
               isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
             } md:flex-row md:justify-center`}
           >
+            {/* admin Links */}
             <NavigationLink
               linkTo={"الصفحة الرئيسية"}
               route={isAuthorized ? "/home" : "/"}
             />
+
             <NavigationLink linkTo={"المواد"} route={"/courses"} />
-            <NavigationLink linkTo={"إختباراتي القصيرة"} route="myquizzes" />
-            <NavigationLink
-              linkTo={"جداولي السابقة"}
-              route={"mypreviousschedules"}
-            />
+
+            {/* student Links */}
+            {isAdmin && (
+              <>
+                <NavigationLink
+                  linkTo={"إختباراتي القصيرة"}
+                  route={"/myquizzes"}
+                />
+                <NavigationLink
+                  linkTo={"جداولي السابقة"}
+                  route={"mypreviousschedules"}
+                />
+              </>
+            )}
           </div>
         )}
         {isAuthorized && <SearchBar isOpen={isOpen} />}
