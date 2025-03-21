@@ -266,6 +266,66 @@ router.put("/hideComment", async (req, res) => {
 });
 
 //==================================================
+//================= quiz =========================
+//==================================================
+
+router.put("/hideQuiz", async (req, res) => {
+  try {
+    const { reason, reportId, quizId } = req.body;
+
+    if (!quizId) {
+      return res.status(400).json({
+        success: false,
+        message: "Quiz ID is required.",
+      });
+    }
+
+    // Check if the quiz is already hidden
+    const existingHide = await db.query(
+      `SELECT 1 FROM hideQuiz WHERE quizId = $1`,
+      [quizId]
+    );
+
+    if (existingHide.rows.length > 0) {
+      return res.status(409).json({
+        success: true,
+        message: "Quiz already hidden.",
+      });
+    }
+
+    let hideQuizResult;
+    if (reportId && reason) {
+      hideQuizResult = await db.query(
+        `INSERT INTO hideQuiz (quizId, reason, reportId) VALUES ($1, $2, $3) RETURNING *`,
+        [quizId, reason, reportId]
+      );
+    } else if (reason) {
+      hideQuizResult = await db.query(
+        `INSERT INTO hideQuiz (quizId, reason) VALUES ($1, $2) RETURNING *`,
+        [quizId, reason]
+      );
+    }
+
+    if (hideQuizResult.rows.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "Quiz hidden successfully.",
+        hiddenQuizId: hideQuizResult.rows[0].quizid,
+      });
+    }
+  } catch (error) {
+    if (error.constraint === "hidequiz_quizid_fkey") {
+      return res.status(404).json({
+        success: false,
+        message: "Quiz not found in the database.",
+      });
+    }
+
+    console.error("Error hiding quiz:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+//==================================================
 //================= report =========================
 //==================================================
 
