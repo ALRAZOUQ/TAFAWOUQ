@@ -1,4 +1,4 @@
-import { useState, memo } from "react";
+import { useState, memo, useCallback, useMemo } from "react";
 import {
   ThumbsUp,
   MessageCircle,
@@ -6,9 +6,13 @@ import {
   ChevronDown,
   ChevronUp,
   Send,
+  MessageSquareWarning,
+  Trash2,
 } from "lucide-react";
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
+import GenericForm from "../GenericForm";
+import { useAuth } from "../../context/authContext";
 
 // Separate the avatar component for reusability
 const UserAvatar = memo(({ name }) => (
@@ -17,95 +21,13 @@ const UserAvatar = memo(({ name }) => (
   </div>
 ));
 
-// Separate the reply toggle button for cleaner code
-const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
-  <button
-    onClick={onClick}
-    className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
-    disabled={isLoading}
-  >
-    {isLoading ? (
-      "جاري التحميل..."
-    ) : showReplies ? (
-      <>
-        إخفاء الردود
-        <ChevronUp size={18} />
-      </>
-    ) : (
-      <>
-        عرض الردود
-        <ChevronDown size={18} />
-      </>
-    )}
-  </button>
-);
 
-// Reply form component
-const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
-  const [replyContent, setReplyContent] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleSubmitReply = async () => {
-    if (!replyContent.trim()) return;
-
-    setIsSubmitting(true);
-    try {
-      const response = await axios.post("/protected/postComment", {
-        courseId,
-        parentCommentId: parseInt(parentId),
-        content: replyContent,
-        tag: "رد", // Default tag for replies
-      });
-
-      if (response.data.success && response.data.comment) {
-        toast.success("تم إضافة الرد بنجاح");
-        onReplyAdded(response.data.comment);
-        setReplyContent("");
-        onCancel();
-      }
-    } catch (error) {
-      console.error("Error posting reply:", error);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="mt-3 bg-gray-50 p-3 rounded-lg">
-      <textarea
-        className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
-        placeholder="اكتب ردك هنا..."
-        value={replyContent}
-        onChange={(e) => setReplyContent(e.target.value)}
-        disabled={isSubmitting}
-      ></textarea>
-      <div className=" mt-2">
-        <div className="flex flex-row gap-2">
-          <button
-            className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
-              isSubmitting
-                ? "opacity-70 cursor-not-allowed"
-                : "hover:bg-blue-600"
-            }`}
-            onClick={handleSubmitReply}
-            disabled={isSubmitting || !replyContent.trim()}
-          >
-            <Send size={14} /> إرسال
-          </button>
-          <button
-            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
-            onClick={onCancel}
-            disabled={isSubmitting}
-          >
-            إلغاء
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-export default function Comment({ comment, isReply = false, courseId }) {
+export default function Comment({
+  comment,
+  isReply = false,
+  courseId,
+  onDelete,
+}) {
   const [replies, setReplies] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
@@ -114,7 +36,80 @@ export default function Comment({ comment, isReply = false, courseId }) {
   const [likesCount, setLikesCount] = useState(parseInt(comment.numOfLikes));
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
+  const { user } = useAuth();
+  const deleteFields = useMemo(
+    () => [
+      { name: "reason", label: "سبب الحذف", type: "textarea", required: true },
+    ],
+    []
+  );
+  
+  const reportFields = useMemo(
+    () => [
+      {
+        name: "reportContent",
+        label: "سبب الإبلاغ",
+        type: "textarea",
+        required: true
+      },
+    ],
+    []
+  );
+  const handleHideComment = useCallback(
+    async (formData) => {
+      console.log(formData)
+      try {
+        const response = await axios.put("/admin/hideComment", {
+          commentId: comment.id,
+          reason: formData.reason,
+          reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
+        });
+  
+        if (response.data.success) {
+         // onDelete(formData.itemId);
+          toast.success("تم إخفاء التعليق بنجاح");
+        }
+    
+      } catch (error) {
+        if (error?.response?.status === 409) {
+          toast.error("تم حذف هذا المقرر بالفعل");
+          return;
+        }
+        console.error("Error submitting rating:", error);
+        toast.error(
+          error.response?.data?.message || "حدث خطأاثناء حذف الكومنت."
+        );
+          console.error('Error hiding comment:', error);
+        
+      }
+    },
+    [] 
+  );
 
+  const handleReportComment = useCallback(
+    async (formData) => {
+      try {
+        // Prepare the data for the API call
+        const reportData = {
+          commentId: comment.id,
+          reportContent: formData.reportContent 
+        };
+        
+        // Call the API endpoint
+        const response = await axios.post("/protected/reportComment", reportData);
+        
+        if (response.data.success) {
+          toast.success("تم الإبلاغ عن التعليق بنجاح");
+        }
+        return { success: true };
+      } catch (error) {
+        console.error("Error reporting comment:", error);
+        toast.error("حدث خطأ أثناء الإبلاغ عن التعليق");
+        return { success: false, error };
+      }
+    },
+    []
+  );
   const handleToggleReplies = async () => {
     if (showReplies) {
       setShowReplies(false);
@@ -233,8 +228,39 @@ export default function Comment({ comment, isReply = false, courseId }) {
             <Tag size={18} />
             <span className="text-sm">{comment.tag}</span>
           </button>
-        </div>
 
+          <GenericForm
+            itemId={comment.id}
+            title="ابلاغ"
+            fields={reportFields}
+            submitButtonText="ابلاغ"
+            onSubmit={(formData)=>{handleReportComment(formData);}}
+          >
+            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+              <MessageSquareWarning size={18} />
+              <span className="text-sm">ابلاغ</span>
+            </button>
+          </GenericForm>
+          {/* Make sure we're properly checking if the user is an admin */}
+                        {user && user.isAdmin === true && ( 
+                          <GenericForm
+                            itemId={comment?.id}
+                            title="حذف تعليق"
+                            fields={deleteFields}
+                            submitButtonText="حذف"
+                            onSubmit={(formData) => {handleHideComment(formData)}}
+                          >
+                            <button 
+                              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                              type="button"
+                            >
+                              <Trash2 size={18} />
+                              <span className="text-sm">حذف</span>
+                            </button>
+                          </GenericForm>
+                        )}
+         
+        </div>
         {comment.numOfReplies > 0 && (
           <ReplyToggleButton
             isLoading={isLoadingReplies}
@@ -265,3 +291,91 @@ export default function Comment({ comment, isReply = false, courseId }) {
     </div>
   );
 }
+
+// Separate the reply toggle button for cleaner code
+const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
+  <button
+    onClick={onClick}
+    className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+    disabled={isLoading}
+  >
+    {isLoading ? (
+      "جاري التحميل..."
+    ) : showReplies ? (
+      <>
+        إخفاء الردود
+        <ChevronUp size={18} />
+      </>
+    ) : (
+      <>
+        عرض الردود
+        <ChevronDown size={18} />
+      </>
+    )}
+  </button>
+);
+
+// Reply form component
+const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
+  const [replyContent, setReplyContent] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmitReply = async () => {
+    if (!replyContent.trim()) return;
+
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post("/protected/postComment", {
+        courseId,
+        parentCommentId: parseInt(parentId),
+        content: replyContent,
+        tag: "رد", // Default tag for replies
+      });
+
+      if (response.data.success && response.data.comment) {
+        toast.success("تم إضافة الرد بنجاح");
+        onReplyAdded(response.data.comment);
+        setReplyContent("");
+        onCancel();
+      }
+    } catch (error) {
+      console.error("Error posting reply:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  return (
+    <div className="mt-3 bg-gray-50 p-3 rounded-lg">
+      <textarea
+        className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+        placeholder="اكتب ردك هنا..."
+        value={replyContent}
+        onChange={(e) => setReplyContent(e.target.value)}
+        disabled={isSubmitting}
+      ></textarea>
+      <div className=" mt-2">
+        <div className="flex flex-row gap-2">
+          <button
+            className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
+              isSubmitting
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-blue-600"
+            }`}
+            onClick={handleSubmitReply}
+            disabled={isSubmitting || !replyContent.trim()}
+          >
+            <Send size={14} /> إرسال
+          </button>
+          <button
+            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
+            onClick={onCancel}
+            disabled={isSubmitting}
+          >
+            إلغاء
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
