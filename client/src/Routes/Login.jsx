@@ -46,6 +46,8 @@ export default function Login() {
       if (error.response) {
         if (error.response.status === 401) {
           return { errors: ["email or password is incorrect"] };
+        }else if(error.response.status === 403){
+          return { errors: ["This account is banded"] };
         } else {
           return { errors: [error.response.data.message] };
         }
