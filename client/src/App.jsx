@@ -42,7 +42,7 @@ function App() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setLoading(false), 500); // Simulate short loading delay
+    const timer = setTimeout(() => setLoading(false), 500); // Simulate short loading delay note if it deleted it will cause the app to crash and will not working
     return () => clearTimeout(timer);
   }, []);
 
