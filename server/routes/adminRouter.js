@@ -375,6 +375,47 @@ ORDER BY r.creationdate DESC;
   }
 });
 
+
+router.delete("/deleteReport", async (req, res) => {
+  try {
+    const { reportId } = req.body;
+
+    if (!reportId) {
+      return res.status(400).json({
+        success: false,
+        message: "reportId is required.",
+      });
+    }
+
+    // Check if the report exists
+    const existingBan = await db.query(
+      `SELECT 1 FROM report WHERE id = $1`,
+      [reportId]
+    );
+    
+    if (existingBan.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "report does not exist.",
+      });
+    }
+
+    // Remove the report 
+  const  result = await db.query(`DELETE FROM report WHERE id = $1`, [reportId]);
+if (result.rowCount === 1) {
+    res.status(200).json({
+      success: true,
+      message: "report deleted successfully.",
+    });
+  }
+  } catch (error) {
+    
+    console.error("Error deleting report:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
 //==================================================
 //==================== ban =========================
 //==================================================
@@ -422,7 +463,6 @@ router.post("/banUser", async (req, res) => {
       res.status(200).json({
         success: true,
         message: "User banned successfully.",
-        bannedUserId: banUserResult.rows[0].studentid,
       });
     }
     
@@ -462,7 +502,6 @@ if (result.rowCount === 1) {
     res.status(200).json({
       success: true,
       message: "User unbanned successfully.",
-      unbannedUserId: studentId,
     });
   }
   } catch (error) {
