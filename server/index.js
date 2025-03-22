@@ -46,7 +46,10 @@ passport.use(new LocalStrategy({
 }, async (email, password, done) => {
   try {
     const { rows } = await db.query(
-      'SELECT * FROM "user" WHERE email = $1',
+      `SELECT u.*
+FROM "user" u
+LEFT JOIN ban b ON b.studentId = u.id
+WHERE u.email = $1 AND b.studentId IS NULL;`,
       [email]
     );
 
