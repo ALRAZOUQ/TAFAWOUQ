@@ -46,19 +46,24 @@ passport.use(new LocalStrategy({
 }, async (email, password, done) => {
   try {
     const { rows } = await db.query(
-      `SELECT u.*
+      `SELECT u.*, case when b.studentid  is not null then true else false end as "isBanned" 
 FROM "user" u
 LEFT JOIN ban b ON b.studentId = u.id
-WHERE u.email = $1 AND b.studentId IS NULL;`,
+WHERE u.email = $1 limit 1;`,
       [email]
     );
 
     if (!rows.length) return done(null, false);
 
     const user = rows[0];
+    
+    if (user.isBanned == true) { // Check if user.isBanned is  true (banned)
+      return done(null, false, { message: 'You are banned.' });
+    }
+
     const isValid = await bcrypt.compare(password, user.password);
 
-    if (!isValid) return done(null, false);
+    if (!isValid) return done(null, false, { message: 'Invalid email or password.' });
 
     return done(null, { id: user.id, email: user.email, isadmin: user.isadmin, name: user.name });
   } catch (error) {

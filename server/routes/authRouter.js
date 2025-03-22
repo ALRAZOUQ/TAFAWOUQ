@@ -54,7 +54,7 @@ router.post("/register", async (req, res) => {
   }
 });
 
-router.post("/login", passport.authenticate("local"), (req, res) => {
+/*router.post("/login", passport.authenticate("local"), (req, res) => {
   res.status(200).json({
     success: true,
     message: "Logged in successfully",
@@ -66,7 +66,35 @@ router.post("/login", passport.authenticate("local"), (req, res) => {
     },
   }); // 200 OK
 });
-
+*/
+router.post("/login", (req, res, next) => {
+  passport.authenticate("local", (err, user, info) => {
+    if (err) {
+      return next(err); // Handle errors
+    }
+    if (!user) {
+      if (info && info.message === 'You are banned.') {
+        return res.status(403).json({ success: false, message: 'this account is banded.' }); 
+      }
+      return res.status(401).json({ success: false, message: info ? info.message : 'Invalid email or password.' }); // 401 Unauthorized
+    }
+    req.logIn(user, (err) => {
+      if (err) {
+        return next(err);
+      }
+      return res.status(200).json({
+        success: true,
+        message: "Logged in successfully",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+          isadmin: user.isadmin,
+        },
+      });
+    });
+  })(req, res, next);
+});
 router.post("/logout", (req, res) => {
   req.logout((err) => {
     try {

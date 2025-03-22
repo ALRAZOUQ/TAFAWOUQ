@@ -15,6 +15,8 @@ export function errorMapping(value) {
     return "البريد الإلكتروني أو كلمة المرور غير صحيحة ";
   }else if (value === "An account with this email already exists") {
     return "هناك حساب مسجل بهذا البريد الإلكتروني بالفعل";
+  }else if (value === "This account is banded") {
+    return "عذرا هذا الحساب محظور";
   } else {
     return "خطأ غير معروف";
   }
