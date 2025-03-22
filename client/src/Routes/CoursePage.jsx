@@ -83,6 +83,11 @@ const CoursePage = () => {
     }
   };
 
+
+
+  
+
+
   // Event Handlers
   const deleteCourse = async () => {
     try {
@@ -150,11 +155,14 @@ const CoursePage = () => {
     filteredAndSortedComments.length / commentsPerPage
   );
 
-  // comment handling report and delete
-  const handleDeleteComment = useCallback((commentId, formData) => {
-    // Implement your report logic here
-    console.log(`Delete for comment ${commentId}:`, formData);
-  }, []);
+  
+  const handleDeleteComment = (commentId) => {
+    console.log("Comment ID to delete:", commentId);
+    setComments(
+        (prevComments) =>
+            prevComments?.filter((comment) => comment.id !== commentId)
+    );
+};
 
   return (
     <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">

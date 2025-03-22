@@ -39,7 +39,7 @@ export default function Comment({
   const { user } = useAuth();
   const deleteFields = useMemo(
     () => [
-      { name: "reason", label: "سبب الحذف", type: "textarea", required: true },
+      { name: "reason", label: "سبب الاخفاء", type: "textarea", required: true },
     ],
     []
   );
@@ -57,16 +57,16 @@ export default function Comment({
   );
   const handleHideComment = useCallback(
     async (formData) => {
-      console.log(formData)
       try {
         const response = await axios.put("/admin/hideComment", {
-          commentId: comment.id,
+          commentId: formData.id,
           reason: formData.reason,
           reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
         });
   
         if (response.data.success) {
-         // onDelete(formData.itemId);
+          
+          onDelete(formData.id);//to delete the comment from the comments list
           toast.success("تم إخفاء التعليق بنجاح");
         }
     
@@ -245,9 +245,9 @@ export default function Comment({
                         {user && user.isAdmin === true && ( 
                           <GenericForm
                             itemId={comment?.id}
-                            title="حذف تعليق"
+                            title="اخفاء تعليق"
                             fields={deleteFields}
-                            submitButtonText="حذف"
+                            submitButtonText="اخفاء"
                             onSubmit={(formData) => {handleHideComment(formData)}}
                           >
                             <button 
@@ -255,7 +255,7 @@ export default function Comment({
                               type="button"
                             >
                               <Trash2 size={18} />
-                              <span className="text-sm">حذف</span>
+                              <span className="text-sm">اخفاء</span>
                             </button>
                           </GenericForm>
                         )}
