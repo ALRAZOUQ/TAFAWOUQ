@@ -375,4 +375,101 @@ ORDER BY r.creationdate DESC;
   }
 });
 
+//==================================================
+//==================== ban =========================
+//==================================================
+
+
+router.post("/banUser", async (req, res) => {
+  try {
+    const { reason, studentId ,reportId } = req.body;
+
+    if (!studentId || !reason) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required.",
+      });
+    }
+
+    // Check if the user is already banned
+    const existingBan = await db.query(
+      `SELECT 1 FROM ban WHERE studentId = $1`,
+      [studentId]
+    );
+
+    if (existingBan.rows.length > 0) {
+      return res.status(409).json({
+        success: false,
+        message: "User is already banned.",
+      });
+    }
+
+    let banUserResult;
+    if (reportId) {
+      banUserResult = await db.query(
+        `INSERT INTO ban (studentId, reason,reportId ) VALUES ($1, $2 ,$3) RETURNING *`,
+        [studentId, reason,reportId]
+      );
+    
+    } else {
+      banUserResult = await db.query(
+        `INSERT INTO ban (studentId ,reason) VALUES ($1, $2) RETURNING *`,
+        [studentId, reason]
+      );
+    }
+
+    if (banUserResult.rows.length > 0) {
+      res.status(200).json({
+        success: true,
+        message: "User banned successfully.",
+        bannedUserId: banUserResult.rows[0].studentid,
+      });
+    }
+    
+  } catch (error) {
+    console.error("Error banning user:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.put("/unBanUser", async (req, res) => {
+  try {
+    const { studentId } = req.body;
+
+    if (!studentId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required.",
+      });
+    }
+
+    // Check if the user is currently banned
+    const existingBan = await db.query(
+      `SELECT 1 FROM ban WHERE studentId = $1`,
+      [studentId]
+    );
+
+    if (existingBan.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "User is not currently banned.",
+      });
+    }
+
+    // Remove the ban 
+  const  result = await db.query(`DELETE FROM ban WHERE studentId = $1`, [studentId]);
+if (result.rowCount === 1) {
+    res.status(200).json({
+      success: true,
+      message: "User unbanned successfully.",
+      unbannedUserId: studentId,
+    });
+  }
+  } catch (error) {
+    
+    console.error("Error unbanning user:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 export default router;
