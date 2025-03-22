@@ -1,4 +1,4 @@
-import React, { useState, useEffect, lazy, Suspense } from "react";
+import React, { useState, useEffect, lazy, Suspense, useCallback } from "react";
 import axios from "../api/axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,7 +17,9 @@ const Comment = lazy(() =>
 const FilterControls = lazy(() =>
   import("../components/coursePageComponents/FilterControls")
 );
-const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
+const Pagination = lazy(() =>
+  import("../components/coursePageComponents/Pagination")
+);
 const WriteComment = lazy(() =>
   import("../components/coursePageComponents/WriteComment")
 );
@@ -148,6 +150,12 @@ const CoursePage = () => {
     filteredAndSortedComments.length / commentsPerPage
   );
 
+  // comment handling report and delete
+  const handleDeleteComment = useCallback((commentId, formData) => {
+    // Implement your report logic here
+    console.log(`Delete for comment ${commentId}:`, formData);
+  }, []);
+
   return (
     <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
       <div className="w-auto mx-auto container p-4">
@@ -198,7 +206,11 @@ const CoursePage = () => {
         <div className="space-y-4">
           {currentComments.map((comment) => (
             <Suspense key={comment.id} fallback={<div>Loading comment...</div>}>
-              <Comment comment={comment} courseId={courseId} />
+              <Comment
+                comment={comment}
+                courseId={courseId}
+                onDelete={handleDeleteComment}
+              />
             </Suspense>
           ))}
         </div>
