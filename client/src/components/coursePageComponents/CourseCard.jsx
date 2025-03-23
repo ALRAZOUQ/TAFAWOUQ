@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
   Trash2,
   SquarePlus,
@@ -13,6 +13,7 @@ import Rate from "./Rate";
 import EnterGrade from "./EnterGrade";
 import KababMenu from "../KababMenu";
 import ThreeDotMenuButton from "../ThreeDotMenuButton";
+import { motion } from "framer-motion";
 
 export default function CourseCard({
   course,
@@ -25,18 +26,51 @@ export default function CourseCard({
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isRating, setIsRating] = useState(false);
   const [isGrading, setIsGrading] = useState(false);
+  const [animatedGrade, setAnimatedGrade] = useState(0);
+  const [animatedRating, setAnimatedRating] = useState(0);
+
+  useEffect(() => {
+    if (!course || !course?.avgGrade || !course?.avgRating) return;
+    const duration = 1500; // Animation duration in milliseconds
+    const steps = 60; // Number of updates
+    let step = 0;
+
+    const avgGrade = course.avgGrade;
+    const avgRating = course.avgRating;
+
+    const interval = setInterval(() => {
+      step++;
+      setAnimatedGrade((prev) =>
+        Math.min(prev + ((avgGrade / 5) * 360) / steps, (avgGrade / 5) * 360)
+      );
+      setAnimatedRating((prev) =>
+        Math.min(prev + ((avgRating / 5) * 360) / steps, (avgRating / 5) * 360)
+      );
+      if (step >= steps) clearInterval(interval);
+    }, duration / steps);
+
+    return () => clearInterval(interval);
+  }, [course?.avgGrade, course?.avgRating]);
+  const getColor = (value) => {
+    if (value <= 1.5 && value >= 1) return "#4ade80"; // bg-green-400
+    if (value <= 2.5 && value > 1.5) return "#166534"; // bg-green-800
+    if (value <= 3.5 && value > 2.5) return "#ea580c"; // bg-orange-600
+    if (value <= 4.5 && value > 3.5) return "#ef4444"; // bg-red-500
+    return "#dc2626"; // bg-red-600
+  };
+
   async function handleAddCourseToSchedule(courseId) {
     addCourseToSchedule(courseId);
   }
+
   function handleRating() {
     setIsRating(true);
   }
+
   function handleGrading() {
     setIsGrading(true);
   }
-
   if (!course) return <div className="text-center py-4">Loading...</div>;
-
   return (
     <div className="w-full h-auto bg-white shadow-lg rounded-lg p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300 hover:shadow-xl transition-shadow">
       <EditCourseModal
@@ -52,7 +86,6 @@ export default function CourseCard({
         <div className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">{course.code}</h2>
-
             <KababMenu
               position={"relative absolute bottom-6 left-6"}
               menuOpen={menuOpen}
@@ -141,17 +174,40 @@ export default function CourseCard({
       </div>
 
       <div className="grid grid-cols-2 gap-4 pt-4">
-        <div className="space-y-1">
+        {/* Circular Progress Bar for Average Grade */}
+        <div className="flex flex-col items-center space-y-2">
           <p className="text-sm text-gray-500">متوسط الدرجات</p>
-          <p className="text-lg font-semibold text-gray-800">
-            {course.avgGrade}
-          </p>
+          <motion.div
+            className="relative w-20 h-20 rounded-full flex items-center justify-center bg-gray-200"
+            animate={{
+              background: `conic-gradient(#3b82f6 ${animatedGrade}deg, #e5e7eb 0deg)`,
+            }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          >
+            <div className="absolute inset-0 bg-white rounded-full m-2"></div>
+            <p className="absolute text-lg font-semibold text-gray-800">
+              {course.avgGrade}/5
+            </p>
+          </motion.div>
         </div>
-        <div className="space-y-1">
+
+        {/* Circular Progress Bar for Average Rating */}
+        <div className="flex flex-col items-center space-y-2">
           <p className="text-sm text-gray-500">متوسط الصعوبة</p>
-          <p className="text-lg font-semibold text-gray-800">
-            {course.avgRating}/5
-          </p>
+          <motion.div
+            className="relative w-20 h-20 rounded-full flex items-center justify-center bg-gray-200"
+            animate={{
+              background: `conic-gradient(${getColor(
+                course.avgRating
+              )} ${animatedRating}deg, #e5e7eb 0deg)`,
+            }}
+            transition={{ duration: 1.5, ease: "easeInOut" }}
+          >
+            <div className="absolute inset-0 bg-white rounded-full m-2"></div>
+            <p className="absolute text-lg font-semibold text-gray-800">
+              {course.avgRating}/5
+            </p>
+          </motion.div>
         </div>
       </div>
     </div>
