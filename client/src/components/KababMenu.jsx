@@ -12,7 +12,7 @@ export default function KababMenu({
         onClick={() => {
           setMenuOpen((menuOpen) => !menuOpen);
         }}
-        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+        className="absolute top-2 right-2 hover:shadow-lg rounded-full hover:bg-gray-200 text-gray-500 hover:text-gray-700"
       >
         <MoreVertical size={20} className="text-gray-500 hover:text-gray-700" />
       </button>
