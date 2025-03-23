@@ -44,8 +44,9 @@ export default function AdminHomePage() {
         {reports.map((report) => (
           <ReportCard
             key={report.reportId}
+            reportId={report.reportId}
             reason={report.content}
-            comment={report.comment.content}
+            comment={report.comment}
             commentWriter={report.comment.authorName}
             onReject={() => handleReject(report.reportId)}
             onDeleteComment={() => handleDeleteReport(report.reportId)}
