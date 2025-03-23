@@ -1,12 +1,11 @@
-import { useState } from "react";
 export default function ReportCard({
-  reason = "سبب بلاغ وهمي الرجاء حذفه لئلا يظهر للمستخدمين",
+  reason,
   comment,
   commentWriter,
   onReject,
 }) {
-  const [isOpen, setIsOpen] = useState(false);
   function onDeleteComment() {}
+  function onDeleteCommentAndBanUser() {}
   return (
     <div className="bg-white p-4 border rounded-lg shadow-md transition text-right w-full">
       <h2 className="text-lg font-bold mb-2">بلاغ</h2>
@@ -28,7 +27,7 @@ export default function ReportCard({
         </button>
         <button
           className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
-          onClick={()=>{}}
+          onClick={onDeleteCommentAndBanUser }
         >
           حذف التعليق و حظر المستخدم
         </button>
