@@ -21,19 +21,25 @@ export default function AdminHomePage() {
     fetchReports();
   }, []);
 
- 
-
-  async function handleReject(reportId) {
+  async function onReject(reportId) {
     try {
       const response = await axios.delete("/admin/deleteReport", {
         data: { reportId },
       });
       if (response.data.success) {
         setReports(reports.filter((report) => report.reportId !== reportId));
-        toast.success("تم رفض البلاغ بنجاح");
+        return true;
       }
     } catch (error) {
       console.error("Error deleting report:", error);
+      return false;
+    }
+    return false;
+  }
+  function handleReject(reportId) {
+    if (onReject(reportId)) {
+      toast.success("تم رفض البلاغ بنجاح");
+    } else {
       toast.error("حدث خطأ أثناء رفض البلاغ");
     }
   }
@@ -47,8 +53,9 @@ export default function AdminHomePage() {
             reportId={report.reportId}
             reason={report.content}
             comment={report.comment}
+            handleReject={handleReject}
             commentWriter={report.comment.authorName}
-            onReject={() => handleReject(report.reportId)}
+            onReject={() => onReject(report.reportId)}
             onDeleteComment={() => handleDeleteReport(report.reportId)}
           />
         ))}
