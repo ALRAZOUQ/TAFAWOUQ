@@ -1,14 +1,7 @@
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 
-export default function ReportCard({
-  reason,
-  comment,
-
-  reportId,
-
-  onReject,
-}) {
+export default function ReportCard({ reason, comment, reportId, onReject }) {
   console.log(comment);
   async function onDeleteComment() {
     try {
@@ -19,10 +12,19 @@ export default function ReportCard({
       });
       if (response.data.success) {
         onReject(reportId);
-        toast.success("تم حذف التعليق بنجاح");
+        return true;
       }
     } catch (error) {
       console.error("Error hiding comment:", error);
+      return false;
+    }
+    return false;
+  }
+  function handleDelet() {
+    if (onDeleteComment()) {
+      toast.success("تم حذف التعليق بنجاح");
+    } else {
+      toast.error("حدث خطأ أثناء حذف التعليق");
     }
   }
 
@@ -35,10 +37,19 @@ export default function ReportCard({
       });
       if (response.data.success) {
         await onDeleteComment();
-        toast.success("تم حظر المستخدم بنجاح");
+
+        return true;
       }
     } catch (error) {
       console.error("Error banning user:", error);
+      return false;
+    }
+  }
+  function handleBan() {
+    if (onDeleteCommentAndBanUser()) {
+      toast.success("تم حذف التعليق و حظر المستخدم بنجاح");
+    } else {
+      toast.error("حدث خطأ أثناء حذف التعليق و حظر المستخدم");
     }
   }
 
@@ -57,13 +68,13 @@ export default function ReportCard({
         </button>
         <button
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
-          onClick={onDeleteComment}
+          onClick={handleDelet}
         >
           حذف التعليق
         </button>
         <button
           className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
-          onClick={onDeleteCommentAndBanUser}
+          onClick={handleBan}
         >
           حذف التعليق و حظر المستخدم
         </button>
