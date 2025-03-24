@@ -208,6 +208,66 @@ router.post("/addCourseToSchedule", async (req, res) => {
 //==================================================
 //================= comment =========================
 //==================================================
+router.get("/hiddenComments", async (req, res) => {
+  try {
+    
+    const userId = req.user?.id;
+    const hiddenComments = await db.query(
+      `SELECT 
+  c.id,
+  c.content,
+  c.creationDate as "creationDate",
+  c.tag,
+  u.name AS author,
+  u.id AS "authorId",
+  COALESCE(l.num_likes, 0) AS "numOfLikes",
+  COALESCE(r.reply_count, 0) AS "numOfReplies",
+  CASE
+  WHEN sl.creatorid = $1 THEN true 
+          ELSE false 
+        END AS "isLiked",
+  hc.reason	as "hideReason",
+  hc.date as "hideDate"
+FROM comment c
+JOIN "user" u ON c.authorId = u.id
+LEFT JOIN (
+  SELECT commentId, COUNT(*) AS num_likes
+  FROM "like"
+  GROUP BY commentId
+) l ON c.id = l.commentId
+LEFT JOIN (
+  SELECT parentCommentId, COUNT(*) AS reply_count
+  FROM comment 
+  
+  WHERE parentCommentId IS NOT NULL  
+  GROUP BY parentCommentId
+) r ON c.id = r.parentCommentId
+LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $1
+
+WHERE  hc.id IS not NULL  -- to retreve all hidden comments
+ -- AND c.parentCommentId IS NULL  -- Only top-level comments (no parent)
+ORDER BY hc.date DESC;`,
+      [userId]
+    );
+
+    if (hiddenComments.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No hidden comments or replies were found on this." });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "hidden comments or replies retrieved successfully",
+      hiddenComments: hiddenComments.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
 router.put("/hideComment", async (req, res) => {
   try {
     const { reason, reportId, commentId } = req.body;
