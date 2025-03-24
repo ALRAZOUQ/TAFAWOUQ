@@ -325,6 +325,49 @@ router.put("/hideComment", async (req, res) => {
   }
 });
 
+
+
+router.put("/unHideComment", async (req, res) => {
+  try {
+    const { commentId } = req.body;
+
+    if (!commentId) {
+      return res.status(400).json({
+        success: false,
+        message: "commentId is required.",
+      });
+    }
+
+    // Check if the comment is currently hidden
+    const existingComment = await db.query(
+      `SELECT 1 FROM comment WHERE id = $1`,
+      [commentId]
+    );
+
+    if (existingComment.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "comment is not currently hidden or does not exist in the database.",
+      });
+    }
+
+    // Remove the comment 
+  const  result = await db.query(`DELETE FROM comment WHERE id = $1`, [commentId]);
+if (result.rowCount === 1) {
+    res.status(200).json({
+      success: true,
+      message: "comment has been successfully unHidden.",
+    });
+  }
+  } catch (error) {
+    
+    console.error("Error when unHiding a comment:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+
+
 //==================================================
 //================= quiz =========================
 //==================================================
@@ -587,7 +630,7 @@ router.put("/unBanUser", async (req, res) => {
     if (existingBan.rows.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "User is not currently banned.",
+        message: "User is not currently banned or does not exist in the database.",
       });
     }
 
@@ -596,7 +639,7 @@ router.put("/unBanUser", async (req, res) => {
 if (result.rowCount === 1) {
     res.status(200).json({
       success: true,
-      message: "User unbanned successfully.",
+      message: "User has been successfully unBanned.",
     });
   }
   } catch (error) {
