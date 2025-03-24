@@ -17,14 +17,14 @@ export default function BannedAccounts() {
         }
       } catch (error) {
         console.error("Failed to fetch banned accounts:", error);
-        toast.error("حدث خطأ أثناء جلب الحسابات المحظورة");
+        toast.info("لا يوجد أي حساب محظور");
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchBannedAccounts();
-  }, []); // Remove bannedAccounts from dependency array
+  }, []); 
   const handleUnban = async (userId) => {
     try {
       const response = await axios.put("/admin/unBanUser", {
@@ -50,7 +50,7 @@ export default function BannedAccounts() {
         </h1>
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
-            <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-300"></div>
+            <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
           </div>
         ) : (
           <div className="space-y-4 sm:space-y-0">
@@ -85,7 +85,7 @@ export default function BannedAccounts() {
             </div>
 
             {/* Tablet and Desktop view - Table */}
-            <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg overflow-x-auto">
+            <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-TAF-300">
                   <tr>
