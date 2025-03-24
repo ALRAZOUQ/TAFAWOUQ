@@ -428,6 +428,47 @@ router.put("/hideQuiz", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+
+
+router.put("/unHideQuiz", async (req, res) => {
+  try {
+    const { quizId } = req.body;
+
+    if (!quizId) {
+      return res.status(400).json({
+        success: false,
+        message: "quizId is required.",
+      });
+    }
+
+    // Check if the quiz is currently hidden
+    const existingQuiz = await db.query(
+      `SELECT 1 FROM hideQuiz WHERE quizId = $1`,
+      [quizId]
+    );
+
+    if (existingQuiz.rows.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "quiz is not currently hidden or does not exist in the database.",
+      });
+    }
+
+    // Remove the hideQuiz
+  const  result = await db.query(`DELETE FROM hideQuiz WHERE quizId = $1`, [quizId]);
+if (result.rowCount === 1) {
+    res.status(200).json({
+      success: true,
+      message: "quiz has been successfully unHidden.",
+    });
+  }
+  } catch (error) {
+    
+    console.error("Error when unHiding a quiz:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 //==================================================
 //================= report =========================
 //==================================================
