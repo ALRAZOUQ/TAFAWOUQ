@@ -12,7 +12,7 @@ import SearchBarForDesktop from "./SearchBarForDesktop";
 
 export default function MainHeader() {
   const navigate = useNavigate();
-  const { logout, isAuthorized, isAdmin } = useAuth();
+  const { logout, isAuthorized, user } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
 
@@ -78,7 +78,7 @@ export default function MainHeader() {
             <NavigationLink linkTo={"المواد"} route={"/courses"} />
 
             {/* student Links */}
-            {isAdmin && (
+            {!user.isAdmin && (
               <>
                 <NavigationLink
                   linkTo={"إختباراتي القصيرة"}
@@ -87,6 +87,19 @@ export default function MainHeader() {
                 <NavigationLink
                   linkTo={"جداولي السابقة"}
                   route={"mypreviousschedules"}
+                />
+              </>
+            )}
+            {/* admin Links */}
+            {user.isAdmin && (
+              <>
+                <NavigationLink
+                  linkTo={"الحسابات المحظورة"}
+                  route={"/admin/bannedaccounts"}
+                />
+                <NavigationLink
+                  linkTo={"التعليقات المخفية"}
+                  route={"/admin/hiddencomments"}
                 />
               </>
             )}
