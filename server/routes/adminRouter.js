@@ -479,7 +479,42 @@ if (result.rowCount === 1) {
 //==================================================
 //==================== ban =========================
 //==================================================
+router.get("/bannendAccounts", async (req, res) => {
+  try {
+    const bannendAccounts = await db.query(
+      `SELECT json_build_object(
+  'user', json_build_object(
+    'id', u.id,
+    'name', u.name,
+    'email', u.email,
+    'isAdmin', u.isadmin
+  ),
+  'ban', json_build_object(
+    'id', b.id,
+    'reason', b.reason,
+    'date', b.date,
+    'reportId', b.reportid
+  )
+) AS result
+FROM ban b
+LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
+    );
 
+    if (bannendAccounts.rows.length === 0) {
+      return res
+        .status(404)
+        .json({ success: false, message: "No bannend accounts found." });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "bannend accounts retrieved successfully",
+       bannendAccounts:bannendAccounts.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 router.post("/banUser", async (req, res) => {
   try {
