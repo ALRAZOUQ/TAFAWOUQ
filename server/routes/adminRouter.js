@@ -210,7 +210,6 @@ router.post("/addCourseToSchedule", async (req, res) => {
 //==================================================
 router.get("/hiddenComments", async (req, res) => {
   try {
-    
     const userId = req.user?.id;
     const hiddenComments = await db.query(
       `SELECT 
@@ -254,9 +253,12 @@ ORDER BY hc.date DESC;`,
     if (hiddenComments.rows.length === 0) {
       return res
         .status(404)
-        .json({ success: false, message: "No hidden comments or replies were found on this." });
+        .json({
+          success: false,
+          message: "No hidden comments or replies were found on this.",
+        });
     }
-    
+
     res.status(200).json({
       success: true,
       message: "hidden comments or replies retrieved successfully",
@@ -266,7 +268,6 @@ ORDER BY hc.date DESC;`,
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 router.put("/hideComment", async (req, res) => {
   try {
@@ -303,7 +304,7 @@ router.put("/hideComment", async (req, res) => {
         `INSERT INTO hideComment (commentId, reason) VALUES ($1, $2) RETURNING *`,
         [commentId, reason]
       );
-    } 
+    }
 
     if (hideCommentResult.rows.length > 0) {
       res.status(200).json({
@@ -314,18 +315,16 @@ router.put("/hideComment", async (req, res) => {
       });
     }
   } catch (error) {
-    if(error.constraint  === "hidecomment_commentid_fkey")
+    if (error.constraint === "hidecomment_commentid_fkey")
       return res.status(404).json({
         success: false,
         message: "Comment not found in the database.",
-      })
+      });
 
     console.error("Error hiding comment:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
-
 
 router.put("/unHideComment", async (req, res) => {
   try {
@@ -347,26 +346,27 @@ router.put("/unHideComment", async (req, res) => {
     if (existingComment.rows.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "comment is not currently hidden or does not exist in the database.",
+        message:
+          "comment is not currently hidden or does not exist in the database.",
       });
     }
 
-    // Remove the hideComment 
-  const  result = await db.query(`DELETE FROM hideComment WHERE commentId = $1`, [commentId]);
-if (result.rowCount === 1) {
-    res.status(200).json({
-      success: true,
-      message: "comment has been successfully unHidden.",
-    });
-  }
+    // Remove the hideComment
+    const result = await db.query(
+      `DELETE FROM hideComment WHERE commentId = $1`,
+      [commentId]
+    );
+    if (result.rowCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "comment has been successfully unHidden.",
+      });
+    }
   } catch (error) {
-    
     console.error("Error when unHiding a comment:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
-
 
 //==================================================
 //================= quiz =========================
@@ -429,7 +429,6 @@ router.put("/hideQuiz", async (req, res) => {
   }
 });
 
-
 router.put("/unHideQuiz", async (req, res) => {
   try {
     const { quizId } = req.body;
@@ -450,20 +449,22 @@ router.put("/unHideQuiz", async (req, res) => {
     if (existingQuiz.rows.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "quiz is not currently hidden or does not exist in the database.",
+        message:
+          "quiz is not currently hidden or does not exist in the database.",
       });
     }
 
     // Remove the hideQuiz
-  const  result = await db.query(`DELETE FROM hideQuiz WHERE quizId = $1`, [quizId]);
-if (result.rowCount === 1) {
-    res.status(200).json({
-      success: true,
-      message: "quiz has been successfully unHidden.",
-    });
-  }
+    const result = await db.query(`DELETE FROM hideQuiz WHERE quizId = $1`, [
+      quizId,
+    ]);
+    if (result.rowCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "quiz has been successfully unHidden.",
+      });
+    }
   } catch (error) {
-    
     console.error("Error when unHiding a quiz:", error);
     res.status(500).json({ success: false, message: error.message });
   }
@@ -519,7 +520,6 @@ ORDER BY r.creationdate DESC;
   }
 });
 
-
 router.delete("/deleteReport", async (req, res) => {
   try {
     const { reportId } = req.body;
@@ -532,11 +532,10 @@ router.delete("/deleteReport", async (req, res) => {
     }
 
     // Check if the report exists
-    const existingBan = await db.query(
-      `SELECT 1 FROM report WHERE id = $1`,
-      [reportId]
-    );
-    
+    const existingBan = await db.query(`SELECT 1 FROM report WHERE id = $1`, [
+      reportId,
+    ]);
+
     if (existingBan.rows.length === 0) {
       return res.status(400).json({
         success: false,
@@ -544,21 +543,21 @@ router.delete("/deleteReport", async (req, res) => {
       });
     }
 
-    // Remove the report 
-  const  result = await db.query(`DELETE FROM report WHERE id = $1`, [reportId]);
-if (result.rowCount === 1) {
-    res.status(200).json({
-      success: true,
-      message: "report deleted successfully.",
-    });
-  }
+    // Remove the report
+    const result = await db.query(`DELETE FROM report WHERE id = $1`, [
+      reportId,
+    ]);
+    if (result.rowCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "report deleted successfully.",
+      });
+    }
   } catch (error) {
-    
     console.error("Error deleting report:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 //==================================================
 //==================== ban =========================
@@ -589,11 +588,11 @@ LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
         .status(404)
         .json({ success: false, message: "No bannend accounts found." });
     }
-    
+
     res.status(200).json({
       success: true,
       message: "bannend accounts retrieved successfully",
-       bannendAccounts:bannendAccounts.rows,
+      bannendAccounts: bannendAccounts.rows,
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -602,7 +601,7 @@ LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
 
 router.post("/banUser", async (req, res) => {
   try {
-    const { reason, studentId ,reportId } = req.body;
+    const { reason, studentId, reportId } = req.body;
 
     if (!studentId || !reason) {
       return res.status(400).json({
@@ -628,9 +627,8 @@ router.post("/banUser", async (req, res) => {
     if (reportId) {
       banUserResult = await db.query(
         `INSERT INTO ban (studentId, reason,reportId ) VALUES ($1, $2 ,$3) RETURNING *`,
-        [studentId, reason,reportId]
+        [studentId, reason, reportId]
       );
-    
     } else {
       banUserResult = await db.query(
         `INSERT INTO ban (studentId ,reason) VALUES ($1, $2) RETURNING *`,
@@ -644,7 +642,6 @@ router.post("/banUser", async (req, res) => {
         message: "User banned successfully.",
       });
     }
-    
   } catch (error) {
     console.error("Error banning user:", error);
     res.status(500).json({ success: false, message: error.message });
@@ -671,23 +668,111 @@ router.put("/unBanUser", async (req, res) => {
     if (existingBan.rows.length === 0) {
       return res.status(400).json({
         success: false,
-        message: "User is not currently banned or does not exist in the database.",
+        message:
+          "User is not currently banned or does not exist in the database.",
       });
     }
 
-    // Remove the ban 
-  const  result = await db.query(`DELETE FROM ban WHERE studentId = $1`, [studentId]);
-if (result.rowCount === 1) {
-    res.status(200).json({
-      success: true,
-      message: "User has been successfully unBanned.",
-    });
-  }
+    // Remove the ban
+    const result = await db.query(`DELETE FROM ban WHERE studentId = $1`, [
+      studentId,
+    ]);
+    if (result.rowCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "User has been successfully unBanned.",
+      });
+    }
   } catch (error) {
-    
     console.error("Error unbanning user:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
 
+//==================================================
+//==================== term =========================
+//==================================================
+
+router.post("/AddTerm", async (req, res) => {
+  const { name, startDate, endDate } = req.body;
+const creatorId = req.user?.id;
+  // Validate required fields
+  if (!name || !startDate || !endDate || !creatorId) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Missing required fields." });
+  }
+
+  // Validate and parse dates
+  const startDateObj = new Date(startDate);
+  const endDateObj = new Date(endDate);
+  if (
+    isNaN(startDateObj.getTime()) ||
+    isNaN(endDateObj.getTime())
+  ) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Invalid date format." });
+  }
+
+  // Check if start date is before end date
+  if (startDateObj >= endDateObj) {
+    return res
+      .status(400)
+      .json({ success: false, message: "Start date must be before end date." });
+  }
+
+  try {
+    const overlapQuery = `
+      SELECT EXISTS (
+        SELECT 1
+        FROM public.term
+        WHERE (startdate <= $1 AND enddate >= $2)
+           OR (startdate <= $3 AND enddate >= $4)
+           OR ($5 <= startdate AND $6 >= enddate)
+           OR (startdate = $7 AND enddate = $8)
+      );
+    `;
+
+    const overlapResult = await db.query(overlapQuery, [
+      endDateObj,
+      startDateObj,
+      startDateObj,
+      endDateObj,
+      startDateObj,
+      endDateObj,
+      startDateObj,
+      endDateObj,
+    ]);
+
+    const overlapExists = overlapResult.rows[0].exists;
+
+    if (overlapExists) {
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Term dates overlap with existing terms.",
+        });
+    }
+
+    const insertQuery = `
+      INSERT INTO public.term (name, startdate, enddate, creatorid)
+      VALUES ($1, $2, $3, $4);
+    `;
+    await db.query(insertQuery, [name, startDateObj, endDateObj, creatorId]);
+
+    res
+      .status(201)
+      .json({ success: true, message: "Term created successfully." });
+  } catch (error) {
+    console.error("Database error:", error);
+    if (error.constraint === "term_pkey")
+      return res
+        .status(409)
+        .json({ success: false, message: `there are term with the same name: ${name}` });
+
+    res.status(500).json({ success: false, message: "Internal server error." });
+  }
+});
 export default router;
