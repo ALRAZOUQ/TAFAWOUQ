@@ -28,10 +28,18 @@ const router = createBrowserRouter([
       { path: "home", element: <Home_page /> },
       { index: true, element: <Landing /> },
       { path: "courses", element: <CoursesPage /> },
-      { path: "admin/admin-home", element: <AdminHomePage /> },
+
       { path: "courses/:courseId", element: <CoursePage /> },
       { path: "mypreviousschedules", element: <CoursePage /> },
       { path: "myquizzes", element: <CoursePage /> },
+      {
+        path: "admin",
+        children: [
+          { index: true, path: "admin-home", element: <AdminHomePage /> },
+          { path: "hiddencomments", element: <AdminHomePage /> },
+          { path: "bannedaccounts", element: <AdminHomePage /> },
+        ],
+      },
     ],
   },
   { path: "signup", element: <Signup /> },
