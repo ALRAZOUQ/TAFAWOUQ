@@ -1,34 +1,40 @@
 import Screen from "../components/Screen";
 import { useState, useEffect } from "react";
+import axios from "../api/axios";
+import { toast } from "react-toastify";
 
 export default function BannedAccounts() {
-  const [bannedUsers, setBannedUsers] = useState([]);
+  const [bannedAccounts, setBannedAccounts] = useState([]);
 
   useEffect(() => {
-    setBannedUsers([
-      {
-        id: 1,
-        username: "user1",
-        email: "user1@example.com",
-        bannedDate: "2024-01-01",
-      },
-      {
-        id: 2,
-        username: "user2",
-        email: "user2@example.com",
-        bannedDate: "2024-01-02",
-      },
-    ]);
-  }, []);
+    const fetchBannedAccounts = async () => {
+      try {
+        const response = await axios.get("/admin/bannendAccounts");
+        if (response.status === 200) {
+          setBannedAccounts(response.data.bannendAccounts);
+        }
+      } catch (error) {
+        console.error("Failed to fetch banned accounts:", error);
+      }
+    };
 
+    fetchBannedAccounts();
+  }, [bannedAccounts]);
   const handleUnban = async (userId) => {
     try {
-      console.log(`Unbanning user ${userId}`);
-      setBannedUsers(bannedUsers.filter((user) => user.id !== userId));
+      const response = await axios.put("/admin/unBanUser", { studentId:userId });
+      if (response.status === 200) {
+        setBannedAccounts((prev) =>
+          prev.filter((acc) => acc.result.user.id !== userId)
+        );
+        toast.success("تم فك الحظر بنجاح");
+      }
     } catch (error) {
-      console.error("Error unbanning user:", error);
+      console.error("Failed to unban account:", error);
+      toast.error("حدث خطأ أثناء فك الحظر");
     }
   };
+
 
   return (
     <Screen title="Banned Accounts" className="p-6">
@@ -47,26 +53,32 @@ export default function BannedAccounts() {
                   الإيميل
                 </th>
                 <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  السبب
+                </th>
+                <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   إجراء
                 </th>
               </tr>
             </thead>
             <tbody className="bg-gray-50 divide-y divide-gray-200">
-              {bannedUsers.map((user) => (
-                <tr key={user.id}>
+              {bannedAccounts?.map((bannedAccount) => (
+                <tr key={bannedAccount.result.user.email}>
                   <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-900">
-                    {user.username}
+                    {bannedAccount.result.user.name}
                   </td>
                   <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-900">
-                    {user.email}
+                    {bannedAccount.result.user.email}
+                  </td>
+                  <td className="px-6 py-4 text-center whitespace-nowrap text-sm text-gray-900">
+                    {bannedAccount.result.ban.reason}
                   </td>
 
                   <td className="px-6 py-4 text-center whitespace-nowrap text-sm">
                     <button
-                      onClick={() => handleUnban(user.id)}
-                      className="bg-TAF-100 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded transition duration-200"
+                      onClick={() => handleUnban(bannedAccount.result.user.id)}
+                      className="bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded transition duration-200"
                     >
-                      Unban
+                      فك الحظر
                     </button>
                   </td>
                 </tr>
