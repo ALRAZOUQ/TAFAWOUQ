@@ -340,7 +340,7 @@ router.put("/unHideComment", async (req, res) => {
 
     // Check if the comment is currently hidden
     const existingComment = await db.query(
-      `SELECT 1 FROM comment WHERE id = $1`,
+      `SELECT 1 FROM hidecomment WHERE commentid = $1`,
       [commentId]
     );
 
@@ -351,8 +351,8 @@ router.put("/unHideComment", async (req, res) => {
       });
     }
 
-    // Remove the comment 
-  const  result = await db.query(`DELETE FROM comment WHERE id = $1`, [commentId]);
+    // Remove the hideComment 
+  const  result = await db.query(`DELETE FROM hideComment WHERE commentId = $1`, [commentId]);
 if (result.rowCount === 1) {
     res.status(200).json({
       success: true,
