@@ -101,6 +101,10 @@ export default function MainHeader() {
                   linkTo={"التعليقات المخفية"}
                   route={"/admin/hiddencomments"}
                 />
+                <NavigationLink
+                  linkTo={"إنشاء ترم جديد"}
+                  route={"/admin/createTerm"}
+                />
               </>
             )}
           </div>
