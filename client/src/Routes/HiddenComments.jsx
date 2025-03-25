@@ -63,7 +63,16 @@ export default function HiddenComments() {
       toast.error("حدث خطأ أثناء إظهار التعليق");
     }
   };
-
+  if (hiddenComments.length === 0) {
+    return (
+      <Screen
+        title="Banned Accounts"
+        className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
+      >
+        <div className="text-red-400 text-2xl">لا يوجد تعليقات مخفية</div>
+      </Screen>
+    );
+  }
   return (
     <Screen title="Hidden Comments" className="p-2 sm:p-4 md:p-6">
       <div className="w-full max-w-7xl mx-auto">
