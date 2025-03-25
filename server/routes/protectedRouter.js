@@ -558,8 +558,19 @@ router.get("/viewGpa", async (req, res) => {
         .status(400)
         .json({ success: false, message: "Student ID is required." });
     }
-
+    //other way to get the whole gpa of all sceduls but the rsult will be the gpa or zero
     const gpaQuery = `
+  select COALESCE(SUM(g.value * c.credithours), 0) AS total_grade_points,
+    COALESCE(SUM(c.credithours), 0) AS total_credit_hours,
+    COALESCE(
+        ROUND((SUM(g.value * c.credithours) / NULLIF(SUM(c.credithours), 0))::numeric,2),  0::numeric) AS schedule_gpa
+FROM
+    public.grade g
+JOIN
+    public.course c ON g.courseid = c.id
+WHERE
+    g.creatorid = $1;`;
+    /** old qouery
       SELECT
         SUM(g.value * c.credithours) AS total_grade_points,
         SUM(c.credithours) AS total_credit_hours
@@ -568,14 +579,13 @@ router.get("/viewGpa", async (req, res) => {
       JOIN public.schedule_course sc ON g.courseid = sc.courseid
       JOIN public.schedule s ON sc.scheduleid = s.id
       WHERE s.studentid = $1;
-    `;
-
+     */
     const gpaResult = await db.query(gpaQuery, [studentId]);
 
     if (
       gpaResult.rows.length > 0 &&
-      gpaResult.rows[0].total_credit_hours !== null &&
-      gpaResult.rows[0].total_grade_points !== null
+      gpaResult.rows[0].total_credit_hours !== 0 &&
+      gpaResult.rows[0].total_grade_points !== 0
     ) {
       const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
       const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
@@ -604,6 +614,7 @@ router.get("/viewGpa", async (req, res) => {
 router.get("/viewGpa/:scheduleId", async (req, res) => {
   try {
     const scheduleId = parseInt(req.params.scheduleId);
+    const studentId = parseInt(req.user?.id);
 
     if (!scheduleId) {
       return res
@@ -612,21 +623,23 @@ router.get("/viewGpa/:scheduleId", async (req, res) => {
     }
 
     const gpaQuery = `
-      SELECT
-        SUM(g.value * c.credithours) AS total_grade_points,
-        SUM(c.credithours) AS total_credit_hours
-      FROM public.grade g
-      JOIN public.course c ON g.courseid = c.id
-      JOIN public.schedule_course sc ON g.courseid = sc.courseid
-      WHERE sc.scheduleid = $1;
+      SELECT COALESCE(SUM(g.value * c.credithours), 0) AS total_grade_points,
+    COALESCE(SUM(c.credithours), 0) AS total_credit_hours,
+    COALESCE(
+        ROUND((SUM(g.value * c.credithours) / NULLIF(SUM(c.credithours), 0))::numeric,2),  0.00::numeric) AS schedule_gpa
+FROM schedule_course sc
+JOIN course c ON sc.courseid = c.id
+LEFT JOIN grade g ON sc.courseid = g.courseid 
+    AND g.creatorid = $1
+WHERE sc.scheduleid = $2 and c.id= g.courseid;
     `;
 
-    const gpaResult = await db.query(gpaQuery, [scheduleId]);
+    const gpaResult = await db.query(gpaQuery, [studentId, scheduleId]);
 
     if (
       gpaResult.rows.length > 0 &&
-      gpaResult.rows[0].total_credit_hours !== null &&
-      gpaResult.rows[0].total_grade_points !== null
+      gpaResult.rows[0].total_credit_hours !== 0 &&
+      gpaResult.rows[0].total_grade_points !== 0
     ) {
       const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
       const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
@@ -693,8 +706,6 @@ router.post("/postComment", async (req, res) => {
       numOfReplies: 0,
       isLiked: false,
     };
-
-    
     res.status(201).json({
       success: true,
       message: "Comment created successfully.",
@@ -752,7 +763,6 @@ res.status(500).json({ success: false, message: error.message });
 }
 
 });
-
 
 router.post("/reportQuiz", async (req, res) => {
   try {
