@@ -775,4 +775,67 @@ const creatorId = req.user?.id;
     res.status(500).json({ success: false, message: "Internal server error." });
   }
 });
+
+router.delete("/deleteTerm", async (req, res) => {
+  const { termName } = req.body;
+    try {
+        // Start a transaction
+        await db.query('BEGIN');
+
+        /* Delete courses grads that related to this term because the schedule will be automatically deleted after deleting the term(on delete casecade),
+         so any grads associated with the schedule that will be deleted must be deleted.*/
+        await db.query(`
+            DELETE FROM grade g
+            WHERE g.courseid IN (
+                SELECT sc.courseid
+                FROM schedule_course sc
+                JOIN schedule s ON sc.scheduleid = s.id
+                WHERE s.termname = $1
+            )
+        `, [termName]);
+
+        /*  Delete courses rates that related to this term because the schedule will be automatically deleted after deleting the term(on delete casecade),
+         so any rates associated with the schedule that will be deleted must be deleted.
+        */
+        await db.query(`
+            DELETE FROM rate r
+            WHERE r.courseid IN (
+                SELECT sc.courseid
+                FROM schedule_course sc
+                JOIN schedule s ON sc.scheduleid = s.id
+                WHERE s.termname = $1
+            )
+        `, [termName]);
+
+        // Delete the term (will cascade delete schedules)
+        const result = await db.query(
+            'DELETE FROM term WHERE name = $1', 
+            [termName]
+        );
+
+        // Commit the transaction
+        await db.query('COMMIT');
+
+        // Check if any rows were deleted
+        if (result.rowCount === 0) {
+            return res.status(404).json({ 
+                message: 'Term not found' 
+            });
+        }
+
+        res.status(200).json({ 
+            message: 'Term deleted successfully',
+            deletedTerm: termName 
+        });
+
+    } catch (error) {
+        // Rollback the transaction in case of error
+        await db.query('ROLLBACK');
+        console.error('Error deleting term:', error);
+        res.status(500).json({ 
+            message: 'Error deleting term', 
+            error: error.message 
+        });
+    } 
+});
 export default router;

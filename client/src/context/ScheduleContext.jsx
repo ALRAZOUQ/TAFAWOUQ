@@ -114,7 +114,7 @@ export function ScheduleProvider({ children }) {
       );
       setSchedule((prevSchedule) => ({
         ...prevSchedule,
-        currentScheduleGPA: data.averageGPA || null,
+        currentScheduleGPA: data.averageGPA || 0.0,
       }));
     } catch (error) {
       if (error.response?.status === 404) {
