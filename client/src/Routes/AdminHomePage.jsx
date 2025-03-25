@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "../api/axios";
 import ReportCard from "../components/ReportCard";
 import { toast } from "react-toastify";
+import Screen from "../components/Screen";
 
 export default function AdminHomePage() {
   const [reports, setReports] = useState([]);
@@ -43,7 +44,16 @@ export default function AdminHomePage() {
       toast.error("حدث خطأ أثناء رفض البلاغ");
     }
   }
-
+  if (reports.length === 0) {
+    return (
+      <Screen
+        title="Banned Accounts"
+        className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
+      >
+        <div className="text-red-400">لا يوجد بلاغات</div>
+      </Screen>
+    );
+  }
   return (
     <div className="min-h-screen max-h-max w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 mx-4 p-4">

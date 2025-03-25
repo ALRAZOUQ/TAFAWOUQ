@@ -24,7 +24,7 @@ export default function BannedAccounts() {
     };
 
     fetchBannedAccounts();
-  }, []); 
+  }, []);
   const handleUnban = async (userId) => {
     try {
       const response = await axios.put("/admin/unBanUser", {
@@ -41,7 +41,16 @@ export default function BannedAccounts() {
       toast.error("حدث خطأ أثناء فك الحظر");
     }
   };
-
+  if (bannedAccounts.length === 0) {
+    return (
+      <Screen
+        title="Banned Accounts"
+        className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
+      >
+        <div className="text-red-400">لا يوجد حسابات محظورة</div>
+      </Screen>
+    );
+  }
   return (
     <Screen title="Banned Accounts" className="p-2 sm:p-4 md:p-6">
       <div className="w-full max-w-7xl mx-auto">
@@ -57,19 +66,34 @@ export default function BannedAccounts() {
             {/* Mobile view - Cards */}
             <div className="block sm:hidden space-y-4">
               {bannedAccounts?.map((bannedAccount) => (
-                <div key={bannedAccount.result.user.email} className="bg-gray-50 shadow-md rounded-lg p-4 space-y-3">
+                <div
+                  key={bannedAccount.result.user.email}
+                  className="bg-gray-50 shadow-md rounded-lg p-4 space-y-3"
+                >
                   <div className="space-y-2">
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium text-gray-500">اسم المستخدم</span>
-                      <span className="text-sm text-gray-900">{bannedAccount.result.user.name}</span>
+                      <span className="text-xs font-medium text-gray-500">
+                        اسم المستخدم
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {bannedAccount.result.user.name}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium text-gray-500">الإيميل</span>
-                      <span className="text-sm text-gray-900 break-all">{bannedAccount.result.user.email}</span>
+                      <span className="text-xs font-medium text-gray-500">
+                        الإيميل
+                      </span>
+                      <span className="text-sm text-gray-900 break-all">
+                        {bannedAccount.result.user.email}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-xs font-medium text-gray-500 mx-2">السبب</span>
-                      <span className="text-sm text-gray-900">{bannedAccount.result.ban.reason}</span>
+                      <span className="text-xs font-medium text-gray-500 mx-2">
+                        السبب
+                      </span>
+                      <span className="text-sm text-gray-900">
+                        {bannedAccount.result.ban.reason}
+                      </span>
                     </div>
                   </div>
                   <div className="flex justify-center">
@@ -105,7 +129,10 @@ export default function BannedAccounts() {
                 </thead>
                 <tbody className="bg-gray-50 divide-y divide-gray-200">
                   {bannedAccounts?.map((bannedAccount) => (
-                    <tr key={bannedAccount.result.user.email} className="hover:bg-gray-100 transition-colors duration-200">
+                    <tr
+                      key={bannedAccount.result.user.email}
+                      className="hover:bg-gray-100 transition-colors duration-200"
+                    >
                       <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4 text-center text-[11px] sm:text-sm md:text-base text-gray-900">
                         {bannedAccount.result.user.name}
                       </td>
@@ -117,7 +144,9 @@ export default function BannedAccounts() {
                       </td>
                       <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4 text-center">
                         <button
-                          onClick={() => handleUnban(bannedAccount.result.user.id)}
+                          onClick={() =>
+                            handleUnban(bannedAccount.result.user.id)
+                          }
                           className="bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded transition duration-200 text-[11px] sm:text-sm"
                         >
                           فك الحظر
