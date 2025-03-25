@@ -723,45 +723,45 @@ router.post("/postComment", async (req, res) => {
 
 router.post("/reportComment", async (req, res) => {
   try {
-    const {  commentId, reportContent } = req.body;
-const userId = req.user.id;
+    const { commentId, reportContent } = req.body;
+    const userId = req.user.id;
     if (!userId || !commentId || !reportContent) {
       return res.status(400).json({
         success: false,
-        message: "Missing required parameters (userId, commentId, reportContent).",
+        message:
+          "Missing required parameters (userId, commentId, reportContent).",
       });
     }
-// Begin transaction to do the process together or nothing
-await db.query('BEGIN');
+    // Begin transaction to do the process together or nothing
+    await db.query("BEGIN");
 
-// Create the report
-const reportResult = await db.query(
-  `INSERT INTO report (authorid, content) VALUES ($1, $2) RETURNING id`,
-  [userId, reportContent]
-);
+    // Create the report
+    const reportResult = await db.query(
+      `INSERT INTO report (authorid, content) VALUES ($1, $2) RETURNING id`,
+      [userId, reportContent]
+    );
 
-const reportId = reportResult.rows[0].id;
+    const reportId = reportResult.rows[0].id;
 
-// Link the report with the comment
-await db.query(
-  `INSERT INTO report_comment (reportid, commentid) VALUES ($1, $2)`,
-  [reportId, commentId]
-);
+    // Link the report with the comment
+    await db.query(
+      `INSERT INTO report_comment (reportid, commentid) VALUES ($1, $2)`,
+      [reportId, commentId]
+    );
 
-// Commit transaction
-await db.query('COMMIT');
+    // Commit transaction
+    await db.query("COMMIT");
 
-res.status(201).json({
-  success: true,
-  message: "Comment reported successfully.",
-});
-} catch (error) {
-// Rollback transaction on error
-await db.query('ROLLBACK');
-console.error("Error reporting comment:", error);
-res.status(500).json({ success: false, message: error.message });
-}
-
+    res.status(201).json({
+      success: true,
+      message: "Comment reported successfully.",
+    });
+  } catch (error) {
+    // Rollback transaction on error
+    await db.query("ROLLBACK");
+    console.error("Error reporting comment:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
 router.post("/reportQuiz", async (req, res) => {
