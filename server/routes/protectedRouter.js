@@ -151,6 +151,68 @@ router.post("/addCourseToSchedule", async (req, res) => {
   }
 });
 */
+router.get("/AllSchedules", async (req, res) => {
+  const studentId = req.user.id; // Assuming you have authentication middleware
+
+  try {
+    const result = await db.query(
+      `
+          SELECT 
+              schedule.id AS scheduleId, 
+              schedule.termName, 
+              term.startDate, 
+              term.endDate,
+              COALESCE(
+                  ROUND(
+                      (SUM(COALESCE(grade.value, 0) * course.credithours) / NULLIF(SUM(course.credithours), 0))::numeric, 
+                      2
+                  ), 
+                  0.00::numeric
+              ) AS gpa,
+              COALESCE(json_agg(
+                  json_build_object(
+                      'id', course.id,
+                      'name', course.name,
+                      'code', course.code,
+                      'overview', course.overview,
+                      'creditHours', course.credithours,
+                      'grade', COALESCE(grade.value, 0),
+                      'rate', COALESCE(rate.value, 0)
+                  )
+              ) FILTER (WHERE course.id IS NOT NULL), '[]') AS courses
+          FROM schedule
+          JOIN term ON schedule.termName = term.name
+          LEFT JOIN schedule_course ON (schedule.id = schedule_course.scheduleId)
+          LEFT JOIN course ON schedule_course.courseId = course.id
+          LEFT JOIN grade ON (course.id = grade.courseid AND grade.creatorid = schedule.studentId)
+          LEFT JOIN rate ON (course.id = rate.courseid AND rate.creatorid = schedule.studentId)
+          WHERE schedule.studentId = $1
+          GROUP BY schedule.id, schedule.termName, term.startDate, term.endDate
+          ORDER BY term.startDate DESC
+      `,
+      [studentId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No schedules found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Schedules retrieved successfully",
+      schedules: result.rows,
+    });
+  } catch (error) {
+    console.error("Error fetching student schedules:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching student schedules",
+    });
+  }
+});
 
 router.post("/createSchedule", async (req, res) => {
   try {
