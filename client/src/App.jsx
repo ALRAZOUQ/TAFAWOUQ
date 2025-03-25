@@ -10,6 +10,7 @@ import RootLayout from "./Routes/RootLayout";
 // import AdminHomePage from "./Routes/AdminHomePage";
 import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
+import CreateTermModal from "./Routes/createTermModal";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
 
 // HASSAN: lazy to optimize the performance for the app and load the page in the background
@@ -22,6 +23,7 @@ const BannedAccounts = lazy(() => import("./Routes/BannedAccounts"));
 const Hiddencomments = lazy(() => import("./Routes/Hiddencomments"));
 const PreviousSchedules = lazy(() => import("./Routes/PreviousSchedules"));
 const Quizzes = lazy(() => import("./Routes/Quizzes"));
+
 // ✅ Define Routes
 const router = createBrowserRouter([
   {
@@ -42,7 +44,7 @@ const router = createBrowserRouter([
           { index: true, path: "admin-home", element: <AdminHomePage /> },
           { path: "hiddencomments", element: <Hiddencomments /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },
-          { path: "createTerm", element: <div/> },
+          { path: "createTerm", element: <CreateTermModal /> },
         ],
       },
     ],
