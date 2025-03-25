@@ -47,7 +47,7 @@ export default function BannedAccounts() {
         title="Banned Accounts"
         className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
       >
-        <div className="text-red-400">لا يوجد حسابات محظورة</div>
+        <div className="text-red-400 text-2xl">لا يوجد حسابات محظورة</div>
       </Screen>
     );
   }

@@ -25,7 +25,6 @@ export default function MainHeader() {
   const handleLogout = async () => {
     try {
       const flag = await logout();
-      console.log("Logout successful"); // Debugging log
       if (flag) {
         toast.success("تم تسجيل الخروج بنجاح");
       }
@@ -136,7 +135,7 @@ export default function MainHeader() {
         {isAuthorized && (
           <button
             onClick={handleSearching}
-            className={`hidden md:block md:ml-12 rounded-full p-2 hover:bg-gray-200 transition-colors${
+            className={`hidden md:block md:ml-12 rounded-full p-2 hover:bg-gray-200 transition-colors ${
               isSearching ? "bg-gray-100 hover:bg-gray-200 p-2 ml-12" : ""
             }`}
           >

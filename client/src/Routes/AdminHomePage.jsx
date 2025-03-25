@@ -50,7 +50,7 @@ export default function AdminHomePage() {
         title="Banned Accounts"
         className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
       >
-        <div className="text-red-400">لا يوجد بلاغات</div>
+        <div className="text-red-400 text-2xl">لا يوجد بلاغات</div>
       </Screen>
     );
   }
