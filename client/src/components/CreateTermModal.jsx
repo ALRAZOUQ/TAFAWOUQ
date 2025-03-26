@@ -1,8 +1,7 @@
-import GenericForm from "../components/GenericForm";
-import Screen from "../components/Screen";
-import { useState } from "react";
+import GenericForm from "./GenericForm";
+import Screen from "./Screen";
 
-export default function CreateTermModal({ children }) {
+export default function CreateTermModal() {
   return (
     <Screen>
       <GenericForm
@@ -32,7 +31,7 @@ export default function CreateTermModal({ children }) {
         ]}
         submitButtonText="إنشاء"
       >
-        {children}
+        <button className="w-full bg-black h-2">إنشاء ترم دراسي جديد</button>
       </GenericForm>
     </Screen>
   );
