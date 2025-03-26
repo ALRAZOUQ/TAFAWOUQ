@@ -21,7 +21,6 @@ const UserAvatar = memo(({ name }) => (
   </div>
 ));
 
-
 export default function Comment({
   comment,
   isReply = false,
@@ -36,80 +35,74 @@ export default function Comment({
   const [likesCount, setLikesCount] = useState(parseInt(comment.numOfLikes));
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
-  const { user } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const deleteFields = useMemo(
     () => [
-      { name: "reason", label: "سبب الاخفاء", type: "textarea", required: true },
+      {
+        name: "reason",
+        label: "سبب الاخفاء",
+        type: "textarea",
+        required: true,
+      },
     ],
     []
   );
-  
+
   const reportFields = useMemo(
     () => [
       {
         name: "reportContent",
         label: "سبب الإبلاغ",
         type: "textarea",
-        required: true
+        required: true,
       },
     ],
     []
   );
-  const handleHideComment = useCallback(
-    async (formData) => {
-      try {
-        const response = await axios.put("/admin/hideComment", {
-          commentId: formData.id,
-          reason: formData.reason,
-          reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
-        });
-  
-        if (response.data.success) {
-          
-          onDelete(formData.id);//to delete the comment from the comments list
-          toast.success("تم إخفاء التعليق بنجاح");
-        }
-    
-      } catch (error) {
-        if (error?.response?.status === 409) {
-          toast.error("تم حذف هذا المقرر بالفعل");
-          return;
-        }
-        console.error("Error submitting rating:", error);
-        toast.error(
-          error.response?.data?.message || "حدث خطأاثناء حذف الكومنت."
-        );
-          console.error('Error hiding comment:', error);
-        
-      }
-    },
-    [] 
-  );
+  const handleHideComment = useCallback(async (formData) => {
+    try {
+      const response = await axios.put("/admin/hideComment", {
+        commentId: formData.id,
+        reason: formData.reason,
+        reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
+      });
 
-  const handleReportComment = useCallback(
-    async (formData) => {
-      try {
-        // Prepare the data for the API call
-        const reportData = {
-          commentId: comment.id,
-          reportContent: formData.reportContent 
-        };
-        
-        // Call the API endpoint
-        const response = await axios.post("/protected/reportComment", reportData);
-        
-        if (response.data.success) {
-          toast.success("تم الإبلاغ عن التعليق بنجاح");
-        }
-        return { success: true };
-      } catch (error) {
-        console.error("Error reporting comment:", error);
-        toast.error("حدث خطأ أثناء الإبلاغ عن التعليق");
-        return { success: false, error };
+      if (response.data.success) {
+        onDelete(formData.id); //to delete the comment from the comments list
+        toast.success("تم إخفاء التعليق بنجاح");
       }
-    },
-    []
-  );
+    } catch (error) {
+      if (error?.response?.status === 409) {
+        toast.error("تم حذف هذا المقرر بالفعل");
+        return;
+      }
+      console.error("Error submitting rating:", error);
+      toast.error(error.response?.data?.message || "حدث خطأاثناء حذف الكومنت.");
+      console.error("Error hiding comment:", error);
+    }
+  }, []);
+
+  const handleReportComment = useCallback(async (formData) => {
+    try {
+      // Prepare the data for the API call
+      const reportData = {
+        commentId: comment.id,
+        reportContent: formData.reportContent,
+      };
+
+      // Call the API endpoint
+      const response = await axios.post("/protected/reportComment", reportData);
+
+      if (response.data.success) {
+        toast.success("تم الإبلاغ عن التعليق بنجاح");
+      }
+      return { success: true };
+    } catch (error) {
+      console.error("Error reporting comment:", error);
+      toast.error("حدث خطأ أثناء الإبلاغ عن التعليق");
+      return { success: false, error };
+    }
+  }, []);
   const handleToggleReplies = async () => {
     if (showReplies) {
       setShowReplies(false);
@@ -205,17 +198,19 @@ export default function Comment({
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
         <div className="flex gap-6">
-          <button
-            className={`flex items-center gap-2 ${
-              isLiked ? "text-blue-600" : "text-gray-600"
-            } hover:text-blue-600 transition-colors`}
-            onClick={handleLikeToggle}
-            disabled={isLikeLoading}
-          >
-            <ThumbsUp size={18} />
-            <span className="text-sm">{likesCount} إعجاب</span>
-          </button>
-          {!isReply && (
+          {isAuthorized && (
+            <button
+              className={`flex items-center gap-2 ${
+                isLiked ? "text-blue-600" : "text-gray-600"
+              } hover:text-blue-600 transition-colors`}
+              onClick={handleLikeToggle}
+              disabled={isLikeLoading}
+            >
+              <ThumbsUp size={18} />
+              <span className="text-sm">{likesCount} اعجبني</span>
+            </button>
+          )}
+          {isAuthorized && !isReply && (
             <button
               className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
               onClick={() => setShowReplyForm(!showReplyForm)}
@@ -229,37 +224,42 @@ export default function Comment({
             <span className="text-sm">{comment.tag}</span>
           </button>
 
-          <GenericForm
-            itemId={comment.id}
-            title="ابلاغ"
-            fields={reportFields}
-            submitButtonText="ابلاغ"
-            onSubmit={(formData)=>{handleReportComment(formData);}}
-          >
-            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-              <MessageSquareWarning size={18} />
-              <span className="text-sm">ابلاغ</span>
-            </button>
-          </GenericForm>
+          {isAuthorized && (
+            <GenericForm
+              itemId={comment.id}
+              title="ابلاغ"
+              fields={reportFields}
+              submitButtonText="ابلاغ"
+              onSubmit={(formData) => {
+                handleReportComment(formData);
+              }}
+            >
+              <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <MessageSquareWarning size={18} />
+                <span className="text-sm">ابلاغ</span>
+              </button>
+            </GenericForm>
+          )}
           {/* Make sure we're properly checking if the user is an admin */}
-                        {user && user.isAdmin === true && ( 
-                          <GenericForm
-                            itemId={comment?.id}
-                            title="اخفاء تعليق"
-                            fields={deleteFields}
-                            submitButtonText="اخفاء"
-                            onSubmit={(formData) => {handleHideComment(formData)}}
-                          >
-                            <button 
-                              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                              type="button"
-                            >
-                              <Trash2 size={18} />
-                              <span className="text-sm">اخفاء</span>
-                            </button>
-                          </GenericForm>
-                        )}
-         
+          {isAuthorized && user.isAdmin && (
+            <GenericForm
+              itemId={comment?.id}
+              title="اخفاء تعليق"
+              fields={deleteFields}
+              submitButtonText="اخفاء"
+              onSubmit={(formData) => {
+                handleHideComment(formData);
+              }}
+            >
+              <button
+                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                type="button"
+              >
+                <Trash2 size={18} />
+                <span className="text-sm">اخفاء</span>
+              </button>
+            </GenericForm>
+          )}
         </div>
         {comment.numOfReplies > 0 && (
           <ReplyToggleButton

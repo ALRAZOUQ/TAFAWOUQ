@@ -1,7 +1,6 @@
+import NavigationLink from "./RootLayoutComponents/NavigationLink";
 import GenericForm from "./GenericForm";
-import Screen from "./Screen";
-
-export default function CreateTermModal({ children }) {
+export default function CreateTermModalTrigger() {
   return (
     <GenericForm
       title="إنشاء ترم جديد"
@@ -30,7 +29,7 @@ export default function CreateTermModal({ children }) {
       ]}
       submitButtonText="إنشاء"
     >
-      {children}
+      <NavigationLink linkTo={"إنشاء ترم جديد"} route={"/admin/createTerm"} />
     </GenericForm>
   );
 }
