@@ -7,7 +7,7 @@ export default function ReportCard({ reason, comment, reportId, onReject }) {
     try {
       const response = await axios.put("/admin/hideComment", {
         reason,
-        reportId,
+        reportId:reportId,
         commentId: comment.id,
       });
       if (response.data.success) {
@@ -56,9 +56,9 @@ export default function ReportCard({ reason, comment, reportId, onReject }) {
   return (
     <div className="bg-white p-4 border rounded-lg shadow-md transition text-right w-full">
       <h2 className="text-lg font-bold mb-2">بلاغ</h2>
-      <p className="font-semibold">السبب: {reason}</p>
-      <p className="mt-2 whitespace-pre-line">التعليق: {comment.content}</p>
-      <p className="mt-2 font-semibold">كاتب التعليق: {comment.authorName}</p>
+      <p className="font-semibold whitespace-normal break-words">السبب: {reason}</p>
+      <p className="mt-2 whitespace-normal break-words">التعليق: {comment.content}</p>
+      <p className="mt-2 font-semibold whitespace-normal break-words">كاتب التعليق: {comment.authorName}</p>
       <div className="mt-4 flex justify-start space-x-2 rtl:space-x-reverse">
         <button
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
