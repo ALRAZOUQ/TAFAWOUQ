@@ -2,30 +2,10 @@ import Screen from "../components/Screen";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
-
-// Dummy
-const dummyHiddenComments = [
-  {
-    id: 1,
-    content: "This is a hidden comment for testing purposes",
-    user: { name: "John Doe" },
-    reason: "Inappropriate content",
-  },
-  {
-    id: 2,
-    content: "Another hidden comment with different content",
-    user: { name: "Jane Smith" },
-    reason: "Spam content",
-  },
-  {
-    id: 3,
-    content: "Third hidden comment for UI testing",
-    user: { name: "Alex Johnson" },
-    reason: "Offensive language",
-  },
-];
+import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 
 export default function HiddenComments() {
+  useRouteIfAuthorizedAndHeIsNotAdmin();
   const [hiddenComments, setHiddenComments] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Set to false since we're using dummy data
 

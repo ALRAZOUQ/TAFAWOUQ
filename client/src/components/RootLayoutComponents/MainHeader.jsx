@@ -86,7 +86,7 @@ export default function MainHeader() {
             </>
           )}
 
-          {isAuthorized && !user.isAdmin && (
+          {isAuthorized && user.isAdmin && (
             <>
               <NavigationLink
                 linkTo={"الحسابات المحظورة"}

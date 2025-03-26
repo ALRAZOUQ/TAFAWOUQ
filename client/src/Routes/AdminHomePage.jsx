@@ -3,9 +3,11 @@ import axios from "../api/axios";
 import ReportCard from "../components/ReportCard";
 import { toast } from "react-toastify";
 import Screen from "../components/Screen";
+import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import CreateTermModal from "../components/CreateTermModal";
 
 export default function AdminHomePage() {
+  useRouteIfAuthorizedAndHeIsNotAdmin();
   const [reports, setReports] = useState([]);
 
   useEffect(() => {
