@@ -64,48 +64,68 @@ export default function HiddenComments() {
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {hiddenComments?.map((comment) => (
-              <div
-                key={comment.id}
-                className="bg-gray-50 shadow-md hover:shadow-lg rounded-lg p-4 space-y-3"
-              >
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-gray-500">
-                      المستخدم
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      {comment.author}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-gray-500">
-                      محتوى التعليق
-                    </span>
-                    <span className="text-sm text-gray-900 break-all">
-                      {comment.content}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-xs font-medium text-gray-500">
-                      السبب
-                    </span>
-                    <span className="text-sm text-gray-900">
-                      {comment.hideReason}
-                    </span>
+          <div className="container mx-auto px-4 py-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hiddenComments.map((comment) => (
+                <div
+                  key={comment.id}
+                  className="bg-white border border-gray-100 rounded-lg shadow-md hover:shadow-xl 
+            transition-shadow duration-300 flex flex-col h-full"
+                >
+                  <div className="p-5 space-y-4 flex-grow flex flex-col">
+                    {/* User Info Section */}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                        <span className="text-sm font-semibold  text-gray-900">
+                          المستخدم:
+                        </span>
+                        <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
+                          {comment.author}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Comment Content Section */}
+                    <div className="bg-gray-50 p-3 rounded-md flex-grow overflow-hidden">
+                      <div className="flex items-start space-x-2 rtl:space-x-reverse">
+                        <span className="text-sm font-semibold text-gray-900 mt-1 flex-shrink-0">
+                          التعليق:
+                        </span>
+                        <p
+                          className="text-sm text-gray-600 break-words overflow-hidden text-ellipsis 
+                    max-h-[100px] overflow-y-auto"
+                        >
+                          {comment.content}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Hide Reason Section */}
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                      <span className="text-sm font-semibold text-gray-900">
+                        سبب الإخفاء:
+                      </span>
+                      <span className="text-sm text-gray-600 truncate max-w-[200px]">
+                        {comment.hideReason || "غير محدد"}
+                      </span>
+                    </div>
+
+                    {/* Unhide Button */}
+                    <div className="mt-auto">
+                      <button
+                        onClick={() => handleUnhide(comment.id)}
+                        className="w-full bg-red-500 text-white py-2 px-4 rounded-md 
+                    hover:bg-red-600 transition-colors duration-200 
+                    focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
+                    active:scale-95"
+                      >
+                        إظهار التعليق
+                      </button>
+                    </div>
                   </div>
                 </div>
-                <div className="flex justify-center">
-                  <button
-                    onClick={() => handleUnhide(comment.id)}
-                    className="w-1/2 bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded-md transition duration-200 text-sm"
-                  >
-                    إظهار التعليق
-                  </button>
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         )}
       </div>
