@@ -3,13 +3,13 @@ import { useAuth } from "../context/authContext";
 import { useEffect, useState } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { Eye, EyeOff } from "lucide-react";
-
+import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
 import GPA from "../components/HomePageComponents/GPA";
 import CourseCardSchedule from "../components/HomePageComponents/CourseCardSchedule";
 
 export default function HomePage() {
-  const navigate = useNavigate();
-  const { isAuthorized, user } = useAuth();
+  useRouteIfAuthorizedAndHeIsAdmin();
+
   const {
     scheduleCourses,
     fetchScheduleCourses,
@@ -20,17 +20,6 @@ export default function HomePage() {
   } = useSchedule();
 
   const [showGPA, setShowGPA] = useState(true);
-
-  useEffect(() => {
-    if (!isAuthorized) {
-      navigate("/");
-      return;
-    }
-    if (user?.isAdmin) {
-      navigate("/admin/admin-home");
-      return;
-    }
-  }, [isAuthorized, user?.isAdmin, navigate]);
 
   async function createScheduleHandler() {
     try {
@@ -62,7 +51,7 @@ export default function HomePage() {
                 لا يوجد لديك مواد مضافة
               </p>
               <p className="text-gray-500">أضف مواد الآن إلى جدولك الدراسي</p>
-              <Link 
+              <Link
                 to="/courses"
                 className="mt-4 bg-TAF-100 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
               >

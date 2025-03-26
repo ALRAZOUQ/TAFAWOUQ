@@ -2,8 +2,10 @@ import Screen from "../components/Screen";
 import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
+import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 
 export default function BannedAccounts() {
+  useRouteIfAuthorizedAndHeIsNotAdmin();
   const [bannedAccounts, setBannedAccounts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
