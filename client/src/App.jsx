@@ -10,7 +10,7 @@ import RootLayout from "./Routes/RootLayout";
 // import AdminHomePage from "./Routes/AdminHomePage";
 import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
-import CreateTermModal from "./Routes/createTermModal";
+import CreateTermModal from "./components/CreateTermModal";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
 
 // HASSAN: lazy to optimize the performance for the app and load the page in the background

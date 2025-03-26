@@ -2,14 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import ThreeDotMenuButton from "../ThreeDotMenuButton";
 import KababMenu from "../KababMenu";
-import {
-  Trash2,
-  ClipboardList,
-  BarChart,
-  Eye,
-  EyeOff,
-  BookOpen,
-} from "lucide-react";
+import { Trash2, ClipboardList, BarChart, BookOpen } from "lucide-react";
 import EnterGrade from "../coursePageComponents/EnterGrade";
 import Rate from "../coursePageComponents/Rate";
 import { useSchedule } from "../../context/ScheduleContext";
@@ -32,11 +25,10 @@ export default function CourseCardSchedule({ course, fetchAgain }) {
     setMenuOpen(false); // Closes the menu
   }
 
-function handleRemoveCourse() {
-  removeCourseFromSchedule(course.id)
-    .then(() => fetchScheduleCourses());
+  function handleRemoveCourse() {
+    removeCourseFromSchedule(course.id).then(() => fetchScheduleCourses());
     setMenuOpen(false);
-}
+  }
 
   return (
     <div className="relative">

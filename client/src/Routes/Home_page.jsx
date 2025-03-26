@@ -25,18 +25,17 @@ export default function HomePage() {
     if (!isAuthorized) {
       navigate("/");
       return;
-    }  
+    }
     if (user?.isAdmin) {
       navigate("/admin/admin-home");
       return;
     }
-}, [isAuthorized, user?.isAdmin, navigate]);
-
+  }, [isAuthorized, user?.isAdmin, navigate]);
 
   async function createScheduleHandler() {
     try {
- await createSchedule();
-     await fetchScheduleCourses();//this will update schedule data after create it (to get the id ,name, startDate , endDate)
+      await createSchedule();
+      await fetchScheduleCourses(); //this will update schedule data after create it (to get the id ,name, startDate , endDate)
     } catch (error) {
       console.error("Failed to create schedule:", error);
     }
@@ -63,7 +62,7 @@ export default function HomePage() {
                 لا يوجد لديك مواد مضافة
               </p>
               <p className="text-gray-500">أضف مواد الآن إلى جدولك الدراسي</p>
-              <Link
+              <Link 
                 to="/courses"
                 className="mt-4 bg-TAF-100 text-white px-6 py-2 rounded-lg hover:opacity-70 active:opacity-55 transition-all"
               >
