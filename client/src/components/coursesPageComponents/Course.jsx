@@ -17,7 +17,7 @@ export default function Course({
   overview,
 }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const { addCourseToSchedule } = useSchedule();
 
@@ -28,42 +28,46 @@ export default function Course({
 
   return (
     <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
-      <KababMenu
-        setMenuOpen={setMenuOpen}
-        position={"absolute top-3 right-3"}
-        menuOpen={menuOpen}
-      >
-        {!user?.isAdmin && (
-          <ThreeDotMenuButton
-            clickHandler={handleAddCourseToSchedule}
-            purpose={"normal"}
-          >
-            <SquarePlus size={20} />
-            أضف المادة الى الجدول
-          </ThreeDotMenuButton>
-        )}
-        {user?.isAdmin && (
-          <ThreeDotMenuButton
-            clickHandler={() => {
-              setIsEditModalOpen(true);
-              setMenuOpen(false);
-            }}
-            purpose={"warning"}
-          >
-            <Pencil size={16} />
-            تعديل المادة
-          </ThreeDotMenuButton>
-        )}
-      </KababMenu>
-      <EditCourseModal
-        id={id}
-        isOpen={isEditModalOpen}
-        onClose={() => setIsEditModalOpen(false)}
-        code={code}
-        name={name}
-        creditHours={creditHours}
-        overview={overview}
-      />
+      {isAuthorized && (
+        <KababMenu
+          setMenuOpen={setMenuOpen}
+          position={"absolute top-3 right-3"}
+          menuOpen={menuOpen}
+        >
+          {!user?.isAdmin && (
+            <ThreeDotMenuButton
+              clickHandler={handleAddCourseToSchedule}
+              purpose={"normal"}
+            >
+              <SquarePlus size={20} />
+              أضف المادة الى الجدول
+            </ThreeDotMenuButton>
+          )}
+          {isAuthorized && user.isAdmin && (
+            <ThreeDotMenuButton
+              clickHandler={() => {
+                setIsEditModalOpen(true);
+                setMenuOpen(false);
+              }}
+              purpose={"warning"}
+            >
+              <Pencil size={16} />
+              تعديل المادة
+            </ThreeDotMenuButton>
+          )}
+        </KababMenu>
+      )}
+      {isAuthorized && user.isAdmin && (
+        <EditCourseModal
+          id={id}
+          isOpen={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          code={code}
+          name={name}
+          creditHours={creditHours}
+          overview={overview}
+        />
+      )}
 
       <Link to={`/courses/${id}`}>
         <div>

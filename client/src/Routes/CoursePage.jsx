@@ -28,7 +28,7 @@ const CoursePage = () => {
   // Hooks
   const { courseId } = useParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const { deleteCourseFromContext } = useCourseData(); //To update the fetched course data used in the search bar and courses page
 
   // State
@@ -82,11 +82,6 @@ const CoursePage = () => {
       console.error("Error fetching comments:", error);
     }
   };
-
-
-
-  
-
 
   // Event Handlers
   const deleteCourse = async () => {
@@ -155,14 +150,12 @@ const CoursePage = () => {
     filteredAndSortedComments.length / commentsPerPage
   );
 
-  
   const handleDeleteComment = (commentId) => {
     console.log("Comment ID to delete:", commentId);
-    setComments(
-        (prevComments) =>
-            prevComments?.filter((comment) => comment.id !== commentId)
+    setComments((prevComments) =>
+      prevComments?.filter((comment) => comment.id !== commentId)
     );
-};
+  };
 
   return (
     <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
@@ -199,16 +192,18 @@ const CoursePage = () => {
         </Suspense>
 
         <Suspense fallback={<div>Loading...</div>}>
-          <WriteComment
-            courseId={courseId}
-            onCommentAdded={(newComment) => {
-              if (newComment) {
-                setComments((prevComments) => [newComment, ...prevComments]);
-              } else {
-                fetchComments();
-              }
-            }}
-          />
+          {isAuthorized && (
+            <WriteComment
+              courseId={courseId}
+              onCommentAdded={(newComment) => {
+                if (newComment) {
+                  setComments((prevComments) => [newComment, ...prevComments]);
+                } else {
+                  fetchComments();
+                }
+              }}
+            />
+          )}
         </Suspense>
 
         <div className="space-y-4">

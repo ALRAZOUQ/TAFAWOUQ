@@ -60,52 +60,46 @@ export default function MainHeader() {
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
-
         {/* Navigation Links */}
-        {isAuthorized && (
-          <div
-            className={`md:flex md:items-center md:gap-5 md:mx-5 ${
-              isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
-            } md:flex-row md:justify-center`}
-          >
-            {/* admin Links */}
-            <NavigationLink
-              linkTo={"الصفحة الرئيسية"}
-              route={isAuthorized ? "/home" : "/"}
-            />
+        <div
+          className={`md:flex md:items-center md:gap-5 md:mx-5 ${
+            isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
+          } md:flex-row md:justify-center`}
+        >
+          {/* admin Links */}
+          <NavigationLink
+            linkTo={"الصفحة الرئيسية"}
+            route={isAuthorized ? "/home" : "/"}
+          />
 
-            <NavigationLink linkTo={"المواد"} route={"/courses"} />
+          <NavigationLink linkTo={"المواد"} route={"/courses"} />
+          {isAuthorized && !user.isAdmin && (
+            <>
+              <NavigationLink
+                linkTo={"إختباراتي القصيرة"}
+                route={"/myquizzes"}
+              />
+              <NavigationLink
+                linkTo={"جداولي السابقة"}
+                route={"mypreviousschedules"}
+              />
+            </>
+          )}
 
-            {/* student Links */}
-            {!user.isAdmin && (
-              <>
-                <NavigationLink
-                  linkTo={"إختباراتي القصيرة"}
-                  route={"/myquizzes"}
-                />
-                <NavigationLink
-                  linkTo={"جداولي السابقة"}
-                  route={"mypreviousschedules"}
-                />
-              </>
-            )}
-            {/* admin Links */}
-            {user.isAdmin && (
-              <>
-                <NavigationLink
-                  linkTo={"الحسابات المحظورة"}
-                  route={"/admin/bannedaccounts"}
-                />
-                <NavigationLink
-                  linkTo={"التعليقات المخفية"}
-                  route={"/admin/hiddencomments"}
-                />
-              </>
-            )}
-          </div>
-        )}
+          {isAuthorized && !user.isAdmin && (
+            <>
+              <NavigationLink
+                linkTo={"الحسابات المحظورة"}
+                route={"/admin/bannedaccounts"}
+              />
+              <NavigationLink
+                linkTo={"التعليقات المخفية"}
+                route={"/admin/hiddencomments"}
+              />
+            </>
+          )}
+        </div>
         {isAuthorized && <SearchBar isOpen={isOpen} />}
-
         {/* Sign Up Button mobile */}
         <div
           className={`w-full md:flex md:items-center md:gap-8 ${
@@ -141,9 +135,7 @@ export default function MainHeader() {
         <ThreeDotMenu />
       </nav>
 
-      {isAuthorized && isSearching && (
-        <SearchBarForDesktop handleSearching={handleSearching} />
-      )}
+      {isSearching && <SearchBarForDesktop handleSearching={handleSearching} />}
     </div>
   );
 }

@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import {
   Trash2,
   SquarePlus,
-  MoreVertical,
   Pencil,
   BarChart,
   ClipboardList,
@@ -12,6 +11,7 @@ import EditCourseModal from "../../components/EditCourseModal";
 import Rate from "./Rate";
 import EnterGrade from "./EnterGrade";
 import KababMenu from "../KababMenu";
+import { useAuth } from "../../context/authContext";
 import ThreeDotMenuButton from "../ThreeDotMenuButton";
 import { motion } from "framer-motion";
 
@@ -28,6 +28,7 @@ export default function CourseCard({
   const [isGrading, setIsGrading] = useState(false);
   const [animatedGrade, setAnimatedGrade] = useState(0);
   const [animatedRating, setAnimatedRating] = useState(0);
+  const { isAuthorized } = useAuth();
 
   useEffect(() => {
     if (!course || !course?.avgGrade || !course?.avgRating) return;
@@ -86,78 +87,80 @@ export default function CourseCard({
         <div className="border-b border-gray-200 pb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-2xl font-bold text-gray-800">{course.code}</h2>
-            <KababMenu
-              position={"relative absolute bottom-6 left-6"}
-              menuOpen={menuOpen}
-              setMenuOpen={setMenuOpen}
-              reverse={true}
-            >
-              {isAdmin ? (
-                <>
-                  <ThreeDotMenuButton
-                    clickHandler={() => onDelete(course.id)}
-                    purpose={"dangerous"}
-                  >
-                    <Trash2 size={20} />
-                    حذف المادة
-                  </ThreeDotMenuButton>
-                  <ThreeDotMenuButton
-                    clickHandler={() => {
-                      setIsEditModalOpen(true);
-                      setMenuOpen(false);
-                    }}
-                    purpose={"warning"}
-                  >
-                    <Pencil size={16} />
-                    <span>تعديل المادة</span>
-                  </ThreeDotMenuButton>
-                </>
-              ) : (
-                <>
-                  {!isRating && !isGrading && (
-                    <>
-                      <ThreeDotMenuButton
-                        clickHandler={() =>
-                          handleAddCourseToSchedule(course.id)
-                        }
-                        purpose={"normal"}
-                      >
-                        <SquarePlus size={20} />
-                        أضف المادة إلى الجدول
-                      </ThreeDotMenuButton>
-                      <ThreeDotMenuButton
-                        clickHandler={handleRating}
-                        purpose={"normal"}
-                      >
-                        <BarChart size={20} />
-                        قيّم صعوبة المقرر
-                      </ThreeDotMenuButton>
-                      <ThreeDotMenuButton
-                        clickHandler={handleGrading}
-                        purpose={"normal"}
-                      >
-                        <ClipboardList size={20} />
-                        أضف درجتك
-                      </ThreeDotMenuButton>
-                    </>
-                  )}
-                  {isRating && (
-                    <Rate
-                      onClose={() => setIsRating(false)}
-                      courseId={course.id}
-                      onCourseUpdate={onCourseUpdate}
-                    />
-                  )}
-                  {isGrading && (
-                    <EnterGrade
-                      onClose={() => setIsGrading(false)}
-                      courseId={course.id}
-                      onCourseUpdate={onCourseUpdate}
-                    />
-                  )}
-                </>
-              )}
-            </KababMenu>
+            {isAuthorized && (
+              <KababMenu
+                position={"relative absolute bottom-6 left-6"}
+                menuOpen={menuOpen}
+                setMenuOpen={setMenuOpen}
+                reverse={true}
+              >
+                {isAdmin ? (
+                  <>
+                    <ThreeDotMenuButton
+                      clickHandler={() => onDelete(course.id)}
+                      purpose={"dangerous"}
+                    >
+                      <Trash2 size={20} />
+                      حذف المادة
+                    </ThreeDotMenuButton>
+                    <ThreeDotMenuButton
+                      clickHandler={() => {
+                        setIsEditModalOpen(true);
+                        setMenuOpen(false);
+                      }}
+                      purpose={"warning"}
+                    >
+                      <Pencil size={16} />
+                      <span>تعديل المادة</span>
+                    </ThreeDotMenuButton>
+                  </>
+                ) : (
+                  <>
+                    {!isRating && !isGrading && (
+                      <>
+                        <ThreeDotMenuButton
+                          clickHandler={() =>
+                            handleAddCourseToSchedule(course.id)
+                          }
+                          purpose={"normal"}
+                        >
+                          <SquarePlus size={20} />
+                          أضف المادة إلى الجدول
+                        </ThreeDotMenuButton>
+                        <ThreeDotMenuButton
+                          clickHandler={handleRating}
+                          purpose={"normal"}
+                        >
+                          <BarChart size={20} />
+                          قيّم صعوبة المقرر
+                        </ThreeDotMenuButton>
+                        <ThreeDotMenuButton
+                          clickHandler={handleGrading}
+                          purpose={"normal"}
+                        >
+                          <ClipboardList size={20} />
+                          أضف درجتك
+                        </ThreeDotMenuButton>
+                      </>
+                    )}
+                    {isRating && (
+                      <Rate
+                        onClose={() => setIsRating(false)}
+                        courseId={course.id}
+                        onCourseUpdate={onCourseUpdate}
+                      />
+                    )}
+                    {isGrading && (
+                      <EnterGrade
+                        onClose={() => setIsGrading(false)}
+                        courseId={course.id}
+                        onCourseUpdate={onCourseUpdate}
+                      />
+                    )}
+                  </>
+                )}
+              </KababMenu>
+            )}
           </div>
         </div>
 
