@@ -194,7 +194,7 @@ export default function Comment({
         </span>
       </div>
 
-      <p className="text-gray-700 py-2 text-right">{comment.content}</p>
+      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">{comment.content}</p>
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
         <div className="flex gap-6">
