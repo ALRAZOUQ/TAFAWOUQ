@@ -1,5 +1,4 @@
 import CourseCardSchedule from "./HomePageComponents/CourseCardSchedule";
-import { useSchedule } from "../context/ScheduleContext";
 import { Link } from "react-router-dom";
 
 export default function Schedule({
