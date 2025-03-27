@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
 import { useAuth } from "../../context/authContext";
@@ -10,10 +9,11 @@ import NavigationLink from "./NavigationLink";
 import SearchBar from "./SearchBarForMobile";
 import SearchBarForDesktop from "./SearchBarForDesktop";
 import CreateTermModal from "../CreateTermModal";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 export default function MainHeader() {
   const route = useLocation();
+
   const navigate = useNavigate();
   const { logout, isAuthorized, user } = useAuth();
 
@@ -101,6 +101,7 @@ export default function MainHeader() {
               />
               <CreateTermModal>
                 <motion.button
+                  onClick={() => navigate("/admin/createTerm")}
                   whileHover={{
                     scale: 1.04,
                   }}
@@ -110,7 +111,6 @@ export default function MainHeader() {
                       ? "border-opacity-100"
                       : "border-opacity-0"
                   }`}
-                  onClick={() => {}}
                 >
                   إنشاء ترم
                 </motion.button>

@@ -45,7 +45,6 @@ const router = createBrowserRouter([
           { index: true, path: "admin-home", element: <AdminHomePage /> },
           { path: "hiddencomments", element: <Hiddencomments /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },
-          { path: "createTerm", element: <Screen /> },
         ],
       },
     ],
