@@ -33,12 +33,12 @@ export default function HomePage() {
     }
   }
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center p-6">
+    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center">
       <Schedule
         scheduleCourses={scheduleCourses}
         createScheduleHandler={createScheduleHandler}
         current={true}
-        scheduleId={scheduleId}
+        Id={scheduleId}
       />
 
       <div className="w-full max-w-screen-xl p-6 mt-6 relative">
