@@ -36,15 +36,8 @@ export default function Comment({
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const { user, isAuthorized } = useAuth();
-  const { user, isAuthorized } = useAuth();
   const deleteFields = useMemo(
     () => [
-      {
-        name: "reason",
-        label: "سبب الاخفاء",
-        type: "textarea",
-        required: true,
-      },
       {
         name: "reason",
         label: "سبب الاخفاء",
@@ -62,7 +55,6 @@ export default function Comment({
         label: "سبب الإبلاغ",
         type: "textarea",
         required: true,
-        required: true,
       },
     ],
     []
@@ -89,50 +81,7 @@ export default function Comment({
       console.error("Error hiding comment:", error);
     }
   }, []);
-  const handleHideComment = useCallback(async (formData) => {
-    try {
-      const response = await axios.put("/admin/hideComment", {
-        commentId: formData.id,
-        reason: formData.reason,
-        reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
-      });
 
-      if (response.data.success) {
-        onDelete(formData.id); //to delete the comment from the comments list
-        toast.success("تم إخفاء التعليق بنجاح");
-      }
-    } catch (error) {
-      if (error?.response?.status === 409) {
-        toast.error("تم حذف هذا المقرر بالفعل");
-        return;
-      }
-      console.error("Error submitting rating:", error);
-      toast.error(error.response?.data?.message || "حدث خطأاثناء حذف الكومنت.");
-      console.error("Error hiding comment:", error);
-    }
-  }, []);
-
-  const handleReportComment = useCallback(async (formData) => {
-    try {
-      // Prepare the data for the API call
-      const reportData = {
-        commentId: comment.id,
-        reportContent: formData.reportContent,
-      };
-
-      // Call the API endpoint
-      const response = await axios.post("/protected/reportComment", reportData);
-
-      if (response.data.success) {
-        toast.success("تم الإبلاغ عن التعليق بنجاح");
-      }
-      return { success: true };
-    } catch (error) {
-      console.error("Error reporting comment:", error);
-      toast.error("حدث خطأ أثناء الإبلاغ عن التعليق");
-      return { success: false, error };
-    }
-  }, []);
   const handleReportComment = useCallback(async (formData) => {
     try {
       // Prepare the data for the API call
