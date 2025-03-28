@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
-import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
 import GPA from "../components/HomePageComponents/GPA";
 import CourseCardSchedule from "../components/HomePageComponents/CourseCardSchedule";
 import { requestNotificationPermissionAndGetTheFCMToken } from "../config/firebase";
@@ -27,13 +26,6 @@ export default function HomePage() {
   const [showGPA, setShowGPA] = useState(true);
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center">
-      <Schedule
-        scheduleCourses={scheduleCourses}
-        createScheduleHandler={createScheduleHandler}
-        current={true}
-        Id={scheduleId}
-      />
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center">
       <Schedule
         scheduleCourses={scheduleCourses}
