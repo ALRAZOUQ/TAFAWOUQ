@@ -1,14 +1,19 @@
 import { Link } from "react-router-dom";
 import Schedule from "../components/Schedule";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
+import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
 import GPA from "../components/HomePageComponents/GPA";
 import CourseCardSchedule from "../components/HomePageComponents/CourseCardSchedule";
+import { requestNotificationPermissionAndGetTheFCMToken } from "../config/firebase";
 
 export default function HomePage() {
   useRouteIfAuthorizedAndHeIsAdmin();
+  useEffect(() => {
+    requestNotificationPermissionAndGetTheFCMToken(); // Ask for notification permission
+  }, []);
 
   const {
     scheduleCourses,
@@ -21,18 +26,14 @@ export default function HomePage() {
 
   const [showGPA, setShowGPA] = useState(true);
 
-  function handleShowGPA() {
-    setShowGPA((showGPA) => !showGPA);
-  }
-  async function createScheduleHandler() {
-    try {
-      await createSchedule();
-      await fetchScheduleCourses(); //this will update schedule data after create it (to get the id ,name, startDate , endDate)
-    } catch (error) {
-      console.error("Failed to create schedule:", error);
-    }
-  }
   return (
+    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center">
+      <Schedule
+        scheduleCourses={scheduleCourses}
+        createScheduleHandler={createScheduleHandler}
+        current={true}
+        Id={scheduleId}
+      />
     <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center">
       <Schedule
         scheduleCourses={scheduleCourses}
@@ -45,8 +46,7 @@ export default function HomePage() {
         <div className="w-full flex justify-start pr-2">
           <button
             className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 px-3 py-1 rounded-lg transition-all"
-            onClick={handleShowGPA}
-          >
+            onClick={handleShowGPA}>
             {showGPA ? (
               <>
                 <EyeOff size={16} />
@@ -74,4 +74,16 @@ export default function HomePage() {
       </div>
     </div>
   );
+  function handleShowGPA() {
+    setShowGPA((showGPA) => !showGPA);
+  }
+
+  async function createScheduleHandler() {
+    try {
+      await createSchedule();
+      await fetchScheduleCourses(); //this will update schedule data after create it (to get the id ,name, startDate , endDate)
+    } catch (error) {
+      console.error("Failed to create schedule:", error);
+    }
+  }
 }

@@ -164,11 +164,7 @@ router.get("/AllSchedules", async (req, res) => {
               term.endDate,
               COALESCE(
                   ROUND(
-                      (SUM(COALESCE(grade.value, 0) * course.credithours) / NULLIF(SUM(course.credithours), 0))::numeric, 
-                      2
-                  ), 
-                  0.00::numeric
-              ) AS gpa,
+                      (SUM(COALESCE(grade.value, 0) * course.credithours) / NULLIF(SUM(course.credithours), 0))::numeric, 2),0.00::numeric) AS gpa,
               COALESCE(json_agg(
                   json_build_object(
                       'id', course.id,
@@ -621,7 +617,19 @@ router.get("/viewGpa", async (req, res) => {
         .json({ success: false, message: "Student ID is required." });
     }
     //other way to get the whole gpa of all sceduls but the rsult will be the gpa or zero
+    //other way to get the whole gpa of all sceduls but the rsult will be the gpa or zero
     const gpaQuery = `
+  select COALESCE(SUM(g.value * c.credithours), 0) AS total_grade_points,
+    COALESCE(SUM(c.credithours), 0) AS total_credit_hours,
+    COALESCE(
+        ROUND((SUM(g.value * c.credithours) / NULLIF(SUM(c.credithours), 0))::numeric,2),  0::numeric) AS schedule_gpa
+FROM
+    public.grade g
+JOIN
+    public.course c ON g.courseid = c.id
+WHERE
+    g.creatorid = $1;`;
+    /** old qouery
   select COALESCE(SUM(g.value * c.credithours), 0) AS total_grade_points,
     COALESCE(SUM(c.credithours), 0) AS total_credit_hours,
     COALESCE(
@@ -642,40 +650,44 @@ WHERE
       JOIN public.schedule s ON sc.scheduleid = s.id
       WHERE s.studentid = $1;
      */
+     */
     const gpaResult = await db.query(gpaQuery, [studentId]);
 
     if (
       gpaResult.rows.length > 0 &&
       gpaResult.rows[0].total_credit_hours !== 0 &&
       gpaResult.rows[0].total_grade_points !== 0
+      gpaResult.rows[0].total_credit_hours !== 0 &&
+        gpaResult.rows[0].total_grade_points !== 0
     ) {
-      const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
-      const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
-      const averageGPA = parseFloat(
-        (totalGradePoints / totalCreditHours).toFixed(2)
-      );
+  const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
+  const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
+  const averageGPA = parseFloat(
+    (totalGradePoints / totalCreditHours).toFixed(2)
+  );
 
-      res.status(200).json({
-        success: true,
-        message: "GPA calculated successfully.",
-        studentId: studentId,
-        averageGPA: averageGPA,
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: "No grades found for the student or student not found.",
-      });
-    }
+  res.status(200).json({
+    success: true,
+    message: "GPA calculated successfully.",
+    studentId: studentId,
+    averageGPA: averageGPA,
+  });
+} else {
+  res.status(404).json({
+    success: false,
+    message: "No grades found for the student or student not found.",
+  });
+}
   } catch (error) {
-    console.error("Error calculating GPA:", error);
-    res.status(500).json({ error: "An error occurred." });
-  }
+  console.error("Error calculating GPA:", error);
+  res.status(500).json({ error: "An error occurred." });
+}
 });
 
 router.get("/viewGpa/:scheduleId", async (req, res) => {
   try {
     const scheduleId = parseInt(req.params.scheduleId);
+    const studentId = parseInt(req.user?.id);
     const studentId = parseInt(req.user?.id);
 
     if (!scheduleId) {
@@ -694,37 +706,49 @@ JOIN course c ON sc.courseid = c.id
 LEFT JOIN grade g ON sc.courseid = g.courseid 
     AND g.creatorid = $1
 WHERE sc.scheduleid = $2 and c.id= g.courseid;
+      SELECT COALESCE(SUM(g.value * c.credithours), 0) AS total_grade_points,
+    COALESCE(SUM(c.credithours), 0) AS total_credit_hours,
+    COALESCE(
+        ROUND((SUM(g.value * c.credithours) / NULLIF(SUM(c.credithours), 0))::numeric,2),  0.00::numeric) AS schedule_gpa
+FROM schedule_course sc
+JOIN course c ON sc.courseid = c.id
+LEFT JOIN grade g ON sc.courseid = g.courseid 
+    AND g.creatorid = $1
+WHERE sc.scheduleid = $2 and c.id= g.courseid;
     `;
 
+    const gpaResult = await db.query(gpaQuery, [studentId, scheduleId]);
     const gpaResult = await db.query(gpaQuery, [studentId, scheduleId]);
 
     if (
       gpaResult.rows.length > 0 &&
       gpaResult.rows[0].total_credit_hours !== 0 &&
       gpaResult.rows[0].total_grade_points !== 0
+      gpaResult.rows[0].total_credit_hours !== 0 &&
+        gpaResult.rows[0].total_grade_points !== 0
     ) {
-      const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
-      const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
-      const averageGPA = parseFloat(
-        (totalGradePoints / totalCreditHours).toFixed(2)
-      );
+  const totalGradePoints = parseFloat(gpaResult.rows[0].total_grade_points);
+  const totalCreditHours = parseFloat(gpaResult.rows[0].total_credit_hours);
+  const averageGPA = parseFloat(
+    (totalGradePoints / totalCreditHours).toFixed(2)
+  );
 
-      res.status(200).json({
-        success: true,
-        message: "GPA calculated successfully for schedule.",
-        scheduleId: scheduleId,
-        averageGPA: averageGPA,
-      });
-    } else {
-      res.status(404).json({
-        success: false,
-        message: "No grades found for the schedule or schedule not found.",
-      });
-    }
+  res.status(200).json({
+    success: true,
+    message: "GPA calculated successfully for schedule.",
+    scheduleId: scheduleId,
+    averageGPA: averageGPA,
+  });
+} else {
+  res.status(404).json({
+    success: false,
+    message: "No grades found for the schedule or schedule not found.",
+  });
+}
   } catch (error) {
-    console.error("Error calculating GPA for schedule:", error);
-    res.status(500).json({ error: "An error occurred." });
-  }
+  console.error("Error calculating GPA for schedule:", error);
+  res.status(500).json({ error: "An error occurred." });
+}
 });
 
 //==================================================
@@ -780,6 +804,16 @@ router.post("/postComment", async (req, res) => {
 });
 
 //==================================================
+//================= Notifications ==================
+//==================================================
+router.post("/RegisterForPushNotifications", async (req, res) => {
+  const { FCMToken, deviceType } = req.body
+  console.log(FCMToken)
+  console.log(deviceType)
+  res.status(200).json()
+})
+
+//==================================================
 //=================== report ======================
 //==================================================
 
@@ -787,13 +821,19 @@ router.post("/reportComment", async (req, res) => {
   try {
     const { commentId, reportContent } = req.body;
     const userId = req.user.id;
+    const { commentId, reportContent } = req.body;
+    const userId = req.user.id;
     if (!userId || !commentId || !reportContent) {
       return res.status(400).json({
         success: false,
         message:
           "Missing required parameters (userId, commentId, reportContent).",
+        message:
+          "Missing required parameters (userId, commentId, reportContent).",
       });
     }
+    // Begin transaction to do the process together or nothing
+    await db.query("BEGIN");
     // Begin transaction to do the process together or nothing
     await db.query("BEGIN");
 
@@ -802,7 +842,13 @@ router.post("/reportComment", async (req, res) => {
       `INSERT INTO report (authorid, content) VALUES ($1, $2) RETURNING id`,
       [userId, reportContent]
     );
+    // Create the report
+    const reportResult = await db.query(
+      `INSERT INTO report (authorid, content) VALUES ($1, $2) RETURNING id`,
+      [userId, reportContent]
+    );
 
+    const reportId = reportResult.rows[0].id;
     const reportId = reportResult.rows[0].id;
 
     // Link the report with the comment
@@ -810,7 +856,14 @@ router.post("/reportComment", async (req, res) => {
       `INSERT INTO report_comment (reportid, commentid) VALUES ($1, $2)`,
       [reportId, commentId]
     );
+    // Link the report with the comment
+    await db.query(
+      `INSERT INTO report_comment (reportid, commentid) VALUES ($1, $2)`,
+      [reportId, commentId]
+    );
 
+    // Commit transaction
+    await db.query("COMMIT");
     // Commit transaction
     await db.query("COMMIT");
 
@@ -824,6 +877,16 @@ router.post("/reportComment", async (req, res) => {
     console.error("Error reporting comment:", error);
     res.status(500).json({ success: false, message: error.message });
   }
+  res.status(201).json({
+    success: true,
+    message: "Comment reported successfully.",
+  });
+} catch (error) {
+  // Rollback transaction on error
+  await db.query("ROLLBACK");
+  console.error("Error reporting comment:", error);
+  res.status(500).json({ success: false, message: error.message });
+}
 });
 
 router.post("/reportQuiz", async (req, res) => {

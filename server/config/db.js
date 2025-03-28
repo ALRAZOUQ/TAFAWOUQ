@@ -15,10 +15,11 @@ try {
     });
 
     db.on('connect', () => {
-        // console.log('\x1b[38;5;123m%s\x1b[0m', 'Connected to the [Cloud] DB');
+        console.log('\x1b[38;5;123m%s\x1b[0m', 'Connected to the [Cloud] DB');
     });
 
     db.on('error', (err) => {
+        console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]");
         console.error('Database connection error:', err.stack);
     });
 
@@ -28,6 +29,8 @@ try {
 
 export default db;
 
+////: All of the following should be deleted?
+// Razouq: faisel says he mey need later 
 /*
 // Function to create and return the database connection
 const connectDb = () => {
