@@ -36,8 +36,15 @@ export default function Comment({
   const [isLikeLoading, setIsLikeLoading] = useState(false);
   const [showReplyForm, setShowReplyForm] = useState(false);
   const { user, isAuthorized } = useAuth();
+  const { user, isAuthorized } = useAuth();
   const deleteFields = useMemo(
     () => [
+      {
+        name: "reason",
+        label: "سبب الاخفاء",
+        type: "textarea",
+        required: true,
+      },
       {
         name: "reason",
         label: "سبب الاخفاء",
@@ -54,6 +61,7 @@ export default function Comment({
         name: "reportContent",
         label: "سبب الإبلاغ",
         type: "textarea",
+        required: true,
         required: true,
       },
     ],
@@ -81,7 +89,50 @@ export default function Comment({
       console.error("Error hiding comment:", error);
     }
   }, []);
+  const handleHideComment = useCallback(async (formData) => {
+    try {
+      const response = await axios.put("/admin/hideComment", {
+        commentId: formData.id,
+        reason: formData.reason,
+        reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
+      });
 
+      if (response.data.success) {
+        onDelete(formData.id); //to delete the comment from the comments list
+        toast.success("تم إخفاء التعليق بنجاح");
+      }
+    } catch (error) {
+      if (error?.response?.status === 409) {
+        toast.error("تم حذف هذا المقرر بالفعل");
+        return;
+      }
+      console.error("Error submitting rating:", error);
+      toast.error(error.response?.data?.message || "حدث خطأاثناء حذف الكومنت.");
+      console.error("Error hiding comment:", error);
+    }
+  }, []);
+
+  const handleReportComment = useCallback(async (formData) => {
+    try {
+      // Prepare the data for the API call
+      const reportData = {
+        commentId: comment.id,
+        reportContent: formData.reportContent,
+      };
+
+      // Call the API endpoint
+      const response = await axios.post("/protected/reportComment", reportData);
+
+      if (response.data.success) {
+        toast.success("تم الإبلاغ عن التعليق بنجاح");
+      }
+      return { success: true };
+    } catch (error) {
+      console.error("Error reporting comment:", error);
+      toast.error("حدث خطأ أثناء الإبلاغ عن التعليق");
+      return { success: false, error };
+    }
+  }, []);
   const handleReportComment = useCallback(async (formData) => {
     try {
       // Prepare the data for the API call
@@ -175,8 +226,7 @@ export default function Comment({
     <div
       className={`border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow space-y-3 mb-4 ${
         isReply ? "ml-8" : ""
-      }`}
-    >
+      }`}>
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
           <UserAvatar name={comment.authorName} />
@@ -194,7 +244,9 @@ export default function Comment({
         </span>
       </div>
 
-      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">{comment.content}</p>
+      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">
+        {comment.content}
+      </p>
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
         <div className="flex gap-6">
@@ -204,8 +256,7 @@ export default function Comment({
                 isLiked ? "text-blue-600" : "text-gray-600"
               } hover:text-blue-600 transition-colors`}
               onClick={handleLikeToggle}
-              disabled={isLikeLoading}
-            >
+              disabled={isLikeLoading}>
               <ThumbsUp size={18} />
               <span className="text-sm">{likesCount} اعجبني</span>
             </button>
@@ -213,8 +264,7 @@ export default function Comment({
           {isAuthorized && !isReply && (
             <button
               className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-              onClick={() => setShowReplyForm(!showReplyForm)}
-            >
+              onClick={() => setShowReplyForm(!showReplyForm)}>
               <MessageCircle size={18} />
               <span className="text-sm">{comment.numOfReplies} رد</span>
             </button>
@@ -232,8 +282,7 @@ export default function Comment({
               submitButtonText="ابلاغ"
               onSubmit={(formData) => {
                 handleReportComment(formData);
-              }}
-            >
+              }}>
               <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
                 <MessageSquareWarning size={18} />
                 <span className="text-sm">ابلاغ</span>
@@ -249,12 +298,10 @@ export default function Comment({
               submitButtonText="اخفاء"
               onSubmit={(formData) => {
                 handleHideComment(formData);
-              }}
-            >
+              }}>
               <button
                 className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                type="button"
-              >
+                type="button">
                 <Trash2 size={18} />
                 <span className="text-sm">اخفاء</span>
               </button>
@@ -297,8 +344,7 @@ const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
   <button
     onClick={onClick}
     className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
-    disabled={isLoading}
-  >
+    disabled={isLoading}>
     {isLoading ? (
       "جاري التحميل..."
     ) : showReplies ? (
@@ -352,8 +398,7 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
         placeholder="اكتب ردك هنا..."
         value={replyContent}
         onChange={(e) => setReplyContent(e.target.value)}
-        disabled={isSubmitting}
-      ></textarea>
+        disabled={isSubmitting}></textarea>
       <div className=" mt-2">
         <div className="flex flex-row gap-2">
           <button
@@ -363,15 +408,13 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
                 : "hover:bg-blue-600"
             }`}
             onClick={handleSubmitReply}
-            disabled={isSubmitting || !replyContent.trim()}
-          >
+            disabled={isSubmitting || !replyContent.trim()}>
             <Send size={14} /> إرسال
           </button>
           <button
             className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
             onClick={onCancel}
-            disabled={isSubmitting}
-          >
+            disabled={isSubmitting}>
             إلغاء
           </button>
         </div>

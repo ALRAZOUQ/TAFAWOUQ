@@ -10,6 +10,8 @@ const mainRouter = express.Router();
 mainRouter.use('/auth', authRouter); // Public routes
 mainRouter.use('/protected', protectedRouter); // Authenticated routes
 mainRouter.use('/admin', adminRouter); // Admin-only routes
+//// Razouq: this isn't used??
+// Razouq: faisel: this  
 mainRouter.use(userRouter)
 
 

@@ -9,6 +9,7 @@ import db from './config/db.js'; // database conection
 import env from 'dotenv'
 import flash from 'connect-flash'
 import errorHandler from "./middleware/errorHandler.js";
+import mainRouter from './routes/mainRouter.js' // all route's middlewares
 import cors from 'cors';
 
 const app = express();
@@ -19,7 +20,8 @@ app.use(express.urlencoded({ extended: true }))
 env.config()
 app.use(express.json());
 const port = process.env.PORT
-const error505msg = "Sorry! It seems we have a problem with our servers. Please try again later."
+
+
 // Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
@@ -31,13 +33,9 @@ app.use(session({
   }
 }))
 
-
-
-
 // Passport initialization
 app.use(passport.initialize())
 app.use(passport.session())
-
 
 // Local Strategy with bcrypt
 passport.use(new LocalStrategy({
@@ -47,16 +45,16 @@ passport.use(new LocalStrategy({
   try {
     const { rows } = await db.query(
       `SELECT u.*, case when b.studentid  is not null then true else false end as "isBanned" 
-FROM "user" u
-LEFT JOIN ban b ON b.studentId = u.id
-WHERE u.email = $1 limit 1;`,
+      FROM "user" u
+      LEFT JOIN ban b ON b.studentId = u.id
+      WHERE u.email = $1 limit 1;`,
       [email]
     );
 
     if (!rows.length) return done(null, false);
 
     const user = rows[0];
-    
+
     if (user.isBanned == true) { // Check if user.isBanned is  true (banned)
       return done(null, false, { message: 'You are banned.' });
     }
@@ -86,16 +84,6 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-/*app.use((req, res, next) => {
-
-    // Assuming `req.user` is set by passport or some authentication middleware
-    res.locals.currentPath = req.path
-    res.locals.session = req.user;
-    next();
-});*/
-
-
-
 
 
 // cross to prepare communicate with client server (React)
@@ -105,25 +93,21 @@ app.use(cors({
 }));
 
 
-
-
-db.on('error', error => {
-
-  console.log("\x1b[31m%s\x1b[0m", "[ DB problem ]")
-  console.log(error)
-})
-
-
-
+// TODO Razouq: after merging with the main branch, this will be removed, and the user will see the main front end page when he open the sserver port in the browser 
 app.get("/", (req, res) => {
   res.json("Home page :) ")
 })
 
-// routes import:
-import mainRouter from './routes/mainRouter.js' // one router for all routes n need any route in index.js file
+// Use this if u want to debug client-requests-mistakes
+// app.use((req, res, next) => {
+//   console.log("🔍 Request received:", req.path);
+//   console.log("🔹 Headers:", req.headers);
+//   console.log("🔹 Body:", req.body);
+//   console.log("===")
+//   next();
+// });
 
-
-// routes middlewares
+// one router for all routes
 app.use("/api", mainRouter)
 
 
