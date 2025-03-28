@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
 import { Menu, X, Search } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
 import { useAuth } from "../../context/authContext";
@@ -9,8 +8,12 @@ import ThreeDotMenu from "./ThreeDotMenu";
 import NavigationLink from "./NavigationLink";
 import SearchBar from "./SearchBarForMobile";
 import SearchBarForDesktop from "./SearchBarForDesktop";
+import CreateTermModal from "../CreateTermModal";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 export default function MainHeader() {
+  const route = useLocation();
+
   const navigate = useNavigate();
   const { logout, isAuthorized, user } = useAuth();
 
@@ -96,6 +99,22 @@ export default function MainHeader() {
                 linkTo={"التعليقات المخفية"}
                 route={"/admin/hiddencomments"}
               />
+              <CreateTermModal>
+                <motion.button
+                  onClick={() => navigate("/admin/createTerm")}
+                  whileHover={{
+                    scale: 1.04,
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
+                    route.pathname === "/admin/createTerm"
+                      ? "border-opacity-100"
+                      : "border-opacity-0"
+                  }`}
+                >
+                  إنشاء ترم
+                </motion.button>
+              </CreateTermModal>
             </>
           )}
         </div>

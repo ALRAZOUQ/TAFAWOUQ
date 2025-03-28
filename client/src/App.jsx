@@ -12,6 +12,7 @@ import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
 import CreateTermModal from "./components/CreateTermModal";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
+import Screen from "./components/Screen";
 
 // HASSAN: lazy to optimize the performance for the app and load the page in the background
 const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
@@ -44,7 +45,6 @@ const router = createBrowserRouter([
           { index: true, path: "admin-home", element: <AdminHomePage /> },
           { path: "hiddencomments", element: <Hiddencomments /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },
-          { path: "createTerm", element: <CreateTermModal /> },
         ],
       },
     ],
