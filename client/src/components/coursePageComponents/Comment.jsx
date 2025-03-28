@@ -239,9 +239,11 @@ export default function Comment({
             </small>
           </div>
         </div>
-        <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+        {!isReply &&( <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
           {comment.tag}
         </span>
+        )}
+       
       </div>
 
       <p className="text-gray-700 py-2 text-right break-words whitespace-normal">
@@ -269,11 +271,12 @@ export default function Comment({
               <span className="text-sm">{comment.numOfReplies} رد</span>
             </button>
           )}
+           {!isReply &&(
           <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
             <Tag size={18} />
             <span className="text-sm">{comment.tag}</span>
           </button>
-
+           )}
           {isAuthorized && (
             <GenericForm
               itemId={comment.id}
