@@ -1,4 +1,7 @@
 {
+  "scripts": {
+    "i": "cd server && npm i && cd ../client && npm i && npm run dev"
+  },
   "dependencies": {
     "framer-motion": "^12.5.0"
   }
