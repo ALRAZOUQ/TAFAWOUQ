@@ -4,11 +4,16 @@ import {
   isEmpty,
   hasMinLength,
 } from "../util/validation";
-import { useActionState } from "react";
-import { Link } from "react-router-dom";
+import { useActionState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { errorMapping } from "../util/errorMapping";
+import BackButton from "../components/BackButton";
+import axios from "../api/axios";
+import { toast } from "react-toastify";
 export default function Signup() {
+  const navigate = useNavigate();
   async function handleSignupSubmission(prevFormState, formData) {
+    const username = formData.get("username"); // ✅ Extract username properly
     const email = formData.get("email");
     const password = formData.get("password");
     const confirmPassword = formData.get("confirmPassword");
@@ -37,7 +42,7 @@ export default function Signup() {
       return {
         errors,
         enteredValues: {
-          username,
+          username, // ✅ Now it's defined
           email,
           password,
           confirmPassword,
@@ -45,17 +50,21 @@ export default function Signup() {
       };
     }
 
-    //this is the code that will be executed if the form is valid
+    // Ensure data is valid before sending
     try {
-      const response = await axios.post("auth/register", {
-        name: username,
-        email: email,
-        password: password,
-      });
+      const userData = {
+        name: username.trim(), // Ensure it's a string
+        email: email.trim(),
+        password: password.trim(),
+      };
+
+      console.log("Sending user data:", userData); // Debugging step
+
+      const response = await axios.post("auth/register", userData);
 
       if (response.status === 201) {
         toast.success("تم تسجيل الدخول بنجاح!");
-        setUserStateLogin(response.data.user);
+        // setUserStateLogin(response.data.user);
         return { success: true, message: response.data.message };
       }
     } catch (error) {
@@ -66,10 +75,10 @@ export default function Signup() {
           return { errors: [error.response.data.message] };
         }
       } else {
-        console.error("An error occurred while sending the request");
+        console.error("An error occurred while sending the request:", error);
         return {
-          errors: [error.message] || [
-            "An error occurred while sending the request",
+          errors: [
+            error.message || "An error occurred while sending the request",
           ],
         };
       }
