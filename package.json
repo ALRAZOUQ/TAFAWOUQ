@@ -2,7 +2,6 @@
   "dependencies": {
     "framer-motion": "^12.5.0"
   },
-
   "name": "tafawoq",
   "version": "1.0.0",
   "description": "Tafawouq is a peer-to-peer platform created specifically for King Saud University students to increase collaboration and academic success.",

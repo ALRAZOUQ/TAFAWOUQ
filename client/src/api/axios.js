@@ -1,5 +1,4 @@
 import axios from "axios";
-import { CloudRain } from "lucide-react";
 
 const backendURL = import.meta.env.VITE_SERVER_URL;
 const axiosInstance = axios.create({

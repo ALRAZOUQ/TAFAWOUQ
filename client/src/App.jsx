@@ -21,7 +21,7 @@ const Error404Page = lazy(() => import("./Routes/Error"));
 const Home_page = lazy(() => import("./Routes/Home_page"));
 const AdminHomePage = lazy(() => import("./Routes/AdminHomePage"));
 const BannedAccounts = lazy(() => import("./Routes/BannedAccounts"));
-const Hiddencomments = lazy(() => import("./Routes/Hiddencomments"));
+const Hiddencomments = lazy(() => import("./Routes/HiddenComments"));
 const PreviousSchedules = lazy(() => import("./Routes/PreviousSchedules"));
 const Quizzes = lazy(() => import("./Routes/Quizzes"));
 
