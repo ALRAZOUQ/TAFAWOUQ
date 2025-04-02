@@ -2,7 +2,6 @@ import { initializeApp } from "firebase/app";
 import { getMessaging, getToken, onMessage } from "firebase/messaging";
 import axios from "../api/axios";
 import detectDeviceType from "../util/detectDeviceType";
-// 🔹 Replace with your Firebase config object
 const firebaseConfig = {
     apiKey: "AIzaSyBECPdK4UR5mUgUmxKYToPV5CslLp2ubcY",
     authDomain: "tafawouq-gp.firebaseapp.com",
@@ -19,6 +18,7 @@ const messaging = getMessaging(app);
 
 // Function to request permission for notifications
 export const requestNotificationPermissionAndGetTheFCMToken = async () => {
+    const deviceType = detectDeviceType()
     try {
         const token = await getToken(messaging, { vapidKey: "BKktssn_60oOY41f9ymja2yiTQzHFdm7iEpFxKlodbwDPeN4_IBma0tmC5rsw3Qw-7veT5pr6p-t8CYEJDcaCis" });
         if (token) {
@@ -26,31 +26,36 @@ export const requestNotificationPermissionAndGetTheFCMToken = async () => {
 
             if (storedFCMToken != token) {
                 console.log(`============= 🔥🔔 Firebase =============`)
-                console.log("FCM Token:", token);
+                console.log("The Client FCM Token:", token);
                 console.log(`==========================================`)
-
-                const deviceType = detectDeviceType()
-                console.log(deviceType)
-                await axios.post("protected/RegisterForPushNotifications", { FCMToken: token, deviceType: deviceType })
-                localStorage.setItem("FCMToken", token)
-
+                try {
+                    await axios.post("protected/RegisterForPushNotifications", { FCMToken: token, deviceType: deviceType })
+                    localStorage.setItem("FCMToken", token)
+                } catch (error) {
+                    console.error("🔥🔔 Error while registring the client FCM token in our server:", error);
+                }
             }
-
         } else {
             console.log("🔴🔥🔔 No token received 🔴");
         }
     } catch (error) {
-        console.error("🔥🔔 Error getting FCM token:", error);
+        console.error("🔥🔔 Error while getting FCM token:", error);
+        try {
+            axios.delete("protected/deleteMyOldFCMTokenForThisDevice", { deviceType })
+            console.log(`🔥🔔 This device FCM token is deleted succussfuly ${deviceType}`);
+        } catch (error) {
+            console.error("🔥🔔 Error while deleting this device FCM token if it exists:", error);
+        }
     }
 };
 
 // Listen for foreground messages
-export const onMessageListener = () =>
-    new Promise((resolve) => {
-        onMessage(messaging, (payload) => {
-            console.log("Message received:", payload);
-            resolve(payload);
-        });
-    });
+// export const onMessageListener = () =>
+//     new Promise((resolve) => {
+//         onMessage(messaging, (payload) => {
+//             console.log("Message received:", payload);
+//             resolve(payload);
+//         });
+//     });
 
 export { messaging };

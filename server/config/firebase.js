@@ -1,4 +1,4 @@
-import firebaseAdmin, { credential } from 'firebase-admin';
+import firebaseAdmin from 'firebase-admin';
 import env from 'dotenv';
 env.config()
 
@@ -18,3 +18,4 @@ const serviceAccount = {
 }
 
 firebaseAdmin.initializeApp({ credential: firebaseAdmin.credential.cert(serviceAccount) })
+export default firebaseAdmin

@@ -1,7 +1,9 @@
 import express from "express";
 import { checkAuth } from "../middleware/authMiddleware.js";
 import db from "../config/db.js";
-
+import firebaseAdmin from '../config/firebase.js';
+import env from 'dotenv';
+env.config()
 const router = express.Router();
 
 // Apply checkAuth middleware to all routes in this file
@@ -743,7 +745,7 @@ WHERE sc.scheduleid = $2 and c.id= g.courseid;
 
 router.post("/postComment", async (req, res) => {
   try {
-    const { courseId, content, tag, parentCommentId } = req.body;
+    const { courseId, courseCode, content, tag, parentCommentId } = req.body;
     const studentId = req.user.id;
     const anotherName = req.user.name;
     if (!courseId || !content || !tag) {
@@ -756,10 +758,82 @@ router.post("/postComment", async (req, res) => {
     let commentResult;
     if (parentCommentId) {
       // If parentCommentId is provided, create a reply
-      commentResult = await db.query(
-        `INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [studentId, courseId, content, tag, parentCommentId]
-      );
+      commentResult = await db.query(`INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [studentId, courseId, content, tag, parentCommentId]);
+
+      // store the notification record
+      try {
+        const parentComment = await db.query(`SELECT * FROM public.comment WHERE id=$1`, [parentCommentId])
+        const parentcommentauthorid = parentComment.rows[0].authorid
+        const notificationResult = await db.query(`INSERT INTO notifications ( parentcommentauthorid, coursecode, courseid, parentCommentId, replyauthor ) 
+                                                   VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [parentcommentauthorid, courseCode, courseId, parentCommentId, anotherName])
+        // Here I should send the notification to FCM
+        /**
+         * get the parent comment auhor id 
+         * search for his token (or tokens)
+         * if they exist: send notifications via fireebase
+         * else: NOTHING
+         */
+        try {
+          let personToBeNotified = await db.query(`SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`, [parentcommentauthorid])
+          if (personToBeNotified.rows.length) {
+            let dynamic_url = process.env.NODE_ENV ? process.env.PRODUCTION_CLIENT_URL : process.env.DEVELOPMENT_CLIENT_URL
+            dynamic_url = `${dynamic_url}/courses/${courseId}#${parentCommentId}`
+            // Razouq: If we need to send to only one client: 
+            /*
+            const pushNotification = {
+              token: personToBeNotified.rows[0].fcmtoken,
+              notification: {
+                title: `${anotherName} replied to your comment about ${courseCode} `,
+                body: content,
+                click_action: dynamic_url // Redirect link
+              },
+              data: {
+                url: process.env.NODE_ENV ? process.env.DEVELOPMENT_CLIENT_URL : process.env.PRODUCTION_CLIENT_URL
+              }
+            };
+            await firebaseAdmin.messaging().send(pushNotification)
+            */
+
+            const tokens = personToBeNotified.rows.map(row => row.fcmtoken)
+
+            const pushNotification = {
+              tokens: tokens, // Razouq: send to all of his devices 
+              notification: {
+                title: `${anotherName} replied to your comment about ${courseCode}`,
+                body: content
+              },
+              webpush: {
+                notification: {
+                  title: `${anotherName} replied to your comment about ${courseCode}`,
+                  body: content,
+                  icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png"
+                },
+                data: {
+                  url: dynamic_url,
+                },
+              },
+            };
+
+            firebaseAdmin.messaging().sendEachForMulticast(pushNotification).
+              then((response) => {
+                // console.log(`✅ Successfully sent messages: ${response.successCount}`);
+                // console.log(`❌ Failed messages: ${response.failureCount}`);
+                if (response.failureCount > 0) {
+                  console.log("/postComment 🔴 sending push notifications Errors:", response.responses.filter(r => !r.success));
+                }
+              })
+
+          }
+        } catch (error) {
+          console.error(`/postComment Error while sending the notificaation data to FCM:, ${error}`);
+
+        }
+
+      } catch (error) {
+        console.error(`/postComment Error while creating a notificaation:, ${error}`);
+        res.status(400).json({ success: false, message: `Error while creating a notificaation` })
+      }
     } else {
       // If parentCommentId is not provided, create a regular comment
       commentResult = await db.query(
@@ -794,11 +868,47 @@ router.post("/postComment", async (req, res) => {
 //==================================================
 router.post("/RegisterForPushNotifications", async (req, res) => {
   const { FCMToken, deviceType } = req.body
-  console.log(FCMToken)
-  console.log(deviceType)
-  res.status(200).json()
+  try {
+    const registrationResult = await db.query(`INSERT INTO PushNotificationsRegistration (user_id, FCMToken, deviceType)
+                                            VALUES($1, $2, $3) 
+                                            ON CONFLICT (user_id, deviceType)
+                                            DO UPDATE SET FCMToken = $2
+                                            RETURNING *;`, [req.user.id, FCMToken, deviceType])
+    // console.log('registrationResult :>> ', registrationResult);
+    res.status(200).json({ success: true, message: `The user's FCM Token for his ${registrationResult.rows[0].devicetype} is registered successfully` })
+  } catch (error) {
+    console.error(`/RegisterForPushNotifications DB error ${error}`)
+    res.status(500).json({ success: false, message: `The user's FCM Token for his ${deviceType} couldn't be registered` })
+  }
 })
 
+router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
+  const { deviceType } = req.body
+  try {
+    const deletionResult = await db.query(`DELETE FROM PushNotificationsRegistration
+                                          WHERE user_id = $1 AND deviceType = $2
+                                          RETURNING *;`, [req.user.id, deviceType])
+    res.status(200).json({ success: true, message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully` })
+  } catch (error) {
+    console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`)
+    res.status(500).json({ success: false, message: `The user's FCM Token for his ${deviceType} couldn't be deleted` })
+  }
+})
+
+router.get("/myNotifications", async (req, res) => {
+
+  let notifications = await db.query(`SELECT 
+                                          *,
+                                          CASE 
+                                              WHEN NOW() - timestamp < INTERVAL '1 hour' THEN CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' minutes ago')
+                                              WHEN NOW() - timestamp < INTERVAL '1 day' THEN CONCAT(EXTRACT(HOUR FROM NOW() - timestamp)::int, ' hours ago')
+                                              ELSE CONCAT(EXTRACT(DAY FROM NOW() - timestamp)::int, ' days ago')
+                                          END AS time_ago
+                                      FROM notifications
+                                      Where parentcommentauthorid=$1;
+                                      `, [req.user.id])
+  res.status(200).json(notifications.rows)
+})
 //==================================================
 //=================== report ======================
 //==================================================

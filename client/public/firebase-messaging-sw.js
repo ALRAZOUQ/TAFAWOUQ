@@ -1,3 +1,4 @@
+
 importScripts("https://www.gstatic.com/firebasejs/10.1.0/firebase-app-compat.js");
 importScripts("https://www.gstatic.com/firebasejs/10.1.0/firebase-messaging-compat.js");
 
@@ -18,8 +19,32 @@ const messaging = firebase.messaging();
 // Background notification handler
 messaging.onBackgroundMessage((payload) => {
     console.log("Received background message:", payload);
-    self.registration.showNotification(payload.notification.title, {
-        body: payload.notification.body,
-        icon: "../src/assets/mainLogo.png"
+    const { title, body } = payload.notification;
+    const url = payload.data?.url || "/"; // Default to home if no URL is provided
+
+
+    self.registration.showNotification(title, {
+        body,
+        icon: "../src/assets/mainLogo.png",
+        data: { url } // Store URL in notification data
     });
 });
+
+// 🔔 Handle click on notification
+self.addEventListener("notificationclick", (event) => {
+    event.notification.close();
+    const targetUrl = event.notification.data?.url || "/"; // Use stored URL or default
+    console.log(targetUrl);
+    event.waitUntil(
+        clients
+            .matchAll({ type: "window", includeUncontrolled: true })
+            .then((clientList) => {
+                for (const client of clientList) {
+                    if (client.url === targetUrl && "focus" in client) {
+                        return client.focus();
+                    }
+                }
+                return clients.openWindow(targetUrl); // Open new tab if not already open
+            })
+    );
+}); 
