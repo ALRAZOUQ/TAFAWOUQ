@@ -1,17 +1,28 @@
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 
-export default function ReportCard({ reason, comment, reportId, onReject }) {
-  console.log(comment);
+export default function ReportCard({
+  report,
+  onReject,
+  updateProperty,
+}) {
+  //console.log(report);
   async function onDeleteComment() {
     try {
       const response = await axios.put("/admin/hideComment", {
-        reason,
-        reportId:reportId,
-        commentId: comment.id,
+        reason:report.content,
+        reportId: report.reportId,
+        commentId: report.comment.id,
       });
+   
       if (response.data.success) {
-        onReject(reportId);
+        //onReject(reportId); we do not need to delete the the report after hide the comment
+        
+        updateProperty(report.reportId, "isResolved", true);
+        updateProperty(report.reportId, "isCommentHidden", true);
+        updateProperty(report.reportId, "adminExecutedHide", response.data.hiddenComment
+          .adminExecutedHide);
+
         return true;
       }
     } catch (error) {
@@ -22,22 +33,27 @@ export default function ReportCard({ reason, comment, reportId, onReject }) {
   }
   function handleDelet() {
     if (onDeleteComment()) {
-      toast.success("تم حذف التعليق بنجاح");
+      toast.success("تم اخفاء التعليق بنجاح");
     } else {
-      toast.error("حدث خطأ أثناء حذف التعليق");
+      toast.error("حدث خطأ أثناء اخفاء التعليق");
     }
   }
 
   async function onDeleteCommentAndBanUser() {
     try {
       const response = await axios.post("/admin/banUser", {
-        reason,
-        studentId: comment.authorId,
-        reportId,
+        reason:report.content,
+        studentId: report.comment.authorId,
+        reportId: report.reportId,
       });
       if (response.data.success) {
         await onDeleteComment();
-
+        updateProperty(
+          report.reportId,
+          "adminExecutedBan",
+          response.data.bannedUser.adminExecutedban
+        );
+        updateProperty(report.reportId, "isCommentAuthorBanned", true);
         return true;
       }
     } catch (error) {
@@ -47,22 +63,51 @@ export default function ReportCard({ reason, comment, reportId, onReject }) {
   }
   function handleBan() {
     if (onDeleteCommentAndBanUser()) {
-      toast.success("تم حذف التعليق و حظر المستخدم بنجاح");
+      toast.success("تم اخفاء التعليق و حظر المستخدم بنجاح");
     } else {
-      toast.error("حدث خطأ أثناء حذف التعليق و حظر المستخدم");
+      toast.error("حدث خطأ أثناء اخفاء التعليق و حظر المستخدم");
     }
   }
 
   return (
     <div className="bg-white p-4 border rounded-lg shadow-md transition text-right w-full">
       <h2 className="text-lg font-bold mb-2">بلاغ</h2>
-      <p className="font-semibold whitespace-normal break-words">السبب: {reason}</p>
-      <p className="mt-2 whitespace-normal break-words">التعليق: {comment.content}</p>
-      <p className="mt-2 font-semibold whitespace-normal break-words">كاتب التعليق: {comment.authorName}</p>
+      <p className="font-semibold whitespace-normal break-words">
+        السبب: {report.content}
+      </p>
+      <p className="mt-2 whitespace-normal break-words">
+        التعليق: {report.comment.content}
+      </p>
+      <p className="mt-2 font-semibold whitespace-normal break-words">
+        كاتب التعليق: {report.comment.authorName}
+      </p>
+      <p className="mt-2 font-semibold whitespace-normal break-words">
+        الحالة: {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
+      </p>
+      {report.isResolved && (
+        <div className="mt-2 font-semibold whitespace-normal break-words">
+          الاجراءات:
+          <ul>
+            {report.isCommentHidden && (
+              <li>
+                تم اخفاء التعليق بواسطة:{" "}
+                <span>{report.adminExecutedHide || "المشرف"}</span>
+              </li>
+            )}
+            {report.isCommentAuthorBanned && (
+              <li>
+                تم حظر المستخدم بواسطة:{" "}
+                <span>{report.adminExecutedBan || "المشرف"}</span>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
       <div className="mt-4 flex justify-start space-x-2 rtl:space-x-reverse">
         <button
           className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-700"
-          onClick={() => onReject(reportId)}
+          onClick={() => onReject(report.reportId)}
         >
           رفض
         </button>
@@ -70,13 +115,13 @@ export default function ReportCard({ reason, comment, reportId, onReject }) {
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-700"
           onClick={handleDelet}
         >
-          حذف التعليق
+          اخفاء التعليق
         </button>
         <button
           className="bg-red-700 text-white px-4 py-2 rounded hover:bg-red-900"
           onClick={handleBan}
         >
-          حذف التعليق و حظر المستخدم
+          اخفاء التعليق و حظر المستخدم
         </button>
       </div>
     </div>
