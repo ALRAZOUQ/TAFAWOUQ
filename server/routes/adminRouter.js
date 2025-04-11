@@ -251,12 +251,10 @@ ORDER BY hc.date DESC;`,
     );
 
     if (hiddenComments.rows.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No hidden comments or replies were found on this.",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "No hidden comments or replies were found on this.",
+      });
     }
 
     res.status(200).json({
