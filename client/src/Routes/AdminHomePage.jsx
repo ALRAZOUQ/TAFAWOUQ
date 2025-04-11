@@ -40,6 +40,17 @@ export default function AdminHomePage() {
     }
     return false;
   }
+
+  async function updateProperty(reportId, property, value) {
+    setReports(prevReports =>
+      prevReports.map(report =>
+        report.reportId === reportId
+          ? { ...report, [property]: value }
+          : report
+      )
+    );
+  }
+    
   function handleReject(reportId) {
     if (onReject(reportId)) {
       toast.success("تم رفض البلاغ بنجاح");
@@ -61,13 +72,12 @@ export default function AdminHomePage() {
           reports.map((report) => (
             <ReportCard
               key={report.reportId}
-              reportId={report.reportId}
-              reason={report.content}
-              comment={report.comment}
+              report={report}
               handleReject={handleReject}
               commentWriter={report.comment.authorName}
               onReject={() => onReject(report.reportId)}
               onDeleteComment={() => handleDeleteReport(report.reportId)}
+              updateProperty={updateProperty}
             />
           ))
         ) : (
