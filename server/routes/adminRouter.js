@@ -482,12 +482,25 @@ router.put("/unHideQuiz", async (req, res) => {
 
 router.get("/reports/comments", async (req, res) => {
   try {
-    const reports = await db.query(`
-      SELECT
+    const reports = await db.query(`SELECT
     r.id AS "reportId",
     r.authorid AS "authorId",
     r.content AS "content",
     r.creationdate AS "creationDate",
+    CASE
+        WHEN hc.commentId IS NOT NULL OR bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isResolved",
+    CASE
+        WHEN hc.commentId IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isCommentHidden",
+    ha_user.name AS "admin_executed_hide",
+    CASE
+        WHEN bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isCommentAuthorBanned",
+    ba_user.name AS "admin_executed_ban",
     json_build_object(
         'id', c.id,
         'content', c.content,
@@ -513,8 +526,11 @@ LEFT JOIN (
     WHERE parentCommentId IS NOT NULL
     GROUP BY parentCommentId
 ) rep ON c.id = rep.parentCommentId
-ORDER BY r.creationdate DESC;
-    `);
+LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN "user" ha_user ON hc.creatorid = ha_user.id
+LEFT JOIN ban bu ON c.authorid = bu.studentid
+LEFT JOIN "user" ba_user ON bu.creatorid = ba_user.id
+ORDER BY r.creationdate DESC;`);
 
     res.status(200).json({
       success: true,
