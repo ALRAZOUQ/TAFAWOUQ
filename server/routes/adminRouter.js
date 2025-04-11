@@ -608,7 +608,8 @@ LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
 router.post("/banUser", async (req, res) => {
   try {
     const { reason, studentId, reportId } = req.body;
-
+const adminId = req.user.id;
+const adminName = req.user.name;
     if (!studentId || !reason) {
       return res.status(400).json({
         success: false,
@@ -632,13 +633,13 @@ router.post("/banUser", async (req, res) => {
     let banUserResult;
     if (reportId) {
       banUserResult = await db.query(
-        `INSERT INTO ban (studentId, reason,reportId ) VALUES ($1, $2 ,$3) RETURNING *`,
-        [studentId, reason, reportId]
+        `INSERT INTO ban (studentId, reason,reportId ,creatorId) VALUES ($1, $2 ,$3,$4) RETURNING *`,
+        [studentId, reason, reportId,adminId]
       );
     } else {
       banUserResult = await db.query(
-        `INSERT INTO ban (studentId ,reason) VALUES ($1, $2) RETURNING *`,
-        [studentId, reason]
+        `INSERT INTO ban (studentId ,reason,creatorId) VALUES ($1, $2,$3) RETURNING *`,
+        [studentId, reason,adminId]
       );
     }
 
@@ -646,6 +647,10 @@ router.post("/banUser", async (req, res) => {
       res.status(200).json({
         success: true,
         message: "User banned successfully.",
+        bannedUser: {
+          studentId: banUserResult.rows[0].studentid,
+          adminExecutedban: adminName,
+        },
       });
     }
   } catch (error) {
