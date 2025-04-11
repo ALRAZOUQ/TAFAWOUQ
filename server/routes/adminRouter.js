@@ -377,7 +377,8 @@ router.put("/unHideComment", async (req, res) => {
 router.put("/hideQuiz", async (req, res) => {
   try {
     const { reason, reportId, quizId } = req.body;
-
+    const adminId = req.user.id;
+    const adminName = req.user.name;
     if (!quizId) {
       return res.status(400).json({
         success: false,
@@ -401,13 +402,13 @@ router.put("/hideQuiz", async (req, res) => {
     let hideQuizResult;
     if (reportId && reason) {
       hideQuizResult = await db.query(
-        `INSERT INTO hideQuiz (quizId, reason, reportId) VALUES ($1, $2, $3) RETURNING *`,
-        [quizId, reason, reportId]
+        `INSERT INTO hideQuiz (quizId, reason, reportId ,creatorid) VALUES ($1, $2, $3) RETURNING *`,
+        [quizId, reason, reportId, adminId]
       );
     } else if (reason) {
       hideQuizResult = await db.query(
-        `INSERT INTO hideQuiz (quizId, reason) VALUES ($1, $2) RETURNING *`,
-        [quizId, reason]
+        `INSERT INTO hideQuiz (quizId, reason ,creatorid) VALUES ($1, $2) RETURNING *`,
+        [quizId, reason, adminId]
       );
     }
 
@@ -415,7 +416,10 @@ router.put("/hideQuiz", async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Quiz hidden successfully.",
-        hiddenQuizId: hideQuizResult.rows[0].quizid,
+        hiddenQuiz: {
+          quizId: hideQuizResult.rows[0].quizid,
+          adminExecutedHide: adminName,
+        },
       });
     }
   } catch (error) {
