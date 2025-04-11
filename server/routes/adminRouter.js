@@ -270,7 +270,8 @@ ORDER BY hc.date DESC;`,
 router.put("/hideComment", async (req, res) => {
   try {
     const { reason, reportId, commentId } = req.body;
-
+    const adminId = req.user.id;
+    const adminName = req.user.name;
     if (!commentId) {
       return res.status(400).json({
         success: false,
@@ -294,13 +295,13 @@ router.put("/hideComment", async (req, res) => {
     let hideCommentResult;
     if (reportId && reason) {
       hideCommentResult = await db.query(
-        `INSERT INTO hideComment (commentId, reason, reportId) VALUES ($1, $2, $3) RETURNING *`,
-        [commentId, reason, reportId]
+        `INSERT INTO hideComment (commentId, reason, reportId,creatorid) VALUES ($1, $2, $3,$4) RETURNING *`,
+        [commentId, reason, reportId, adminId]
       );
     } else if (reason) {
       hideCommentResult = await db.query(
-        `INSERT INTO hideComment (commentId, reason) VALUES ($1, $2) RETURNING *`,
-        [commentId, reason]
+        `INSERT INTO hideComment (commentId, reason,creatorid) VALUES ($1, $2,$3) RETURNING *`,
+        [commentId, reason, adminId]
       );
     }
 
@@ -309,7 +310,10 @@ router.put("/hideComment", async (req, res) => {
         success: true,
         message: "Comment hidden successfully.",
         //hiddenComment: hideCommentResult.rows[0],
-        hiddenCommentId: hideCommentResult.rows[0].commentid,
+        hiddenComment: {
+          commentId: hideCommentResult.rows[0].commentid,
+          adminExecutedHide: adminName,
+        },
       });
     }
   } catch (error) {
