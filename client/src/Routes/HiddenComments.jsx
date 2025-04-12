@@ -2,9 +2,11 @@ import Screen from "../components/Screen";
 import { useState, useEffect } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 
 export default function HiddenComments() {
+  const { user } = useAuth();
   useRouteIfAuthorizedAndHeIsNotAdmin();
   const [hiddenComments, setHiddenComments] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Set to false since we're using dummy data
@@ -80,7 +82,7 @@ export default function HiddenComments() {
   }
   return (
     <Screen title="Hidden Comments" className="p-2 sm:p-4 md:p-6">
-      <div className="w-full max-w-7xl mx-auto">
+      <div className="w-full  mx-auto">
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center sm:text-right">
           التعليقات المخفية
         </h1>
@@ -89,12 +91,12 @@ export default function HiddenComments() {
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
           </div>
         ) : (
-          <div className="container mx-auto px-4 py-6">
+          <div className="w-full px-4 py-6">
             <div className="grid grid-cols-1  md:grid-cols-2 gap-6">
               {hiddenComments.map((x) => (
                 <div
                   key={x.commentId}
-                  className="bg-white border border-gray-100 rounded-lg shadow-md hover:shadow-xl 
+                  className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
             transition-shadow duration-300 flex flex-col h-full"
                 >
                   <div className="p-5 space-y-4 flex-grow flex flex-col">
@@ -145,6 +147,8 @@ export default function HiddenComments() {
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
                         {formatTime(x.hideDate).date.formatted || "غير محدد"}
                       </span>
+                    </div>
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
                       <span className="text-sm font-semibold text-gray-900">
                         وقت الإخفاء:
                       </span>
@@ -172,17 +176,19 @@ export default function HiddenComments() {
                     </div>
 
                     {/* Unhide Button */}
-                    <div className="mt-auto">
-                      <button
-                        onClick={() => handleUnhide(x.commentId)}
-                        className="w-full bg-red-500 text-white py-2 px-4 rounded-md 
+                    {user.id === x.hideCreatorId && (
+                      <div className="mt-auto flex items-center justify-center">
+                        <button
+                          onClick={() => handleUnhide(x.commentId)}
+                          className="w-3/4 bg-red-500 text-white py-2 px-4 rounded-md 
                     hover:bg-red-600 transition-colors duration-200 
                     focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
                     active:scale-95"
-                      >
-                        اعادة إظهار التعليق
-                      </button>
-                    </div>
+                        >
+                          اعادة إظهار التعليق
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

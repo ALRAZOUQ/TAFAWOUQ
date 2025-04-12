@@ -3,8 +3,10 @@ import { useState, useEffect } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
+import { useAuth } from "../context/authContext";
 
 export default function BannedAccounts() {
+  const { user } = useAuth();
   useRouteIfAuthorizedAndHeIsNotAdmin();
   const [bannedAccounts, setBannedAccounts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -98,14 +100,18 @@ export default function BannedAccounts() {
                       </span>
                     </div>
                   </div>
-                  <div className="flex justify-center">
-                    <button
-                      onClick={() => handleUnban(bannedAccount.result.user.id)}
-                      className="w-full sm:w-auto bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded transition duration-200 text-sm"
-                    >
-                      فك الحظر
-                    </button>
-                  </div>
+                  {bannedAccount.result.ban.hideCreatorId === user.id && (
+                    <div className="flex justify-center">
+                      <button
+                        onClick={() =>
+                          handleUnban(bannedAccount.result.user.id)
+                        }
+                        className="w-full sm:w-auto bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded transition duration-200 text-sm"
+                      >
+                        فك الحظر
+                      </button>
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
@@ -145,14 +151,18 @@ export default function BannedAccounts() {
                         {bannedAccount.result.ban.reason}
                       </td>
                       <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4 text-center">
-                        <button
-                          onClick={() =>
-                            handleUnban(bannedAccount.result.user.id)
-                          }
-                          className="bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded transition duration-200 text-[11px] sm:text-sm"
-                        >
-                          فك الحظر
-                        </button>
+                        {bannedAccount.result.ban.hideCreatorId === user.id ? (
+                          <button
+                            onClick={() =>
+                              handleUnban(bannedAccount.result.user.id)
+                            }
+                            className="bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded transition duration-200 text-[11px] sm:text-sm"
+                          >
+                            فك الحظر
+                          </button>
+                        ) : (
+                          <h3 className="text-orange-300">لا يمكنك فك الحظر</h3>
+                        )}
                       </td>
                     </tr>
                   ))}
