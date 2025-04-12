@@ -495,12 +495,12 @@ router.get("/reports/comments", async (req, res) => {
         WHEN hc.commentId IS NOT NULL THEN TRUE
         ELSE FALSE
     END AS "isCommentHidden",
-    ha_user.name AS "admin_executed_hide",
+    ha_user.name AS "adminExecutedHide",
     CASE
         WHEN bu.studentid IS NOT NULL THEN TRUE
         ELSE FALSE
     END AS "isCommentAuthorBanned",
-    ba_user.name AS "admin_executed_ban",
+    ba_user.name AS "adminExecutedBan",
     json_build_object(
         'id', c.id,
         'content', c.content,
