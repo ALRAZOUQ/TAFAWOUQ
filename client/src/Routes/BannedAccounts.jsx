@@ -100,18 +100,24 @@ export default function BannedAccounts() {
                       </span>
                     </div>
                   </div>
-                  {bannedAccount.result.ban.hideCreatorId === user.id && (
-                    <div className="flex justify-center">
-                      <button
-                        onClick={() =>
-                          handleUnban(bannedAccount.result.user.id)
-                        }
-                        className="w-full sm:w-auto bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded transition duration-200 text-sm"
-                      >
-                        فك الحظر
-                      </button>
-                    </div>
-                  )}
+
+                  <div className="flex justify-center">
+                    <button
+                      disabled={
+                        bannedAccount.result.ban.hideCreatorId !== user.id
+                      }
+                      onClick={() => handleUnban(bannedAccount.result.user.id)}
+                      className={`w-full sm:w-auto ${
+                        bannedAccount.result.ban.hideCreatorId === user.id
+                          ? "bg-red-500"
+                          : "bg-gray-500"
+                      } hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-2 px-4 rounded transition duration-200 text-sm`}
+                    >
+                      {bannedAccount.result.ban.hideCreatorId === user.id
+                        ? "إزالة الحظر"
+                        : "لا يمكنك إزالة الحظر"}
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -129,6 +135,9 @@ export default function BannedAccounts() {
                     </th>
                     <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-center text-[10px] sm:text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">
                       السبب
+                    </th>
+                    <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-center text-[10px] sm:text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">
+                      المشرف
                     </th>
                     <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-center text-[10px] sm:text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">
                       إجراء
@@ -150,19 +159,27 @@ export default function BannedAccounts() {
                       <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4 text-center text-[11px] sm:text-sm md:text-base text-gray-900">
                         {bannedAccount.result.ban.reason}
                       </td>
+                      <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4 text-center text-[11px] sm:text-sm md:text-base text-gray-900">
+                        {bannedAccount.result.ban.adminExecutedBan}
+                      </td>
                       <td className="px-3 sm:px-4 md:px-6 py-2 sm:py-4 text-center">
-                        {bannedAccount.result.ban.hideCreatorId === user.id ? (
-                          <button
-                            onClick={() =>
-                              handleUnban(bannedAccount.result.user.id)
-                            }
-                            className="bg-red-500 hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded transition duration-200 text-[11px] sm:text-sm"
-                          >
-                            فك الحظر
-                          </button>
-                        ) : (
-                          <h3 className="text-orange-300">لا يمكنك فك الحظر</h3>
-                        )}
+                        <button
+                          disabled={
+                            bannedAccount.result.ban.hideCreatorId !== user.id
+                          }
+                          onClick={() =>
+                            handleUnban(bannedAccount.result.user.id)
+                          }
+                          className={`${
+                            bannedAccount.result.ban.hideCreatorId === user.id
+                              ? "bg-red-500"
+                              : "bg-gray-500"
+                          } hover:opacity-85 active:opacity-65 hover:shadow-md text-white font-bold py-1 sm:py-2 px-2 sm:px-4 rounded transition duration-200 text-[11px] sm:text-sm`}
+                        >
+                          {bannedAccount.result.ban.hideCreatorId === user.id
+                            ? "إزالة الحظر"
+                            : "لا يمكنك إزالة الحظر"}
+                        </button>
                       </td>
                     </tr>
                   ))}

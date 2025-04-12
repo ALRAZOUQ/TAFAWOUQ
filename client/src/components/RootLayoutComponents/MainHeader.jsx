@@ -91,6 +91,7 @@ export default function MainHeader() {
 
           {isAuthorized && user.isAdmin && (
             <>
+              <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
               <NavigationLink
                 linkTo={"الحسابات المحظورة"}
                 route={"/admin/bannedaccounts"}
@@ -99,6 +100,7 @@ export default function MainHeader() {
                 linkTo={"التعليقات المخفية"}
                 route={"/admin/hiddencomments"}
               />
+
               <CreateTermModal>
                 <motion.button
                   onClick={() => navigate("/admin/createTerm")}
