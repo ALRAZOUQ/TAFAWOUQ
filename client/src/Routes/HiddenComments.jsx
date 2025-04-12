@@ -8,7 +8,32 @@ export default function HiddenComments() {
   useRouteIfAuthorizedAndHeIsNotAdmin();
   const [hiddenComments, setHiddenComments] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Set to false since we're using dummy data
+  function formatTime(isoString) {
+    const date = new Date(isoString);
 
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
+
+    return {
+      date: {
+        year,
+        month,
+        day,
+        formatted: `${year}-${month}-${day}`,
+      },
+      time: {
+        hours,
+        minutes,
+        seconds,
+        formatted: `${hours}:${minutes}:${seconds}`,
+      },
+    };
+  }
   async function fetchHiddenComments() {
     setIsLoading(true);
     try {
@@ -74,6 +99,10 @@ export default function HiddenComments() {
                 >
                   <div className="p-5 space-y-4 flex-grow flex flex-col">
                     {/* User Info Section */}
+                    <h2>
+                      لقد تم اخفاء هذا التعليق بواسطة المشرف{" "}
+                      {x.adminExecutedHide || "غير محدد"}
+                    </h2>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2 rtl:space-x-reverse">
                         <span className="text-sm font-semibold  text-gray-900">
@@ -89,7 +118,7 @@ export default function HiddenComments() {
                     <div className="bg-gray-50 p-3 rounded-md flex-grow overflow-hidden">
                       <div className="flex items-start space-x-2 rtl:space-x-reverse">
                         <span className="text-sm font-semibold text-gray-900 mt-1 flex-shrink-0">
-                          التعليق:
+                          محتوى التعليق:
                         </span>
                         <p
                           className="text-sm text-gray-600 break-words overflow-hidden text-ellipsis 
@@ -108,25 +137,39 @@ export default function HiddenComments() {
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
                         {x.hideReason || "غير محدد"}
                       </span>
-                      </div>
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <span className="text-sm font-semibold text-gray-900">
-                      تم الاخفاء بواسطة 
-                      </span>
-                      <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                        {x.adminExecutedHide || "غير محدد"}
-                      </span>
                     </div>
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
                       <span className="text-sm font-semibold text-gray-900">
-                        رقم البلاغ
-
+                        تاريخ الإخفاء:
                       </span>
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                        {x.reportId || "غير محدد"}
+                        {formatTime(x.hideDate).date.formatted || "غير محدد"}
+                      </span>
+                      <span className="text-sm font-semibold text-gray-900">
+                        وقت الإخفاء:
+                      </span>
+                      <span className="text-sm text-gray-600 truncate max-w-[200px]">
+                        {formatTime(x.hideDate).time.formatted || "غير محدد"}
                       </span>
                     </div>
-                      <div>+  فيه بيانات اكثر ممكن نحطها هنا وفي الحسابات المحظورة شيك على postman</div>
+
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                      {x.reportId ? (
+                        <>
+                          {" "}
+                          <span className="text-sm font-semibold text-gray-900">
+                            رقم البلاغ
+                          </span>
+                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
+                            {x.reportId}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-sm font-semibold text-gray-900">
+                          تم اخفاء هذا التعليق من قبل المشرف مباشرة بدون بلاغ
+                        </span>
+                      )}
+                    </div>
 
                     {/* Unhide Button */}
                     <div className="mt-auto">
@@ -137,7 +180,7 @@ export default function HiddenComments() {
                     focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
                     active:scale-95"
                       >
-                       اعادة إظهار التعليق 
+                        اعادة إظهار التعليق
                       </button>
                     </div>
                   </div>
