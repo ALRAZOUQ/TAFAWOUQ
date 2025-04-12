@@ -223,7 +223,7 @@ hc.id as "hideId",
      c.content as "commentContent",
      c.creationdate as "commentCreationDate",
      c.tag as "commentTag",
-    u.id as "commentAuthor",
+    u.name as "commentAuthor",
     u.id as "commentAuthorId",
      COALESCE(l.num_likes, 0) as "commentNumOfLikes",
     COALESCE(r.reply_count, 0) as "commentNumOfReplies",
@@ -678,6 +678,29 @@ router.post("/banUser", async (req, res) => {
         [studentId, reason, adminId]
       );
     }
+
+    if (banUserResult.rows.length > 0) {
+      // Find and destroy the session of the banned user
+      if (req.sessionStore) {
+        req.sessionStore.all((err, sessions) => {
+          if (err) {
+            console.error("Error retrieving sessions:", err);
+          } else if (sessions) {
+            Object.keys(sessions).forEach(sid => {
+              const session = sessions[sid];
+              if (session.passport && session.passport.user && session.passport.user.id === parseInt(studentId)) {
+                req.sessionStore.destroy(sid, (destroyErr) => {
+                  if (destroyErr) {
+                    console.error("Error destroying session:", destroyErr);
+                  } else {
+                    console.log(`Session destroyed for banned user ${studentId}`);
+                  }
+                });
+              }
+            });
+          }
+        });
+      }}
 
     if (banUserResult.rows.length > 0) {
       res.status(200).json({
