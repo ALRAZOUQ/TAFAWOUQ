@@ -32,7 +32,7 @@ export default function HiddenComments() {
       const response = await axios.put(`/admin/unhideComment`, { commentId });
       if (response.status === 200) {
         setHiddenComments((prev) =>
-          prev.filter((comment) => comment.id !== commentId)
+          prev.filter((comment) => comment.commentId !== commentId)
         );
         toast.success("تم إظهار التعليق بنجاح");
       } else {
@@ -66,9 +66,9 @@ export default function HiddenComments() {
         ) : (
           <div className="container mx-auto px-4 py-6">
             <div className="grid grid-cols-1  md:grid-cols-2 gap-6">
-              {hiddenComments.map((comment) => (
+              {hiddenComments.map((x) => (
                 <div
-                  key={comment.id}
+                  key={x.commentId}
                   className="bg-white border border-gray-100 rounded-lg shadow-md hover:shadow-xl 
             transition-shadow duration-300 flex flex-col h-full"
                 >
@@ -80,7 +80,7 @@ export default function HiddenComments() {
                           المستخدم:
                         </span>
                         <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
-                          {comment.author}
+                          {x.commentAuthor}
                         </span>
                       </div>
                     </div>
@@ -95,7 +95,7 @@ export default function HiddenComments() {
                           className="text-sm text-gray-600 break-words overflow-hidden text-ellipsis 
                     max-h-[100px] overflow-y-auto"
                         >
-                          {comment.content}
+                          {x.commentContent}
                         </p>
                       </div>
                     </div>
@@ -106,20 +106,38 @@ export default function HiddenComments() {
                         سبب الإخفاء:
                       </span>
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                        {comment.hideReason || "غير محدد"}
+                        {x.hideReason || "غير محدد"}
+                      </span>
+                      </div>
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                      <span className="text-sm font-semibold text-gray-900">
+                      تم الاخفاء بواسطة 
+                      </span>
+                      <span className="text-sm text-gray-600 truncate max-w-[200px]">
+                        {x.adminExecutedHide || "غير محدد"}
                       </span>
                     </div>
+                    <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                      <span className="text-sm font-semibold text-gray-900">
+                        رقم البلاغ
+
+                      </span>
+                      <span className="text-sm text-gray-600 truncate max-w-[200px]">
+                        {x.reportId || "غير محدد"}
+                      </span>
+                    </div>
+                      <div>+  فيه بيانات اكثر ممكن نحطها هنا وفي الحسابات المحظورة شيك على postman</div>
 
                     {/* Unhide Button */}
                     <div className="mt-auto">
                       <button
-                        onClick={() => handleUnhide(comment.id)}
+                        onClick={() => handleUnhide(x.commentId)}
                         className="w-full bg-red-500 text-white py-2 px-4 rounded-md 
                     hover:bg-red-600 transition-colors duration-200 
                     focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
                     active:scale-95"
                       >
-                        إظهار التعليق
+                       اعادة إظهار التعليق 
                       </button>
                     </div>
                   </div>
