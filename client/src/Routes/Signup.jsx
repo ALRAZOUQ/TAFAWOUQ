@@ -10,7 +10,9 @@ import { errorMapping } from "../util/errorMapping";
 import BackButton from "../components/BackButton";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/authContext";
 export default function Signup() {
+  const { user, setUserStateLogin } = useAuth();
   const navigate = useNavigate();
   async function handleSignupSubmission(prevFormState, formData) {
     const username = formData.get("username"); // ✅ Extract username properly
@@ -64,7 +66,7 @@ export default function Signup() {
 
       if (response.status === 201) {
         toast.success("تم تسجيل الدخول بنجاح!");
-        // setUserStateLogin(response.data.user);
+        setUserStateLogin(response.data.user);
         return { success: true, message: response.data.message };
       }
     } catch (error) {

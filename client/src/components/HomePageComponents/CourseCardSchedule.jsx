@@ -7,7 +7,7 @@ import EnterGrade from "../coursePageComponents/EnterGrade";
 import Rate from "../coursePageComponents/Rate";
 import { useSchedule } from "../../context/ScheduleContext";
 
-export default function CourseCardSchedule({ course, fetchAgain }) {
+export default function CourseCardSchedule({ course, current = true }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [ratingCourse, setRatingCourse] = useState(false);
   const [gradingCourse, setGradingCourse] = useState(false);
@@ -57,23 +57,27 @@ export default function CourseCardSchedule({ course, fetchAgain }) {
           </Link>
         </ThreeDotMenuButton>
 
-        <ThreeDotMenuButton clickHandler={handleRating} purpose={"normal"}>
-          <BarChart size={20} />
-          قيّم صعوبة المقرر
-        </ThreeDotMenuButton>
+        {current && (
+          <>
+            <ThreeDotMenuButton clickHandler={handleRating} purpose={"normal"}>
+              <BarChart size={20} />
+              قيّم صعوبة المقرر
+            </ThreeDotMenuButton>
 
-        <ThreeDotMenuButton clickHandler={handleGrading} purpose={"normal"}>
-          <ClipboardList size={20} />
-          أضف درجتك
-        </ThreeDotMenuButton>
+            <ThreeDotMenuButton clickHandler={handleGrading} purpose={"normal"}>
+              <ClipboardList size={20} />
+              أضف درجتك
+            </ThreeDotMenuButton>
 
-        <ThreeDotMenuButton
-          purpose={"dangerous"}
-          clickHandler={handleRemoveCourse}
-        >
-          <Trash2 size={20} />
-          إزالة من الجدول
-        </ThreeDotMenuButton>
+            <ThreeDotMenuButton
+              purpose={"dangerous"}
+              clickHandler={handleRemoveCourse}
+            >
+              <Trash2 size={20} />
+              إزالة من الجدول
+            </ThreeDotMenuButton>
+          </>
+        )}
       </KababMenu>
 
       {/* ✅ Keep Rating & Grading Components Outside the Menu */}
