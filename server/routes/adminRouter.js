@@ -694,7 +694,7 @@ const adminName = req.user.name;
 router.put("/unBanUser", async (req, res) => {
   try {
     const { studentId } = req.body;
-
+const adminId = req.user.id;
     if (!studentId) {
       return res.status(400).json({
         success: false,
@@ -704,7 +704,7 @@ router.put("/unBanUser", async (req, res) => {
 
     // Check if the user is currently banned
     const existingBan = await db.query(
-      `SELECT 1 FROM ban WHERE studentId = $1`,
+      `SELECT creatorid FROM ban WHERE studentId = $1`,
       [studentId]
     );
 
@@ -715,6 +715,14 @@ router.put("/unBanUser", async (req, res) => {
           "User is not currently banned or does not exist in the database.",
       });
     }
+// These 6 lines can be removed if any admin should be allowed to unban the user it.
+if (adminId !== existingBan.rows[0].creatorid) {
+  return res.status(403).json({
+    success: false,
+    message:
+      "You are not authorized to unBan this account because you are not the admin who ban it.",
+  });
+}
 
     // Remove the ban
     const result = await db.query(`DELETE FROM ban WHERE studentId = $1`, [
