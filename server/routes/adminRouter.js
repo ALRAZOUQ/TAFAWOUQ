@@ -650,12 +650,12 @@ const adminName = req.user.name;
     if (reportId) {
       banUserResult = await db.query(
         `INSERT INTO ban (studentId, reason,reportId ,creatorId) VALUES ($1, $2 ,$3,$4) RETURNING *`,
-        [studentId, reason, reportId,adminId]
+        [studentId, reason, reportId, adminId]
       );
     } else {
       banUserResult = await db.query(
         `INSERT INTO ban (studentId ,reason,creatorId) VALUES ($1, $2,$3) RETURNING *`,
-        [studentId, reason,adminId]
+        [studentId, reason, adminId]
       );
     }
 
@@ -790,12 +790,10 @@ router.post("/AddTerm", async (req, res) => {
   } catch (error) {
     console.error("Database error:", error);
     if (error.constraint === "term_pkey")
-      return res
-        .status(409)
-        .json({
-          success: false,
-          message: `there are term with the same name: ${name}`,
-        });
+      return res.status(409).json({
+        success: false,
+        message: `there are term with the same name: ${name}`,
+      });
 
     res.status(500).json({ success: false, message: "Internal server error." });
   }
