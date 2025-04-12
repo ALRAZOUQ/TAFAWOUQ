@@ -614,6 +614,7 @@ router.get("/bannendAccounts", async (req, res) => {
     'reason', b.reason,
     'date', b.date,
     'reportId', b.reportid,
+     'hideCreatorId', b.creatorId,
     'adminExecutedBan', a.name
   )
 ) AS result
