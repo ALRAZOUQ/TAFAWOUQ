@@ -331,7 +331,7 @@ router.put("/hideComment", async (req, res) => {
 router.put("/unHideComment", async (req, res) => {
   try {
     const { commentId } = req.body;
-
+    const adminId = req.user.id;
     if (!commentId) {
       return res.status(400).json({
         success: false,
@@ -341,7 +341,7 @@ router.put("/unHideComment", async (req, res) => {
 
     // Check if the comment is currently hidden
     const existingComment = await db.query(
-      `SELECT 1 FROM hidecomment WHERE commentid = $1`,
+      `SELECT creatorId FROM hidecomment WHERE commentid = $1`,
       [commentId]
     );
 
@@ -353,6 +353,14 @@ router.put("/unHideComment", async (req, res) => {
       });
     }
 
+    // These 6 lines can be removed if any admin should be allowed to unhide it.
+    if (adminId !== existingComment.rows[0].creatorid) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You are not authorized to unhide this comment because you are not the admin who hid it.",
+      });
+    }
     // Remove the hideComment
     const result = await db.query(
       `DELETE FROM hideComment WHERE commentId = $1`,
