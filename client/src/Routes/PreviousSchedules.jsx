@@ -25,10 +25,14 @@ export default function PreviousSchedules() {
   }, [scheduleId]);
 
   return (
-    <Screen className="flex flex-col gap-4 justify-center items-center">
+    <Screen className="flex flex-col justify-center items-center p-8">
       {console.log(previosSchedules.length)}
       {previosSchedules.length > 0 ? (
         previosSchedules.map((schedule) => (
+          <>
+          <h2 className="text-2xl font-bold text-gray-800 mt-2">
+          {schedule.termname}
+        </h2>
           <Schedule
             scheduleCourses={schedule.courses}
             createScheduleHandler={() => {}}
@@ -36,6 +40,7 @@ export default function PreviousSchedules() {
             key={schedule.scheduleid}
             current={false}
           />
+          </>
         ))
       ) : (
         <div className="text-2xl text-red-500">ليس لديك جدول سابق</div>
