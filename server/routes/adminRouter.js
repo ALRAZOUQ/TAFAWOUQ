@@ -446,7 +446,7 @@ router.put("/hideQuiz", async (req, res) => {
 router.put("/unHideQuiz", async (req, res) => {
   try {
     const { quizId } = req.body;
-
+    const adminId = req.user.id;
     if (!quizId) {
       return res.status(400).json({
         success: false,
@@ -456,7 +456,7 @@ router.put("/unHideQuiz", async (req, res) => {
 
     // Check if the quiz is currently hidden
     const existingQuiz = await db.query(
-      `SELECT 1 FROM hideQuiz WHERE quizId = $1`,
+      `SELECT creatorid FROM hideQuiz WHERE quizId = $1`,
       [quizId]
     );
 
@@ -465,6 +465,14 @@ router.put("/unHideQuiz", async (req, res) => {
         success: false,
         message:
           "quiz is not currently hidden or does not exist in the database.",
+      });
+    }
+    // These 6 lines can be removed if any admin should be allowed to unhide it.
+    if (adminId !== existingQuiz.rows[0].creatorid) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You are not authorized to unhide this quiz because you are not the admin who hid it.",
       });
     }
 
