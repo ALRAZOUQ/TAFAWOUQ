@@ -614,11 +614,15 @@ router.get("/bannendAccounts", async (req, res) => {
     'id', b.id,
     'reason', b.reason,
     'date', b.date,
-    'reportId', b.reportid
+    'reportId', b.reportid,
+    'adminExecutedBan', a.name
   )
 ) AS result
 FROM ban b
-LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
+LEFT JOIN "user" u ON b.studentid = u.id 
+LEFT JOIN "user" a ON b.creatorId = a.id 
+order by b.date desc
+;`
     );
 
     if (bannendAccounts.rows.length === 0) {
@@ -640,8 +644,8 @@ LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
 router.post("/banUser", async (req, res) => {
   try {
     const { reason, studentId, reportId } = req.body;
-const adminId = req.user.id;
-const adminName = req.user.name;
+    const adminId = req.user.id;
+    const adminName = req.user.name;
     if (!studentId || !reason) {
       return res.status(400).json({
         success: false,
@@ -694,7 +698,7 @@ const adminName = req.user.name;
 router.put("/unBanUser", async (req, res) => {
   try {
     const { studentId } = req.body;
-const adminId = req.user.id;
+    const adminId = req.user.id;
     if (!studentId) {
       return res.status(400).json({
         success: false,
@@ -715,14 +719,14 @@ const adminId = req.user.id;
           "User is not currently banned or does not exist in the database.",
       });
     }
-// These 6 lines can be removed if any admin should be allowed to unban the user it.
-if (adminId !== existingBan.rows[0].creatorid) {
-  return res.status(403).json({
-    success: false,
-    message:
-      "You are not authorized to unBan this account because you are not the admin who ban it.",
-  });
-}
+    // These 6 lines can be removed if any admin should be allowed to unban the user it.
+    if (adminId !== existingBan.rows[0].creatorid) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You are not authorized to unBan this account because you are not the admin who ban it.",
+      });
+    }
 
     // Remove the ban
     const result = await db.query(`DELETE FROM ban WHERE studentId = $1`, [
