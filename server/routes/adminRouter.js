@@ -212,27 +212,22 @@ router.get("/hiddenComments", async (req, res) => {
   try {
     const userId = req.user?.id;
     const hiddenComments = await db.query(
-      `SELECT json_build_object(
-  'comment', json_build_object(
-    'id', c.id,
-    'content', c.content,
-    'creationDate', c.creationdate,
-    'tag', c.tag,
-    'author',u.id,
-    'authorId',u.id, 
-    'numOfLikes', COALESCE(l.num_likes, 0),
-    'numOfReplies', COALESCE(r.reply_count, 0),
-    'isLiked', CASE WHEN sl.creatorid = 1 THEN true ELSE false END
-  ),
-  'hideInformation', json_build_object(
-    'id', hc.id,
-    'reason', hc.reason,
-    'date', hc.date,
-    'adminExecutedHide', a.name,
-    'reportId', hc.reportId,
-    'creatorId', hc.creatorid
-  )
-) AS comment_data
+      `SELECT 
+hc.id as "hideId",
+    hc.reason as "hideReason",
+   hc.date as "hideDate",
+    a.name as "adminExecutedHide",
+    hc.reportId as "reportId",
+     hc.creatorid as "hideCreatorId",
+    c.id as "commentId",
+     c.content as "commentContent",
+     c.creationdate as "commentCreationDate",
+     c.tag as "commentTag",
+    u.id as "commentAuthor",
+    u.id as "commentAuthorId",
+     COALESCE(l.num_likes, 0) as "commentNumOfLikes",
+    COALESCE(r.reply_count, 0) as "commentNumOfReplies",
+    CASE WHEN sl.creatorid = $1 THEN true ELSE false END as "commentIsLiked"
 FROM comment c
 JOIN "user" u ON c.authorId = u.id
 LEFT JOIN (
@@ -247,7 +242,7 @@ LEFT JOIN (
   GROUP BY parentCommentId
 ) r ON c.id = r.parentCommentId
 LEFT JOIN hideComment hc ON c.id = hc.commentId
-LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = 1
+LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $1
 LEFT JOIN "user" a ON a.id = hc.creatorId
 WHERE hc.id IS NOT NULL
 ORDER BY hc.date DESC;`,
