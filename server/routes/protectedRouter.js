@@ -1004,6 +1004,47 @@ router.post("/storeQuiz", async (req, res) => {
   }
 });
 
+router.post("/addQuizToMyQuizList", async (req, res) => {
+  try {
+    const { quizId } = req.body;
+    const userId = req.user.id;
+    if (!quizId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters quizId.",
+      });
+    }
+
+    //cheek of existing in myQuizList
+    const myQuizListResult = await db.query(
+      `SELECT * FROM myquizlist WHERE studentid = $1 AND quizid = $2`,
+      [userId, quizId]
+    );
+
+    if (myQuizListResult.rows.length !== 0) {
+      return res.status(403).json({
+        success: false,
+        message: "Quiz already exists in myQuizList.",
+      });
+    }
+
+    const insertResult = await db.query(
+      `INSERT INTO myquizlist(
+	studentid, quizid)
+	VALUES ($1, $2)`,
+      [userId, quizId]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Quiz added to myQuizList successfully.",
+    });
+  } catch (error) {
+    console.error("Error add to myQuizList:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 //==================================================
 //=================== report ======================
 //==================================================
