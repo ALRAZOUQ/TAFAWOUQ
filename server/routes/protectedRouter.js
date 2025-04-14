@@ -1045,6 +1045,49 @@ router.post("/addQuizToMyQuizList", async (req, res) => {
   }
 });
 
+
+router.delete("/removeQuizToMyQuizList", async (req, res) => {
+  try {
+    const { quizId } = req.body;
+    const userId = req.user.id;
+    if (!quizId) {
+      return res.status(400).json({
+        success: false,
+        message: "quizId is required.",
+      });
+    }
+    // Check if the quiz is currently exist in myquizlist
+    const existingQuiz = await db.query(
+      `SELECT studentid, quizid
+	FROM myquizlist where studentid =$1 and quizId=$2`,
+      [userId, quizId]
+    );
+
+    if (existingQuiz.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "quiz does not exist in myquizlist or does not exist in the database.",
+      });
+    }
+
+    // Remove the quiz from myquizlist
+    const result = await db.query(
+      `DELETE FROM myquizlist
+	WHERE studentid = $1 and quizid=$2;`,
+      [userId, quizId]
+    );
+    if (result.rowCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "quiz has been successfully removed from myquizlist.",
+      });
+    }
+  } catch (error) {
+    console.error("Error when remove a quiz from myquizlist:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 //==================================================
 //=================== report ======================
 //==================================================
