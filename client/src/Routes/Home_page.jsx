@@ -1,11 +1,9 @@
-import { Link } from "react-router-dom";
 import Schedule from "../components/Schedule";
 import { useState, useEffect } from "react";
 import { useSchedule } from "../context/ScheduleContext";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
 import GPA from "../components/HomePageComponents/GPA";
-import CourseCardSchedule from "../components/HomePageComponents/CourseCardSchedule";
 import { requestNotificationPermissionAndGetTheFCMToken } from "../config/firebase";
 
 export default function HomePage() {
@@ -41,12 +39,12 @@ export default function HomePage() {
         scheduleName={scheduleName}
       />
 
-      
       <div className="w-full max-w-screen-xl mb-6 flex flex-col items-center">
         <div className="w-full flex justify-start pr-2 mb-3">
           <button
             className="flex items-center gap-2 text-gray-700 hover:bg-gray-200 px-3 py-1 rounded-lg transition-all"
-            onClick={handleShowGPA}>
+            onClick={handleShowGPA}
+          >
             {showGPA ? (
               <>
                 <EyeOff size={16} />
