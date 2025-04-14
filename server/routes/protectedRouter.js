@@ -1088,6 +1088,59 @@ router.delete("/removeQuizToMyQuizList", async (req, res) => {
   }
 });
 
+router.post("/shareQuiz", async (req, res) => {
+  try {
+    const { quizId, courseId } = req.body;
+    const userId = req.user.id;
+    if (!quizId || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters quizId or courseId.",
+      });
+    }
+
+    //cheek of existing in myQuizList
+    const quizResult = await db.query(`SELECT * FROM quiz WHERE id = $1`, [
+      quizId,
+    ]);
+
+    if (quizResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Quiz does not exist.",
+      });
+    }
+
+    if (quizResult.rows[0].authorid !== userId) {
+      return res.status(401).json({
+        success: false,
+        message: "You are not the author of this quiz.",
+      });
+    }
+    if (quizResult.rows[0].courseid != null) {
+      return res.status(403).json({
+        success: false,
+        message: "the quiz already shared.",
+      });
+    }
+
+    await db.query(
+      `UPDATE quiz
+	SET courseid=$1 , isshared=true 
+	WHERE id=$2`,
+      [courseId, quizId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "course shared successfully.",
+    });
+  } catch (error) {
+    console.error("Error while sharing course:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 //==================================================
 //=================== report ======================
 //==================================================
