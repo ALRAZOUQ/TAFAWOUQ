@@ -686,21 +686,28 @@ router.post("/banUser", async (req, res) => {
           if (err) {
             console.error("Error retrieving sessions:", err);
           } else if (sessions) {
-            Object.keys(sessions).forEach(sid => {
+            Object.keys(sessions).forEach((sid) => {
               const session = sessions[sid];
-              if (session.passport && session.passport.user && session.passport.user.id === parseInt(studentId)) {
+              if (
+                session.passport &&
+                session.passport.user &&
+                session.passport.user.id === parseInt(studentId)
+              ) {
                 req.sessionStore.destroy(sid, (destroyErr) => {
                   if (destroyErr) {
                     console.error("Error destroying session:", destroyErr);
                   } else {
-                    console.log(`Session destroyed for banned user ${studentId}`);
+                    console.log(
+                      `Session destroyed for banned user ${studentId}`
+                    );
                   }
                 });
               }
             });
           }
         });
-      }}
+      }
+    }
 
     if (banUserResult.rows.length > 0) {
       res.status(200).json({

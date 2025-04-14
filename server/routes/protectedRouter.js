@@ -758,25 +758,45 @@ router.post("/postComment", async (req, res) => {
     let commentResult;
     // If parentCommentId is provided, create a reply
     if (parentCommentId) {
-      commentResult = await db.query(`INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [studentId, courseId, content, tag, parentCommentId]);
+      commentResult = await db.query(
+        `INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [studentId, courseId, content, tag, parentCommentId]
+      );
 
       // TODO Razouq: send 200
 
       // store the notification record
       try {
-        const parentComment = await db.query(`SELECT * FROM public.comment WHERE id=$1`, [parentCommentId])
-        const parentcommentauthorid = parentComment.rows[0].authorid
-        const notificationResult = await db.query(`INSERT INTO notifications ( parentcommentauthorid, coursecode, courseid, parentCommentId, replyauthor ) 
-                                                   VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [parentcommentauthorid, courseCode, courseId, parentCommentId, anotherName])
+        const parentComment = await db.query(
+          `SELECT * FROM public.comment WHERE id=$1`,
+          [parentCommentId]
+        );
+        const parentcommentauthorid = parentComment.rows[0].authorid;
+        const notificationResult = await db.query(
+          `INSERT INTO notifications ( parentcommentauthorid, coursecode, courseid, parentCommentId, replyauthor ) 
+                                                   VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+          [
+            parentcommentauthorid,
+            courseCode,
+            courseId,
+            parentCommentId,
+            anotherName,
+          ]
+        );
         try {
-          let personToBeNotified = await db.query(`SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`, [parentcommentauthorid])
+          let personToBeNotified = await db.query(
+            `SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`,
+            [parentcommentauthorid]
+          );
 
-          if (personToBeNotified.rows.length && !firebaseAdmin) { // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
-            let dynamic_url = process.env.NODE_ENV ? process.env.PRODUCTION_CLIENT_URL : process.env.DEVELOPMENT_CLIENT_URL
-            dynamic_url = `${dynamic_url}/courses/${courseId}#${parentCommentId}`
+          if (personToBeNotified.rows.length && !firebaseAdmin) {
+            // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
+            let dynamic_url = process.env.NODE_ENV
+              ? process.env.PRODUCTION_CLIENT_URL
+              : process.env.DEVELOPMENT_CLIENT_URL;
+            dynamic_url = `${dynamic_url}/courses/${courseId}#${parentCommentId}`;
 
-            // Razouq: If we need to send to only one client: 
+            // Razouq: If we need to send to only one client:
 
             /*const pushNotification = {
             token: personToBeNotified.rows[0].fcmtoken,
@@ -792,19 +812,19 @@ router.post("/postComment", async (req, res) => {
           await firebaseAdmin.messaging().send(pushNotification)
           */
 
-            const tokens = personToBeNotified.rows.map(row => row.fcmtoken)
+            const tokens = personToBeNotified.rows.map((row) => row.fcmtoken);
 
             const pushNotification = {
-              tokens: tokens, // Razouq: send to all of his devices 
+              tokens: tokens, // Razouq: send to all of his devices
               notification: {
                 title: `${anotherName} replied to your comment about ${courseCode}`,
-                body: content
+                body: content,
               },
               webpush: {
                 notification: {
                   title: `${anotherName} replied to your comment about ${courseCode}`,
                   body: content,
-                  icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png"
+                  icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png",
                 },
                 data: {
                   url: dynamic_url,
@@ -812,29 +832,42 @@ router.post("/postComment", async (req, res) => {
               },
             };
 
-            firebaseAdmin.messaging().sendEachForMulticast(pushNotification).
-              then((response) => {
+            firebaseAdmin
+              .messaging()
+              .sendEachForMulticast(pushNotification)
+              .then((response) => {
                 // console.log(`✅ Successfully sent messages: ${response.successCount}`);
                 // console.log(`❌ Failed messages: ${response.failureCount}`);
                 if (response.failureCount > 0) {
-                  console.log("/postComment 🔴 sending push notifications Errors:", response.responses.filter(r => !r.success));
+                  console.log(
+                    "/postComment 🔴 sending push notifications Errors:",
+                    response.responses.filter((r) => !r.success)
+                  );
                 }
-              })
-
+              });
           }
         } catch (error) {
-          console.error(`/postComment Error while sending the notificaation data to FCM:, ${error}`);
-
+          console.error(
+            `/postComment Error while sending the notificaation data to FCM:, ${error}`
+          );
         }
       } catch (error) {
-        console.error(`/postComment Error while creating a notificaation:, ${error}`);
-        res.status(400).json({ success: false, message: `Error while creating a notificaation` })
+        console.error(
+          `/postComment Error while creating a notificaation:, ${error}`
+        );
+        res
+          .status(400)
+          .json({
+            success: false,
+            message: `Error while creating a notificaation`,
+          });
       }
     } else {
       // If parentCommentId is not provided, create a regular comment
       commentResult = await db.query(
         `INSERT INTO public.comment (authorid, courseid, content, tag) VALUES ($1, $2, $3, $4) RETURNING *`,
-        [studentId, courseId, content, tag]);
+        [studentId, courseId, content, tag]
+      );
     }
     const newComeent = {
       id: commentResult.rows[0].id,
@@ -862,37 +895,63 @@ router.post("/postComment", async (req, res) => {
 //================= Notifications ==================
 //==================================================
 router.post("/RegisterForPushNotifications", async (req, res) => {
-  const { FCMToken, deviceType } = req.body
+  const { FCMToken, deviceType } = req.body;
   try {
-    const registrationResult = await db.query(`INSERT INTO PushNotificationsRegistration (user_id, FCMToken, deviceType)
+    const registrationResult = await db.query(
+      `INSERT INTO PushNotificationsRegistration (user_id, FCMToken, deviceType)
                                             VALUES($1, $2, $3) 
                                             ON CONFLICT (user_id, deviceType)
                                             DO UPDATE SET FCMToken = $2
-                                            RETURNING *;`, [req.user.id, FCMToken, deviceType])
+                                            RETURNING *;`,
+      [req.user.id, FCMToken, deviceType]
+    );
     // console.log('registrationResult :>> ', registrationResult);
-    res.status(200).json({ success: true, message: `The user's FCM Token for his ${registrationResult.rows[0].devicetype} is registered successfully` })
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `The user's FCM Token for his ${registrationResult.rows[0].devicetype} is registered successfully`,
+      });
   } catch (error) {
-    console.error(`/RegisterForPushNotifications DB error ${error}`)
-    res.status(500).json({ success: false, message: `The user's FCM Token for his ${deviceType} couldn't be registered` })
+    console.error(`/RegisterForPushNotifications DB error ${error}`);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `The user's FCM Token for his ${deviceType} couldn't be registered`,
+      });
   }
-})
+});
 
 router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
-  const { deviceType } = req.body
+  const { deviceType } = req.body;
   try {
-    const deletionResult = await db.query(`DELETE FROM PushNotificationsRegistration
+    const deletionResult = await db.query(
+      `DELETE FROM PushNotificationsRegistration
                                           WHERE user_id = $1 AND deviceType = $2
-                                          RETURNING *;`, [req.user.id, deviceType])
-    res.status(200).json({ success: true, message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully` })
+                                          RETURNING *;`,
+      [req.user.id, deviceType]
+    );
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully`,
+      });
   } catch (error) {
-    console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`)
-    res.status(500).json({ success: false, message: `The user's FCM Token for his ${deviceType} couldn't be deleted` })
+    console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `The user's FCM Token for his ${deviceType} couldn't be deleted`,
+      });
   }
-})
+});
 
 router.get("/myNotifications", async (req, res) => {
-
-  let notifications = await db.query(`SELECT 
+  let notifications = await db.query(
+    `SELECT 
                                           *,
                                           CASE 
                                               WHEN NOW() - timestamp < INTERVAL '1 hour' THEN CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' minutes ago')
@@ -901,10 +960,11 @@ router.get("/myNotifications", async (req, res) => {
                                           END AS time_ago
                                       FROM notifications
                                       Where parentcommentauthorid=$1;
-                                      `, [req.user.id])
-  res.status(200).json(notifications.rows)
-})
-
+                                      `,
+    [req.user.id]
+  );
+  res.status(200).json(notifications.rows);
+});
 
 //==================================================
 //=================== quiz ======================
@@ -923,22 +983,23 @@ left join course c on  q.courseid = c.id
 where  q.id in(select quizid from myquizlist mql where studentid =$1)`,
       [userId]
     );
-if(quizzesResult.rows.length === 0){
-return res.status(404).json({
-  success: false,
-  message: "No quizzes found in myQuizList.",
-});}
+    if (quizzesResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No quizzes found in myQuizList.",
+      });
+    }
 
-const quizzeslist = quizzesResult.rows.map((quiz) => ({
-  id: quiz.id,
-  title: quiz.title,
-  isShared: quiz.isshared,
-  authorId: quiz.authorid,
-  authorName: quiz.authorName,
-  courseId: quiz.courseid,
-  courseCode: quiz.courseCode,
-  creationDate: quiz.creationdate,
-}));
+    const quizzeslist = quizzesResult.rows.map((quiz) => ({
+      id: quiz.id,
+      title: quiz.title,
+      isShared: quiz.isshared,
+      authorId: quiz.authorid,
+      authorName: quiz.authorName,
+      courseId: quiz.courseid,
+      courseCode: quiz.courseCode,
+      creationDate: quiz.creationdate,
+    }));
 
     res.status(200).json({
       success: true,
@@ -1041,7 +1102,6 @@ router.post("/addQuizToMyQuizList", async (req, res) => {
   }
 });
 
-
 router.delete("/removeQuizToMyQuizList", async (req, res) => {
   try {
     const { quizId } = req.body;
@@ -1062,7 +1122,8 @@ router.delete("/removeQuizToMyQuizList", async (req, res) => {
     if (existingQuiz.rows.length === 0) {
       return res.status(404).json({
         success: false,
-        message: "quiz does not exist in myquizlist or does not exist in the database.",
+        message:
+          "quiz does not exist in myquizlist or does not exist in the database.",
       });
     }
 
