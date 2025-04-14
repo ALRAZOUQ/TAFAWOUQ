@@ -16,7 +16,7 @@ export default function HiddenComments() {
   const [isLoading, setIsLoading] = useState(false); // Set to false since we're using dummy data
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const commentsPerPage = 6;
+  const commentsPerPage = 8;
   function formatTime(isoString) {
     const date = new Date(isoString);
 

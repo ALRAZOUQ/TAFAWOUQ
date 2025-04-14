@@ -16,7 +16,7 @@ export default function BannedAccounts() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
-  const accountsPerPage = 6;
+  const accountsPerPage = 10;
 
   useEffect(() => {
     const fetchBannedAccounts = async () => {
@@ -156,7 +156,7 @@ export default function BannedAccounts() {
             </div>
 
             {/* Tablet and Desktop view - Table */}
-            <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg">
+            <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg mb-4">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-TAF-300">
                   <tr>
