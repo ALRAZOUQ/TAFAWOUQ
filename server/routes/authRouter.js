@@ -439,4 +439,51 @@ ORDER BY c.creationDate ASC;  -- Sort by oldest to maintain thread order`,
   }
 });
 
+
+//==================================================
+//================= quiz ========================
+//==================================================
+
+router.get("/course/quizzes/:courseId", async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+
+    // Get quizzes data
+    const quizzesResult = await db.query(
+      `select q.* ,c.code as "courseCode", u.name as "authorName" from quiz q 
+left join "user" u on u.id = q.authorid
+left join hidequiz hq on hq.quizid = q.id 
+left join course c on  q.courseid = c.id
+where c.id =$1 and hq.id IS NULL  -- Exclude quizzes that exist in hideQuiz table`,
+      [courseId]
+    );
+if(quizzesResult.rows.length === 0){
+return res.status(404).json({
+  success: false,
+  message: "No quizzes found for this course.",
+});}
+
+const quizzeslist = quizzesResult.rows.map((quiz) => ({
+  id: quiz.id,
+  title: quiz.title,
+  isShared: quiz.isshared,
+  authorId: quiz.authorid,
+  authorName: quiz.authorName,
+  courseId: quiz.courseid,
+  courseCode: quiz.courseCode,
+  creationDate: quiz.creationdate,
+}));
+
+    res.status(200).json({
+      success: true,
+      message: "quizzes retrieved sucssusfully",
+      quiz: quizzeslist,
+    });
+  } catch (error) {
+    console.error("Error fetching quizzes list:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to retrieve quizzes list" });
+  }
+});
 export default router;
