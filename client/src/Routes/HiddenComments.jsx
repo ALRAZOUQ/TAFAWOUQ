@@ -1,15 +1,21 @@
 import Screen from "../components/Screen";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
+
+// Lazy load Pagination component
+const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 
 export default function HiddenComments() {
   const { user } = useAuth();
   useRouteIfAuthorizedAndHeIsNotAdmin();
   const [hiddenComments, setHiddenComments] = useState([]);
   const [isLoading, setIsLoading] = useState(false); // Set to false since we're using dummy data
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const commentsPerPage = 6;
   function formatTime(isoString) {
     const date = new Date(isoString);
 
@@ -53,6 +59,21 @@ export default function HiddenComments() {
   useEffect(() => {
     fetchHiddenComments();
   }, []);
+  
+  // Preload Pagination component
+  useEffect(() => {
+    import("../components/coursePageComponents/Pagination");
+  }, []);
+  
+  // Filter & pagination calculations
+  const filteredComments = hiddenComments.filter((comment) => 
+    comment.commentContent.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const indexOfLastComment = currentPage * commentsPerPage;
+  const indexOfFirstComment = indexOfLastComment - commentsPerPage;
+  const currentComments = filteredComments.slice(indexOfFirstComment, indexOfLastComment);
+  const totalPages = Math.ceil(filteredComments.length / commentsPerPage);
 
   const handleUnhide = async (commentId) => {
     try {
@@ -86,6 +107,21 @@ export default function HiddenComments() {
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center sm:text-right">
           التعليقات المخفية
         </h1>
+        
+        {/* Search input */}
+        <div className="mb-4 px-4">
+          <input
+            type="text"
+            placeholder="ابحث في التعليقات المخفية..."
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setCurrentPage(1); // Reset to first page on search
+            }}
+            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+        
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
@@ -93,7 +129,7 @@ export default function HiddenComments() {
         ) : (
           <div className="w-full px-4 py-6">
             <div className="grid grid-cols-1  md:grid-cols-2 gap-6">
-              {hiddenComments.map((x) => (
+              {currentComments.map((x) => (
                 <div
                   key={x.commentId}
                   className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
@@ -193,6 +229,17 @@ export default function HiddenComments() {
                 </div>
               ))}
             </div>
+            
+            {/* Pagination */}
+            {hiddenComments.length > 0 && (
+              <Suspense fallback={<div>Loading pagination...</div>}>
+                <Pagination 
+                  currentPage={currentPage} 
+                  totalPages={totalPages} 
+                  setCurrentPage={setCurrentPage} 
+                />
+              </Suspense>
+            )}
           </div>
         )}
       </div>
