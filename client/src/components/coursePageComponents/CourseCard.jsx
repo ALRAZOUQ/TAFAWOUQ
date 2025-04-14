@@ -5,6 +5,7 @@ import {
   Pencil,
   BarChart,
   ClipboardList,
+  Info,
 } from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
 import EditCourseModal from "../../components/EditCourseModal";
@@ -28,6 +29,7 @@ export default function CourseCard({
   const [isGrading, setIsGrading] = useState(false);
   const [animatedGrade, setAnimatedGrade] = useState(0);
   const [animatedRating, setAnimatedRating] = useState(0);
+  const [showTooltip, setShowTooltip] = useState(false);
   const { isAuthorized } = useAuth();
 
   useEffect(() => {
@@ -52,7 +54,7 @@ export default function CourseCard({
 
     return () => clearInterval(interval);
   }, [course?.avgGrade, course?.avgRating]);
-  const getColor = (value) => {
+  const getDifficultyColor = (value) => {
     if (value <= 1.5 && value >= 1) return "#4ade80"; // bg-green-400
     if (value <= 2.5 && value > 1.5) return "#166534"; // bg-green-800
     if (value <= 3.5 && value > 2.5) return "#ea580c"; // bg-orange-600
@@ -196,11 +198,27 @@ export default function CourseCard({
 
         {/* Circular Progress Bar for Average Rating */}
         <div className="flex flex-col items-center space-y-2">
-          <p className="text-sm text-gray-500">متوسط الصعوبة</p>
+          <p className="text-sm text-gray-500 whitespace-nowrap flex items-center justify-center">
+            متوسط الصعوبة
+            <button
+              onMouseEnter={() => setShowTooltip(true)}
+              onClick={() => setShowTooltip(!showTooltip)}
+              className="relative"
+            >
+              <Info className="mx-1" size={20} />
+              {showTooltip && (
+                <div className="absolute z-10 w-fit p-2 bg-white border border-gray-200 rounded-md shadow-lg -left-10 top-6 text-right">
+                  <p className="text-sm text-gray-500">
+                    عدد التقييمات: {course.numOfRaters}
+                  </p>
+                </div>
+              )}
+            </button>
+          </p>
           <motion.div
             className="relative w-20 h-20 rounded-full flex items-center justify-center bg-gray-200"
             animate={{
-              background: `conic-gradient(${getColor(
+              background: `conic-gradient(${getDifficultyColor(
                 course.avgRating
               )} ${animatedRating}deg, #e5e7eb 0deg)`,
             }}

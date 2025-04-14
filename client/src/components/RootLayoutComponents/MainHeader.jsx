@@ -43,7 +43,15 @@ export default function MainHeader() {
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
-            <Link to={isAuthorized ? "/home" : "/"}>
+            <Link
+              to={
+                isAuthorized
+                  ? user.isAdmin
+                    ? "/admin/admin-home"
+                    : "/home"
+                  : "/"
+              }
+            >
               <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 flex items-center justify-center">
                 <motion.img
                   src={main_logo}
@@ -72,7 +80,13 @@ export default function MainHeader() {
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
-            route={isAuthorized ? "/home" : "/"}
+            route={
+              isAuthorized
+                ? user.isAdmin
+                  ? "/admin/admin-home"
+                  : "/home"
+                : "/"
+            }
           />
 
           <NavigationLink linkTo={"المواد"} route={"/courses"} />

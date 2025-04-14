@@ -6,7 +6,7 @@ export default function Schedule({
   Id,
   current = false,
   createScheduleHandler,
-  scheduleName,
+  
 }) {
   return (
     <div className="md:w-full md:max-w-screen-xl w-[93%] bg-gray-50 shadow-inner shadow-gray-300 rounded-lg p-4 min-h-[400px] my-4 flex flex-col">

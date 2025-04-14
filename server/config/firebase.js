@@ -16,5 +16,15 @@ const serviceAccount = {
   universe_domain: process.env.universe_domain,
 };
 
-//firebaseAdmin.initializeApp({ credential: firebaseAdmin.credential.cert(serviceAccount) })
-export default firebaseAdmin;
+/** If you don't have the env variables of the API you will get `false`, If you have it you will get the `firebaseAdmin` 
+*/
+let firebaseAdmin_or_false
+if (serviceAccount.type) {
+  firebaseAdmin.initializeApp({ credential: firebaseAdmin.credential.cert(serviceAccount) })
+  firebaseAdmin_or_false = firebaseAdmin
+} else {
+  firebaseAdmin_or_false = false
+}
+
+export default firebaseAdmin_or_false;
+

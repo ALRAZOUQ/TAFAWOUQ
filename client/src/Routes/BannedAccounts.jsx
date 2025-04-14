@@ -1,15 +1,22 @@
 import Screen from "../components/Screen";
-import { useState, useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import { useAuth } from "../context/authContext";
+import SearchButton from "../components/SearchButton";
+
+// Lazy load Pagination component
+const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 
 export default function BannedAccounts() {
   const { user } = useAuth();
   useRouteIfAuthorizedAndHeIsNotAdmin();
   const [bannedAccounts, setBannedAccounts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const accountsPerPage = 10;
 
   useEffect(() => {
     const fetchBannedAccounts = async () => {
@@ -29,6 +36,22 @@ export default function BannedAccounts() {
 
     fetchBannedAccounts();
   }, []);
+  
+  // Preload Pagination component
+  useEffect(() => {
+    import("../components/coursePageComponents/Pagination");
+  }, []);
+  
+  // Filter & pagination calculations
+  const filteredAccounts = bannedAccounts.filter((account) => 
+    account.result.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    account.result.user.email.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
+  const indexOfLastAccount = currentPage * accountsPerPage;
+  const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
+  const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
+  const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
   const handleUnban = async (userId) => {
     try {
       const response = await axios.put("/admin/unBanUser", {
@@ -61,6 +84,16 @@ export default function BannedAccounts() {
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center sm:text-right">
           الحسابات المحظورة
         </h1>
+        
+        {/* Search Button */}
+        <SearchButton
+          placeholder="ابحث في الحسابات المحظورة..."
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+        />
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
@@ -69,7 +102,7 @@ export default function BannedAccounts() {
           <div className="space-y-4 sm:space-y-0">
             {/* Mobile view - Cards */}
             <div className="block sm:hidden space-y-4">
-              {bannedAccounts?.map((bannedAccount) => (
+              {currentAccounts?.map((bannedAccount) => (
                 <div
                   key={bannedAccount.result.user.email}
                   className="bg-gray-50 shadow-md rounded-lg p-4 space-y-3"
@@ -123,7 +156,7 @@ export default function BannedAccounts() {
             </div>
 
             {/* Tablet and Desktop view - Table */}
-            <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg">
+            <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg mb-4">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-TAF-300">
                   <tr>
@@ -145,7 +178,7 @@ export default function BannedAccounts() {
                   </tr>
                 </thead>
                 <tbody className="bg-gray-50 divide-y divide-gray-200">
-                  {bannedAccounts?.map((bannedAccount) => (
+                  {currentAccounts?.map((bannedAccount) => (
                     <tr
                       key={bannedAccount.result.user.email}
                       className="hover:bg-gray-100 transition-colors duration-200"
@@ -186,6 +219,17 @@ export default function BannedAccounts() {
                 </tbody>
               </table>
             </div>
+            
+            {/* Pagination */}
+            {bannedAccounts.length > 0 && (
+              <Suspense fallback={<div>Loading pagination...</div>}>
+                <Pagination 
+                  currentPage={currentPage} 
+                  totalPages={totalPages} 
+                  setCurrentPage={setCurrentPage} 
+                />
+              </Suspense>
+            )}
           </div>
         )}
       </div>
