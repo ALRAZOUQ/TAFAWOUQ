@@ -1141,6 +1141,72 @@ router.post("/shareQuiz", async (req, res) => {
   }
 });
 
+router.get("/getQuiz/:quizId", async (req, res) => {
+  const client = await db.connect();
+
+  try {
+    const quizId = req.params.quizId;
+
+    // Get quiz details
+    const quizResult = await client.query(
+      `SELECT q.* ,c.code as "courseCode",u.name as "authorName" FROM quiz q
+      left join course c on  q.courseid = c.id
+	  left join "user" u on u.id = q.authorid
+        WHERE q.id = $1`,
+      [quizId]
+    );
+    // Get all questions for the quiz
+    const questionsResult = await client.query(
+      `SELECT id, content FROM question WHERE quizid = $1`,
+      [quizId]
+    );
+
+    const quizQuestions = [];
+
+    for (const question of questionsResult.rows) {
+      // Get all options for this question
+      const optionsResult = await client.query(
+        `SELECT content, iscorrect FROM option WHERE questionid = $1`,
+        [question.id]
+      );
+
+      const options = optionsResult.rows.map((o) => o.content);
+      const correctAnswer = optionsResult.rows.find(
+        (o) => o.iscorrect
+      )?.content;
+
+      quizQuestions.push({
+        question: question.content,
+        options,
+        correctAnswer,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Quiz retrieved sucssusfully",
+      quiz: {
+        id: quizResult.rows[0].id,
+        title: quizResult.rows[0].title,
+        isShared: quizResult.rows[0].isshared,
+        authorId: quizResult.rows[0].authorid,
+        authorName: quizResult.rows[0].authorName,
+        courseId: quizResult.rows[0].courseid,
+        courseCode: quizResult.rows[0].courseCode,
+        creationDate: quizResult.rows[0].creationdate,
+        questions: quizQuestions,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching quiz:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to retrieve quiz" });
+  } finally {
+    client.release();
+  }
+});
+
 //==================================================
 //=================== report ======================
 //==================================================
