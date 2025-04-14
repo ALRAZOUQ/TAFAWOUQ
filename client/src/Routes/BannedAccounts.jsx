@@ -4,6 +4,7 @@ import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import { useAuth } from "../context/authContext";
+import SearchButton from "../components/SearchButton";
 
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
@@ -84,19 +85,15 @@ export default function BannedAccounts() {
           الحسابات المحظورة
         </h1>
         
-        {/* Search input */}
-        <div className="mb-4 px-4">
-          <input
-            type="text"
-            placeholder="ابحث في الحسابات المحظورة..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        {/* Search Button */}
+        <SearchButton
+          placeholder="ابحث في الحسابات المحظورة..."
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+        />
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>

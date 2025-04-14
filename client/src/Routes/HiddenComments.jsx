@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
+import SearchButton from "../components/SearchButton";
 
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
@@ -108,19 +109,15 @@ export default function HiddenComments() {
           التعليقات المخفية
         </h1>
         
-        {/* Search input */}
-        <div className="mb-4 px-4">
-          <input
-            type="text"
-            placeholder="ابحث في التعليقات المخفية..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        {/* Search Button */}
+        <SearchButton
+          placeholder="ابحث في التعليقات المخفية..."
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+        />
         
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">

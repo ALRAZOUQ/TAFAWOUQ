@@ -4,6 +4,7 @@ import ReportCard from "../components/ReportCard";
 import { toast } from "react-toastify";
 import Screen from "../components/Screen";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
+import SearchButton from "../components/SearchButton";
 
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
@@ -80,19 +81,15 @@ export default function AdminHomePage() {
   return (
     <Screen>
       <div className="px-4 py-2">
-        {/* Search input */}
-        <div className="mb-4">
-          <input
-            type="text"
-            placeholder="ابحث في البلاغات..."
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
-            className="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-        </div>
+        {/* Search Button */}
+        <SearchButton
+          placeholder="ابحث في البلاغات..."
+          value={searchQuery}
+          onChange={(value) => {
+            setSearchQuery(value);
+            setCurrentPage(1); // Reset to first page on search
+          }}
+        />
 
         <div
           className={`${
