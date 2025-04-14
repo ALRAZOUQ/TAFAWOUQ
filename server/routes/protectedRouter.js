@@ -756,10 +756,12 @@ router.post("/postComment", async (req, res) => {
     }
 
     let commentResult;
+    // If parentCommentId is provided, create a reply
     if (parentCommentId) {
-      // If parentCommentId is provided, create a reply
       commentResult = await db.query(`INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
         [studentId, courseId, content, tag, parentCommentId]);
+
+      // TODO Razouq: send 200
 
       // store the notification record
       try {
@@ -767,33 +769,28 @@ router.post("/postComment", async (req, res) => {
         const parentcommentauthorid = parentComment.rows[0].authorid
         const notificationResult = await db.query(`INSERT INTO notifications ( parentcommentauthorid, coursecode, courseid, parentCommentId, replyauthor ) 
                                                    VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [parentcommentauthorid, courseCode, courseId, parentCommentId, anotherName])
-        // Here I should send the notification to FCM
-        /**
-         * get the parent comment auhor id 
-         * search for his token (or tokens)
-         * if they exist: send notifications via fireebase
-         * else: NOTHING
-         */
         try {
           let personToBeNotified = await db.query(`SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`, [parentcommentauthorid])
-          if (personToBeNotified.rows.length) {
+
+          if (personToBeNotified.rows.length && !firebaseAdmin) { // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
             let dynamic_url = process.env.NODE_ENV ? process.env.PRODUCTION_CLIENT_URL : process.env.DEVELOPMENT_CLIENT_URL
             dynamic_url = `${dynamic_url}/courses/${courseId}#${parentCommentId}`
+
             // Razouq: If we need to send to only one client: 
-            /*
-            const pushNotification = {
-              token: personToBeNotified.rows[0].fcmtoken,
-              notification: {
-                title: `${anotherName} replied to your comment about ${courseCode} `,
-                body: content,
-                click_action: dynamic_url // Redirect link
-              },
-              data: {
-                url: process.env.NODE_ENV ? process.env.DEVELOPMENT_CLIENT_URL : process.env.PRODUCTION_CLIENT_URL
-              }
-            };
-            await firebaseAdmin.messaging().send(pushNotification)
-            */
+
+            /*const pushNotification = {
+            token: personToBeNotified.rows[0].fcmtoken,
+            notification: {
+              title: `${anotherName} replied to your comment about ${courseCode} `,
+              body: content,
+              click_action: dynamic_url // Redirect link
+            },
+            data: {
+              url: process.env.NODE_ENV ? process.env.DEVELOPMENT_CLIENT_URL : process.env.PRODUCTION_CLIENT_URL
+            }
+          };
+          await firebaseAdmin.messaging().send(pushNotification)
+          */
 
             const tokens = personToBeNotified.rows.map(row => row.fcmtoken)
 
@@ -838,8 +835,7 @@ router.post("/postComment", async (req, res) => {
       // If parentCommentId is not provided, create a regular comment
       commentResult = await db.query(
         `INSERT INTO public.comment (authorid, courseid, content, tag) VALUES ($1, $2, $3, $4) RETURNING *`,
-        [studentId, courseId, content, tag]
-      );
+        [studentId, courseId, content, tag]);
     }
     const newComeent = {
       id: commentResult.rows[0].id,
