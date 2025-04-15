@@ -13,7 +13,7 @@ export default function QuizPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const location = useLocation();
-    const {  quizData } = location.state || {}; // to retreve quiz data from url
+    const { quizData } = location.state || {}; // to retreve quiz data from url
     // API Calls
     const fetchQuiz = async () => {
         setLoading(true);
