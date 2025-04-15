@@ -1,7 +1,10 @@
-import React from'react';
-import {  Tag, ChevronRight } from 'lucide-react';
+import React , { useMemo , useCallback} from'react';
+import {  Tag, ChevronRight,Trash2 ,MessageSquareWarning } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
+import { useAuth } from "../context/authContext";
+import GenericForm from "./GenericForm";
+import axios from "../api/axios";
+import { toast } from "react-toastify";
 // Custom Course Avatar component
 const CourseAvatar = ({ code }) => {
   // Extract initials from course code
@@ -36,6 +39,77 @@ const formatDate = (dateString) => {
 
 
 export default function QuizCard({ quiz, onStartQuiz }) {
+  const reportFields = useMemo(
+    () => [
+      {
+        name: "reportContent",
+        label: "سبب الإبلاغ",
+        type: "textarea",
+        required: true,
+      },
+    ],
+    []
+  );
+  
+  const deleteFields = useMemo(
+    () => [
+      {
+        name: "reason",
+        label: "سبب الاخفاء",
+        type: "textarea",
+        required: true,
+      },
+    ],
+    []
+  ); 
+
+  const { user, isAuthorized } = useAuth();
+
+  const handleHideQuiz = useCallback(async (formData) => {
+    try {
+      const response = await axios.put("/admin/hideQuiz", {
+        quizId: formData.id,
+        reason: formData.reason,
+        reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
+      });
+
+      if (response.data.success) {
+       // onDelete(formData.id); //to delete the quiz from the Quiz list  // we have to update the quiz list using on delete function not implmented yet suld be implemented in the course page (remove it from Quizzes state)
+        toast.success("تم إخفاء الاختبار بنجاح");
+      }
+    } catch (error) {
+      if (error?.response?.status === 409) {
+        toast.error(" هذا المقرر مخفي بالفعل");
+        return;
+      }
+      console.error("Error submitting rating:", error);
+      toast.error(error.response?.data?.message || "حدث خطأاثناء حذف الاختبار.");
+      console.error("Error hiding quiz:", error);
+    }
+  }, []);
+
+  const handleReportQuiz = useCallback(async (formData) => {
+    try {
+      // Prepare the data for the API call
+      const reportData = {
+        quizId: quiz.id,
+        reportContent: formData.reportContent,
+      };
+
+      // Call the API endpoint
+      const response = await axios.post("/protected/reportQuiz", reportData);
+
+      if (response.data.success) {
+        toast.success("تم الإبلاغ عن الاختبار بنجاح");
+      }
+      return { success: true };
+    } catch (error) {
+      console.error("Error reporting comment:", error);
+      toast.error("حدث خطأ أثناء الإبلاغ عن الاختبار");
+      return { success: false, error };
+    }
+  }, []);
+
   return (
     <div 
       className=" border-gray-100 rounded-2xl p-5 bg-white shadow hover:shadow-md transition-all duration-300 mb-4"
@@ -69,6 +143,39 @@ export default function QuizCard({ quiz, onStartQuiz }) {
             <Tag size={16} />
             <span className="text-xs font-medium">{quiz.courseCode}</span>
           </div>
+          {isAuthorized && !user.isAdmin &&(
+            <GenericForm
+              itemId={quiz.id}
+              title="ابلاغ"
+              fields={reportFields}
+              submitButtonText="ابلاغ"
+              onSubmit={(formData) => {
+                handleReportQuiz(formData);
+              }}>
+              <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <MessageSquareWarning size={18} />
+                <span className="text-sm">ابلاغ</span>
+              </button>
+            </GenericForm>
+          )}
+          {/* Make sure we're properly checking if the user is an admin */}
+          {isAuthorized && user.isAdmin && (
+            <GenericForm
+              itemId={quiz?.id}
+              title="اخفاءالالاختبار"
+              fields={deleteFields}
+              submitButtonText="اخفاء"
+              onSubmit={(formData) => {
+               handleHideQuiz(formData);
+              }}>
+              <button
+                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                type="button">
+                <Trash2 size={18} />
+                <span className="text-sm">اخفاء</span>
+              </button>
+            </GenericForm>
+          )}
         </div>
         
         <Link to={`/quiz/${quiz.id}`}>

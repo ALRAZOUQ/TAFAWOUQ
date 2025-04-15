@@ -19,7 +19,7 @@ export default function ReportCard({
         //onReject(reportId); we do not need to delete the the report after hide the comment
         
         updateProperty(report.reportId, "isResolved", true);
-        updateProperty(report.reportId, "isCommentHidden", true);
+        updateProperty(report.reportId, "isElementHidden", true);
         updateProperty(report.reportId, "adminExecutedHide", response.data.hiddenComment
           .adminExecutedHide);
 
@@ -53,7 +53,7 @@ export default function ReportCard({
           "adminExecutedBan",
           response.data.bannedUser.adminExecutedban
         );
-        updateProperty(report.reportId, "isCommentAuthorBanned", true);
+        updateProperty(report.reportId, "isAuthorBanned", true);
         return true;
       }
     } catch (error) {
@@ -84,17 +84,18 @@ export default function ReportCard({
       <p className="mt-2 font-semibold whitespace-normal break-words">
         الحالة: {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
       </p>
+      {console.log("report", report)}
       {report.isResolved && (
         <div className="mt-2 font-semibold whitespace-normal break-words">
           الاجراءات:
           <ul>
-            {report.isCommentHidden && (
+            {report.isElementHidden && (
               <li>
                 تم اخفاء التعليق بواسطة:{" "}
                 <span>{report.adminExecutedHide || "المشرف"}</span>
               </li>
             )}
-            {report.isCommentAuthorBanned && (
+            {report.isAuthorBanned && (
               <li>
                 تم حظر المستخدم بواسطة:{" "}
                 <span>{report.adminExecutedBan || "المشرف"}</span>
