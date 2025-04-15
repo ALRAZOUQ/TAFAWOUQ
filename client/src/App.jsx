@@ -22,8 +22,9 @@ const ReportsPage = lazy(() => import("./Routes/ReportsPage"));
 const BannedAccounts = lazy(() => import("./Routes/BannedAccounts"));
 const Hiddencomments = lazy(() => import("./Routes/Hiddencomments"));
 const PreviousSchedules = lazy(() => import("./Routes/PreviousSchedules"));
-const Quizzes = lazy(() => import("./Routes/Quizzes"));
+const MyQuizzes = lazy(() => import("./Routes/MyQuizzes"));
 const AdminHomePage = lazy(() => import("./Routes/AdminHomePage"));
+const QuizPage = lazy(() => import("./Routes/QuizPage"));
 
 // ✅ Define Routes
 const router = createBrowserRouter([
@@ -38,7 +39,8 @@ const router = createBrowserRouter([
 
       { path: "courses/:courseId", element: <CoursePage /> },
       { path: "mypreviousschedules", element: <PreviousSchedules /> },
-      { path: "myquizzes", element: <Quizzes /> },
+      { path: "myquizzes", element: <MyQuizzes /> },
+      { path: "quiz/:quizId", element: <QuizPage /> },
       {
         path: "admin",
         children: [

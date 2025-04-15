@@ -218,6 +218,7 @@ hc.id as "hideId",
    hc.date as "hideDate",
     a.name as "adminExecutedHide",
     hc.reportId as "reportId",
+    ur.name as "reportAuthorName",
      hc.creatorid as "hideCreatorId",
     c.id as "commentId",
      c.content as "commentContent",
@@ -242,8 +243,10 @@ LEFT JOIN (
   GROUP BY parentCommentId
 ) r ON c.id = r.parentCommentId
 LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN report rep on rep.id =hc.reportId
+LEFT JOIN "user" ur on ur.id= rep.authorid --the user linked with reprt
 LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $1
-LEFT JOIN "user" a ON a.id = hc.creatorId
+LEFT JOIN "user" a ON a.id = hc.creatorId -- the admin user
 WHERE hc.id IS NOT NULL
 ORDER BY hc.date DESC;`,
       [userId]
@@ -686,21 +689,28 @@ router.post("/banUser", async (req, res) => {
           if (err) {
             console.error("Error retrieving sessions:", err);
           } else if (sessions) {
-            Object.keys(sessions).forEach(sid => {
+            Object.keys(sessions).forEach((sid) => {
               const session = sessions[sid];
-              if (session.passport && session.passport.user && session.passport.user.id === parseInt(studentId)) {
+              if (
+                session.passport &&
+                session.passport.user &&
+                session.passport.user.id === parseInt(studentId)
+              ) {
                 req.sessionStore.destroy(sid, (destroyErr) => {
                   if (destroyErr) {
                     console.error("Error destroying session:", destroyErr);
                   } else {
-                    console.log(`Session destroyed for banned user ${studentId}`);
+                    console.log(
+                      `Session destroyed for banned user ${studentId}`
+                    );
                   }
                 });
               }
             });
           }
         });
-      }}
+      }
+    }
 
     if (banUserResult.rows.length > 0) {
       res.status(200).json({

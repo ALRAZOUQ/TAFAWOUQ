@@ -5,7 +5,7 @@ import axios from "../api/axios";
 import { useAuth } from "../context/AuthContext";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import SearchButton from "../components/SearchButton";
-
+import Page from "../components/Page";
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 
@@ -103,8 +103,8 @@ export default function HiddenComments() {
     );
   }
   return (
-    <Screen title="Hidden Comments" className="p-2 sm:p-4 md:p-6">
-      <div className="w-full  mx-auto">
+    <Screen title="Hidden Comments" >
+      <Page>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center sm:text-right">
           التعليقات المخفية
         </h1>
@@ -239,7 +239,7 @@ export default function HiddenComments() {
             )}
           </div>
         )}
-      </div>
+      </Page>
     </Screen>
   );
 }

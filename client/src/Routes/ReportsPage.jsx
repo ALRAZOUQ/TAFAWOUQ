@@ -5,7 +5,7 @@ import { toast } from "react-toastify";
 import Screen from "../components/Screen";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import SearchButton from "../components/SearchButton";
-
+import Page from "../components/Page";
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 
@@ -80,7 +80,7 @@ export default function AdminHomePage() {
 
   return (
     <Screen>
-      <div className="px-4 py-2">
+        <Page>
         {/* Search Button */}
         <SearchButton
           placeholder="ابحث في البلاغات..."
@@ -125,7 +125,8 @@ export default function AdminHomePage() {
             />
           </Suspense>
         )}
-      </div>
+     
+      </Page>
     </Screen>
   );
 }

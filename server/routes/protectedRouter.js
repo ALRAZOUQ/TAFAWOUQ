@@ -1,11 +1,19 @@
 import express from "express";
 import { checkAuth } from "../middleware/authMiddleware.js";
 import db from "../config/db.js";
-import firebaseAdmin from '../config/firebase.js';
-import env from 'dotenv';
-env.config()
+import firebaseAdmin from "../config/firebase.js";
+import env from "dotenv";
+env.config();
+//quiz anf file upload imports
+import { GoogleGenAI } from "@google/genai"; // Corrected import
+import multer from "multer";
+import pdfParse from "pdf-parse";
+import fs from "fs";
+import path from "path";
+//End quiz and file upload imports
 const router = express.Router();
-
+// Multer config for file upload
+const upload = multer({ dest: "uploads/" });
 // Apply checkAuth middleware to all routes in this file
 // each roter here not allowed to be accessed without authentication. no need to do any thing. the middleware will do the job
 router.use(checkAuth);
@@ -758,25 +766,45 @@ router.post("/postComment", async (req, res) => {
     let commentResult;
     // If parentCommentId is provided, create a reply
     if (parentCommentId) {
-      commentResult = await db.query(`INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
-        [studentId, courseId, content, tag, parentCommentId]);
+      commentResult = await db.query(
+        `INSERT INTO public.comment (authorid, courseid, content, tag, parentCommentId) VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+        [studentId, courseId, content, tag, parentCommentId]
+      );
 
       // TODO Razouq: send 200
 
       // store the notification record
       try {
-        const parentComment = await db.query(`SELECT * FROM public.comment WHERE id=$1`, [parentCommentId])
-        const parentcommentauthorid = parentComment.rows[0].authorid
-        const notificationResult = await db.query(`INSERT INTO notifications ( parentcommentauthorid, coursecode, courseid, parentCommentId, replyauthor ) 
-                                                   VALUES ($1, $2, $3, $4, $5) RETURNING *;`, [parentcommentauthorid, courseCode, courseId, parentCommentId, anotherName])
+        const parentComment = await db.query(
+          `SELECT * FROM public.comment WHERE id=$1`,
+          [parentCommentId]
+        );
+        const parentcommentauthorid = parentComment.rows[0].authorid;
+        const notificationResult = await db.query(
+          `INSERT INTO notifications ( parentcommentauthorid, coursecode, courseid, parentCommentId, replyauthor ) 
+                                                   VALUES ($1, $2, $3, $4, $5) RETURNING *;`,
+          [
+            parentcommentauthorid,
+            courseCode,
+            courseId,
+            parentCommentId,
+            anotherName,
+          ]
+        );
         try {
-          let personToBeNotified = await db.query(`SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`, [parentcommentauthorid])
+          let personToBeNotified = await db.query(
+            `SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`,
+            [parentcommentauthorid]
+          );
 
-          if (personToBeNotified.rows.length && !firebaseAdmin) { // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
-            let dynamic_url = process.env.NODE_ENV ? process.env.PRODUCTION_CLIENT_URL : process.env.DEVELOPMENT_CLIENT_URL
-            dynamic_url = `${dynamic_url}/courses/${courseId}#${parentCommentId}`
+          if (personToBeNotified.rows.length && !firebaseAdmin) {
+            // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
+            let dynamic_url = process.env.NODE_ENV
+              ? process.env.PRODUCTION_CLIENT_URL
+              : process.env.DEVELOPMENT_CLIENT_URL;
+            dynamic_url = `${dynamic_url}/courses/${courseId}#${parentCommentId}`;
 
-            // Razouq: If we need to send to only one client: 
+            // Razouq: If we need to send to only one client:
 
             /*const pushNotification = {
             token: personToBeNotified.rows[0].fcmtoken,
@@ -792,19 +820,19 @@ router.post("/postComment", async (req, res) => {
           await firebaseAdmin.messaging().send(pushNotification)
           */
 
-            const tokens = personToBeNotified.rows.map(row => row.fcmtoken)
+            const tokens = personToBeNotified.rows.map((row) => row.fcmtoken);
 
             const pushNotification = {
-              tokens: tokens, // Razouq: send to all of his devices 
+              tokens: tokens, // Razouq: send to all of his devices
               notification: {
                 title: `${anotherName} replied to your comment about ${courseCode}`,
-                body: content
+                body: content,
               },
               webpush: {
                 notification: {
                   title: `${anotherName} replied to your comment about ${courseCode}`,
                   body: content,
-                  icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png"
+                  icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png",
                 },
                 data: {
                   url: dynamic_url,
@@ -812,30 +840,42 @@ router.post("/postComment", async (req, res) => {
               },
             };
 
-            firebaseAdmin.messaging().sendEachForMulticast(pushNotification).
-              then((response) => {
+            firebaseAdmin
+              .messaging()
+              .sendEachForMulticast(pushNotification)
+              .then((response) => {
                 // console.log(`✅ Successfully sent messages: ${response.successCount}`);
                 // console.log(`❌ Failed messages: ${response.failureCount}`);
                 if (response.failureCount > 0) {
-                  console.log("/postComment 🔴 sending push notifications Errors:", response.responses.filter(r => !r.success));
+                  console.log(
+                    "/postComment 🔴 sending push notifications Errors:",
+                    response.responses.filter((r) => !r.success)
+                  );
                 }
-              })
-
+              });
           }
         } catch (error) {
-          console.error(`/postComment Error while sending the notificaation data to FCM:, ${error}`);
-
+          console.error(
+            `/postComment Error while sending the notificaation data to FCM:, ${error}`
+          );
         }
-
       } catch (error) {
-        console.error(`/postComment Error while creating a notificaation:, ${error}`);
-        res.status(400).json({ success: false, message: `Error while creating a notificaation` })
+        console.error(
+          `/postComment Error while creating a notificaation:, ${error}`
+        );
+        res
+          .status(400)
+          .json({
+            success: false,
+            message: `Error while creating a notificaation`,
+          });
       }
     } else {
       // If parentCommentId is not provided, create a regular comment
       commentResult = await db.query(
         `INSERT INTO public.comment (authorid, courseid, content, tag) VALUES ($1, $2, $3, $4) RETURNING *`,
-        [studentId, courseId, content, tag]);
+        [studentId, courseId, content, tag]
+      );
     }
     const newComeent = {
       id: commentResult.rows[0].id,
@@ -863,37 +903,63 @@ router.post("/postComment", async (req, res) => {
 //================= Notifications ==================
 //==================================================
 router.post("/RegisterForPushNotifications", async (req, res) => {
-  const { FCMToken, deviceType } = req.body
+  const { FCMToken, deviceType } = req.body;
   try {
-    const registrationResult = await db.query(`INSERT INTO PushNotificationsRegistration (user_id, FCMToken, deviceType)
+    const registrationResult = await db.query(
+      `INSERT INTO PushNotificationsRegistration (user_id, FCMToken, deviceType)
                                             VALUES($1, $2, $3) 
                                             ON CONFLICT (user_id, deviceType)
                                             DO UPDATE SET FCMToken = $2
-                                            RETURNING *;`, [req.user.id, FCMToken, deviceType])
+                                            RETURNING *;`,
+      [req.user.id, FCMToken, deviceType]
+    );
     // console.log('registrationResult :>> ', registrationResult);
-    res.status(200).json({ success: true, message: `The user's FCM Token for his ${registrationResult.rows[0].devicetype} is registered successfully` })
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `The user's FCM Token for his ${registrationResult.rows[0].devicetype} is registered successfully`,
+      });
   } catch (error) {
-    console.error(`/RegisterForPushNotifications DB error ${error}`)
-    res.status(500).json({ success: false, message: `The user's FCM Token for his ${deviceType} couldn't be registered` })
+    console.error(`/RegisterForPushNotifications DB error ${error}`);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `The user's FCM Token for his ${deviceType} couldn't be registered`,
+      });
   }
-})
+});
 
 router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
-  const { deviceType } = req.body
+  const { deviceType } = req.body;
   try {
-    const deletionResult = await db.query(`DELETE FROM PushNotificationsRegistration
+    const deletionResult = await db.query(
+      `DELETE FROM PushNotificationsRegistration
                                           WHERE user_id = $1 AND deviceType = $2
-                                          RETURNING *;`, [req.user.id, deviceType])
-    res.status(200).json({ success: true, message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully` })
+                                          RETURNING *;`,
+      [req.user.id, deviceType]
+    );
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully`,
+      });
   } catch (error) {
-    console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`)
-    res.status(500).json({ success: false, message: `The user's FCM Token for his ${deviceType} couldn't be deleted` })
+    console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: `The user's FCM Token for his ${deviceType} couldn't be deleted`,
+      });
   }
-})
+});
 
 router.get("/myNotifications", async (req, res) => {
-
-  let notifications = await db.query(`SELECT 
+  let notifications = await db.query(
+    `SELECT 
                                           *,
                                           CASE 
                                               WHEN NOW() - timestamp < INTERVAL '1 hour' THEN CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' minutes ago')
@@ -902,9 +968,418 @@ router.get("/myNotifications", async (req, res) => {
                                           END AS time_ago
                                       FROM notifications
                                       Where parentcommentauthorid=$1;
-                                      `, [req.user.id])
-  res.status(200).json(notifications.rows)
-})
+                                      `,
+    [req.user.id]
+  );
+  res.status(200).json(notifications.rows);
+});
+
+//==================================================
+//=================== quiz ======================
+//==================================================
+// Initialize Gemini with your API key.
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+// Helper function to generate quiz from text
+async function generateQuizFromText(text) {
+  try {
+    const prompt = `
+You are an AI tutor. Based on the following text, create a quiz with these requirements:
+- 10 multiple-choice questions
+- Each question must have either 2 or 4 options
+- Include the correct answer for each question
+- Format the output as JSON, like this:
+
+{
+    "questions": [
+    {
+        "question": "Sample question?",
+        "options": ["A", "B", "C", "D"],
+        "correctAnswer": "A"
+    }
+    ]
+}
+
+Here is the text:
+${text}
+    `.trim();
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+    });
+
+    const textResponse = response.text;
+    
+    //  parse the quiz JSON
+    const match = textResponse.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("Quiz format not found in response.");
+    
+    return JSON.parse(match[0]);
+  } catch (error) {
+    //console.error("Error in generateQuizFromText:", error); // we do not need it becuse i handel the erorr in the router
+    throw error; // Re-throw the error to be caught in the route handler
+  }
+}
+
+// Endpoint to handle PDF upload and quiz generation
+router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
+  try {
+    const title = req.body.title;
+    // Ensure title is provided
+    if (!title) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Quiz title is required." });
+    }
+    // Ensure file is uploaded
+    if (!req.file) {
+      return res
+        .status(402)
+        .json({ success: false, message: "No PDF file uploaded." });
+    }
+
+    
+    if (req.file && req.file.path) {
+     // console.log("req.file.path:", req.file.path);
+    }
+
+    
+    const filePath = req.file.path;
+    //console.log("Attempting to read file from:", filePath); // Log the file path
+
+   
+    if (!fs.existsSync(filePath)) {
+      console.error(`File not found at path: ${filePath}`);
+      return res.status(404).json({
+        success: false,
+        message: "Uploaded file not found on the server.",
+      });
+    }
+
+    const dataBuffer = fs.readFileSync(filePath);
+    const pdfData = await pdfParse(dataBuffer);
+
+    // Generate quiz using extracted text
+    const question = await generateQuizFromText(pdfData.text);
+
+    // Clean up uploaded file
+    fs.unlinkSync(filePath);
+
+    // Send only one response
+    res.status(200).json({
+      success: true,
+      message: "Quiz generated successfully",
+      quiz: { title: title, questions: question.questions },
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    if(error== "Error: Quiz format not found in response."){
+ // Clean up uploaded file
+ fs.unlinkSync(req.file.path);
+      return res
+       .status(405)
+       .json({ success: false, message: "the ai failed to format the content as json" });
+    }
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong generating the quiz.",
+    });
+  }
+});
+router.get("/myQuizList", async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    // Get quizzes data
+    const quizzesResult = await db.query(
+      `select q.* ,c.code as "courseCode", u.name as "authorName" from quiz q 
+left join "user" u on u.id = q.authorid
+left join hidequiz hq on hq.quizid = q.id 
+left join course c on  q.courseid = c.id
+where  q.id in(select quizid from myquizlist mql where studentid =$1)`,
+      [userId]
+    );
+    if (quizzesResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No quizzes found in myQuizList.",
+      });
+    }
+
+    const quizzeslist = quizzesResult.rows.map((quiz) => ({
+      id: quiz.id,
+      title: quiz.title,
+      isShared: quiz.isshared,
+      authorId: quiz.authorid,
+      authorName: quiz.authorName,
+      courseId: quiz.courseid,
+      courseCode: quiz.courseCode,
+      creationDate: quiz.creationdate,
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: "quizzes retrieved sucssusfully of myQuizList",
+      quiz: quizzeslist,
+    });
+  } catch (error) {
+    console.error("Error fetching myQuizList:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to retrieve myQuizList" });
+  }
+});
+
+router.post("/storeQuiz", async (req, res) => {
+  const client = await db.connect();
+
+  try {
+    const quiz = req.body.quiz;
+    const authorId = req.user.id;
+
+    await client.query("BEGIN");
+console.log("quiz :>> ", quiz);
+    // Insert into quiz table
+    const quizInsert = await client.query(
+      `INSERT INTO quiz (authorid,title) VALUES ($1,$2) RETURNING id`,
+      [authorId, quiz.title]
+    );
+    const quizId = quizInsert.rows[0].id;
+
+    for (const q of quiz.questions) {
+      // Insert question
+      const questionInsert = await client.query(
+        `INSERT INTO question (quizid, content) VALUES ($1, $2) RETURNING id`,
+        [quizId, q.question]
+      );
+      const questionId = questionInsert.rows[0].id;
+
+      // Insert options
+      for (const option of q.options) {
+        const isCorrect = option === q.correctAnswer;
+        await client.query(
+          `INSERT INTO option (questionid, content, iscorrect) VALUES ($1, $2, $3)`,
+          [questionId, option, isCorrect]
+        );
+      }
+    }
+
+    await client.query("COMMIT");
+    res
+      .status(201)
+      .json({ success: true, message: "Quiz saved successfully", quizId });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    console.error("Transaction failed:", error);
+    res.status(500).json({ success: false, message: "Failed to save quiz" });
+  } finally {
+    client.release();
+  }
+});
+
+router.post("/addQuizToMyQuizList", async (req, res) => {
+  try {
+    const { quizId } = req.body;
+    const userId = req.user.id;
+    if (!quizId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters quizId.",
+      });
+    }
+
+    //cheek of existing in myQuizList
+    const myQuizListResult = await db.query(
+      `SELECT * FROM myquizlist WHERE studentid = $1 AND quizid = $2`,
+      [userId, quizId]
+    );
+
+    if (myQuizListResult.rows.length !== 0) {
+      return res.status(403).json({
+        success: false,
+        message: "Quiz already exists in myQuizList.",
+      });
+    }
+
+    const insertResult = await db.query(
+      `INSERT INTO myquizlist(
+	studentid, quizid)
+	VALUES ($1, $2)`,
+      [userId, quizId]
+    );
+
+    res.status(201).json({
+      success: true,
+      message: "Quiz added to myQuizList successfully.",
+    });
+  } catch (error) {
+    console.error("Error add to myQuizList:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.delete("/removeQuizToMyQuizList", async (req, res) => {
+  try {
+    const { quizId } = req.body;
+    const userId = req.user.id;
+    if (!quizId) {
+      return res.status(400).json({
+        success: false,
+        message: "quizId is required.",
+      });
+    }
+    // Check if the quiz is currently exist in myquizlist
+    const existingQuiz = await db.query(
+      `SELECT studentid, quizid
+	FROM myquizlist where studentid =$1 and quizId=$2`,
+      [userId, quizId]
+    );
+
+    if (existingQuiz.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message:
+          "quiz does not exist in myquizlist or does not exist in the database.",
+      });
+    }
+
+    // Remove the quiz from myquizlist
+    const result = await db.query(
+      `DELETE FROM myquizlist
+	WHERE studentid = $1 and quizid=$2;`,
+      [userId, quizId]
+    );
+    if (result.rowCount === 1) {
+      res.status(200).json({
+        success: true,
+        message: "quiz has been successfully removed from myquizlist.",
+      });
+    }
+  } catch (error) {
+    console.error("Error when remove a quiz from myquizlist:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.post("/shareQuiz", async (req, res) => {
+  try {
+    const { quizId, courseId } = req.body;
+    const userId = req.user.id;
+    if (!quizId || !courseId) {
+      return res.status(400).json({
+        success: false,
+        message: "Missing required parameters quizId or courseId.",
+      });
+    }
+
+    //cheek of existing in myQuizList
+    const quizResult = await db.query(`SELECT * FROM quiz WHERE id = $1`, [
+      quizId,
+    ]);
+
+    if (quizResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Quiz does not exist.",
+      });
+    }
+
+    if (quizResult.rows[0].authorid !== userId) {
+      return res.status(401).json({
+        success: false,
+        message: "You are not the author of this quiz.",
+      });
+    }
+    if (quizResult.rows[0].courseid != null) {
+      return res.status(403).json({
+        success: false,
+        message: "the quiz already shared.",
+      });
+    }
+
+    await db.query(
+      `UPDATE quiz
+	SET courseid=$1 , isshared=true 
+	WHERE id=$2`,
+      [courseId, quizId]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "course shared successfully.",
+    });
+  } catch (error) {
+    console.error("Error while sharing course:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get("/getQuiz/:quizId", async (req, res) => {
+  const client = await db.connect();
+
+  try {
+    const quizId = req.params.quizId;
+
+    // Get quiz details
+    const quizResult = await client.query(
+      `SELECT q.* ,c.code as "courseCode",u.name as "authorName" FROM quiz q
+      left join course c on  q.courseid = c.id
+	  left join "user" u on u.id = q.authorid
+        WHERE q.id = $1`,
+      [quizId]
+    );
+    // Get all questions for the quiz
+    const questionsResult = await client.query(
+      `SELECT id, content FROM question WHERE quizid = $1`,
+      [quizId]
+    );
+
+    const quizQuestions = [];
+
+    for (const question of questionsResult.rows) {
+      // Get all options for this question
+      const optionsResult = await client.query(
+        `SELECT content, iscorrect FROM option WHERE questionid = $1`,
+        [question.id]
+      );
+
+      const options = optionsResult.rows.map((o) => o.content);
+      const correctAnswer = optionsResult.rows.find(
+        (o) => o.iscorrect
+      )?.content;
+
+      quizQuestions.push({
+        question: question.content,
+        options,
+        correctAnswer,
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Quiz retrieved sucssusfully",
+      quiz: {
+        id: quizResult.rows[0].id,
+        title: quizResult.rows[0].title,
+        isShared: quizResult.rows[0].isshared,
+        authorId: quizResult.rows[0].authorid,
+        authorName: quizResult.rows[0].authorName,
+        courseId: quizResult.rows[0].courseid,
+        courseCode: quizResult.rows[0].courseCode,
+        creationDate: quizResult.rows[0].creationdate,
+        questions: quizQuestions,
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching quiz:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to retrieve quiz" });
+  } finally {
+    client.release();
+  }
+});
+
 //==================================================
 //=================== report ======================
 //==================================================
@@ -933,7 +1408,6 @@ router.post("/reportComment", async (req, res) => {
       [userId, reportContent]
     );
 
-
     const reportId = reportResult.rows[0].id;
 
     // Link the report with the comment
@@ -941,7 +1415,6 @@ router.post("/reportComment", async (req, res) => {
       `INSERT INTO report_comment (reportid, commentid) VALUES ($1, $2)`,
       [reportId, commentId]
     );
-
 
     // Commit transaction
     await db.query("COMMIT");
@@ -957,7 +1430,6 @@ router.post("/reportComment", async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
 
 router.post("/reportQuiz", async (req, res) => {
   try {

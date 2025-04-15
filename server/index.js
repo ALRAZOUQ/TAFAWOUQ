@@ -1,73 +1,88 @@
 // Libraries imports
 
-import express from 'express';
-import passport from 'passport';
-import session from 'express-session';
-import { Strategy as LocalStrategy } from 'passport-local';
-import bcrypt from 'bcrypt';
-import db from './config/db.js'; // database conection
-import env from 'dotenv'
-import flash from 'connect-flash'
+import express from "express";
+import passport from "passport";
+import session from "express-session";
+import { Strategy as LocalStrategy } from "passport-local";
+import bcrypt from "bcrypt";
+import db from "./config/db.js"; // database conection
+import env from "dotenv";
+import flash from "connect-flash";
 import errorHandler from "./middleware/errorHandler.js";
-import mainRouter from './routes/mainRouter.js' // all route's middlewares
-import cors from 'cors';
+import mainRouter from "./routes/mainRouter.js"; // all route's middlewares
+import cors from "cors";
+
 
 const app = express();
 
 app.use(flash());
 // start coding
-app.use(express.urlencoded({ extended: true }))
-env.config()
+app.use(express.urlencoded({ extended: true }));
+env.config();
 app.use(express.json());
-const port = process.env.PORT
+const port = process.env.PORT;
 
 
 // Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}))
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || "your-secret-key",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+    },
+  })
+);
 
 // Passport initialization
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Local Strategy with bcrypt
-passport.use(new LocalStrategy({
-  usernameField: 'email',
-  passwordField: 'password'
-}, async (email, password, done) => {
-  try {
-    const { rows } = await db.query(
-      `SELECT u.*, case when b.studentid  is not null then true else false end as "isBanned" 
+passport.use(
+  new LocalStrategy(
+    {
+      usernameField: "email",
+      passwordField: "password",
+    },
+    async (email, password, done) => {
+      try {
+        const { rows } = await db.query(
+          `SELECT u.*, case when b.studentid  is not null then true else false end as "isBanned" 
       FROM "user" u
       LEFT JOIN ban b ON b.studentId = u.id
       WHERE u.email = $1 limit 1;`,
-      [email]
-    );
+          [email]
+        );
 
-    if (!rows.length) return done(null, false);
+        if (!rows.length) return done(null, false);
 
-    const user = rows[0];
+        const user = rows[0];
 
-    if (user.isBanned == true) { // Check if user.isBanned is  true (banned)
-      return done(null, false, { message: 'You are banned.' });
+        if (user.isBanned == true) {
+          // Check if user.isBanned is  true (banned)
+          return done(null, false, { message: "You are banned." });
+        }
+
+        const isValid = await bcrypt.compare(password, user.password);
+
+        if (!isValid)
+          return done(null, false, { message: "Invalid email or password." });
+
+        return done(null, {
+          id: user.id,
+          email: user.email,
+          isadmin: user.isadmin,
+          name: user.name,
+        });
+      } catch (error) {
+        return done(error);
+      }
     }
-
-    const isValid = await bcrypt.compare(password, user.password);
-
-    if (!isValid) return done(null, false, { message: 'Invalid email or password.' });
-
-    return done(null, { id: user.id, email: user.email, isadmin: user.isadmin, name: user.name });
-  } catch (error) {
-    return done(error);
-  }
-}));
+  )
+);
 
 // Serialization/Deserialization
 passport.serializeUser((user, done) => done(null, user.id));
@@ -84,19 +99,23 @@ passport.deserializeUser(async (id, done) => {
   }
 });
 
-
-
 // cross to prepare communicate with client server (React)
-app.use(cors({
-  origin: ['https://nwsb8x0b-5173.inc1.devtunnels.ms', process.env.DEVELOPMENT_CLIENT_URL, process.env.PRODUCTION_CLIENT_URL], //React link. we have to check if will work normally or not
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "https://nwsb8x0b-5173.inc1.devtunnels.ms",
+      process.env.DEVELOPMENT_CLIENT_URL,
+      process.env.PRODUCTION_CLIENT_URL,
+    ], //React link. we have to check if will work normally or not
+    credentials: true,
+  })
+);
 
-
-// TODO Razouq: after merging with the main branch, this will be removed, and the user will see the main front end page when he open the sserver port in the browser 
+// TODO Razouq: after merging with the main branch, this will be removed, and the user will see the main front end page when he open the sserver port in the browser
 app.get("/", (req, res) => {
-  res.json("Home page :) ")
-})
+  res.json("Home page :) ");
+});
+
 
 // Use this if u want to debug client-requests-mistakes
 // app.use((req, res, next) => {
@@ -108,10 +127,8 @@ app.get("/", (req, res) => {
 // });
 
 // one router for all routes
-app.use("/api", mainRouter)
-
+app.use("/api", mainRouter);
 
 // Error handling
 app.use(errorHandler);
-app.listen(port, () => console.log(`Server listen to the port ${port}`))
-
+app.listen(port, () => console.log(`Server listen to the port ${port}`));
