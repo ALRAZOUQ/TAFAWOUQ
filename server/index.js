@@ -11,13 +11,7 @@ import flash from "connect-flash";
 import errorHandler from "./middleware/errorHandler.js";
 import mainRouter from "./routes/mainRouter.js"; // all route's middlewares
 import cors from "cors";
-//quiz anf file upload imports
-import { GoogleGenAI } from "@google/genai"; // Corrected import
-import multer from "multer";
-import pdfParse from "pdf-parse";
-import fs from "fs";
-import path from "path";
-//End quiz and file upload imports
+
 
 const app = express();
 
@@ -27,8 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 env.config();
 app.use(express.json());
 const port = process.env.PORT;
-// Multer config for file upload
-const upload = multer({ dest: "uploads/" });
+
 
 // Session configuration
 app.use(
@@ -123,109 +116,7 @@ app.get("/", (req, res) => {
   res.json("Home page :) ");
 });
 
-// Initialize Gemini with your API key.
-const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-// Helper function to generate quiz from text
-async function generateQuizFromText(text) {
-  try {
-    const prompt = `
-You are an AI tutor. Based on the following text, create a quiz with these requirements:
-- 10 multiple-choice questions
-- Each question must have either 2 or 4 options
-- Include the correct answer for each question
-- Format the output as JSON, like this:
-
-{
-    "questions": [
-    {
-        "question": "Sample question?",
-        "options": ["A", "B", "C", "D"],
-        "correctAnswer": "A"
-    }
-    ]
-}
-
-Here is the text:
-${text}
-    `.trim();
-    const response = await genAI.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: prompt,
-    });
-
-    const textResponse = response.text;
-    console.log(textResponse);
-    // Try to safely parse the quiz JSON
-    const match = textResponse.match(/\{[\s\S]*\}/);
-    if (!match) throw new Error("Quiz format not found in response.");
-    console.log("reddy/n============/n", JSON.parse(match[0]));
-    return JSON.parse(match[0]);
-  } catch (error) {
-    console.error("Error in generateQuizFromText:", error); // Important: Log the error
-    throw error; // Re-throw the error to be caught in the route handler
-  }
-}
-
-// Endpoint to handle PDF upload and quiz generation
-app.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
-  try {
-    const title = req.body.title;
-    // Ensure title is provided
-    if (!title) {
-      return res
-        .status(400)
-        .json({ success: false, message: "Quiz title is required." });
-    }
-    // Ensure file is uploaded
-    if (!req.file) {
-      return res
-        .status(400)
-        .json({ success: false, message: "No PDF file uploaded." });
-    }
-
-    // **DEBUGGING INFORMATION:**
-    console.log("req.file:", req.file); // Inspect the req.file object
-    if (req.file && req.file.path) {
-      console.log("req.file.path:", req.file.path);
-    }
-
-    // **CORRECTED PATH USAGE:** Use req.file.path directly
-    const filePath = req.file.path;
-    console.log("Attempting to read file from:", filePath); // Log the file path
-
-    // Check if the file exists before attempting to read it (optional but good practice)
-    if (!fs.existsSync(filePath)) {
-      console.error(`File not found at path: ${filePath}`);
-      return res.status(404).json({
-        success: false,
-        message: "Uploaded file not found on the server.",
-      });
-    }
-
-    const dataBuffer = fs.readFileSync(filePath);
-    const pdfData = await pdfParse(dataBuffer);
-
-    // Generate quiz using extracted text
-    const question = await generateQuizFromText(pdfData.text);
-
-    // Clean up uploaded file
-    fs.unlinkSync(filePath);
-
-    // Send only one response
-    res.status(200).json({
-      success: true,
-      message: "Quiz generated successfully",
-      quiz: { title: title, questions: question.questions },
-    });
-  } catch (error) {
-    console.error("Error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Something went wrong generating the quiz.",
-    });
-  }
-});
 // Use this if u want to debug client-requests-mistakes
 // app.use((req, res, next) => {
 //   console.log("🔍 Request received:", req.path);

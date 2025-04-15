@@ -4,8 +4,16 @@ import db from "../config/db.js";
 import firebaseAdmin from "../config/firebase.js";
 import env from "dotenv";
 env.config();
+//quiz anf file upload imports
+import { GoogleGenAI } from "@google/genai"; // Corrected import
+import multer from "multer";
+import pdfParse from "pdf-parse";
+import fs from "fs";
+import path from "path";
+//End quiz and file upload imports
 const router = express.Router();
-
+// Multer config for file upload
+const upload = multer({ dest: "uploads/" });
 // Apply checkAuth middleware to all routes in this file
 // each roter here not allowed to be accessed without authentication. no need to do any thing. the middleware will do the job
 router.use(checkAuth);
@@ -969,7 +977,115 @@ router.get("/myNotifications", async (req, res) => {
 //==================================================
 //=================== quiz ======================
 //==================================================
+// Initialize Gemini with your API key.
+const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+// Helper function to generate quiz from text
+async function generateQuizFromText(text) {
+  try {
+    const prompt = `
+You are an AI tutor. Based on the following text, create a quiz with these requirements:
+- 10 multiple-choice questions
+- Each question must have either 2 or 4 options
+- Include the correct answer for each question
+- Format the output as JSON, like this:
+
+{
+    "questions": [
+    {
+        "question": "Sample question?",
+        "options": ["A", "B", "C", "D"],
+        "correctAnswer": "A"
+    }
+    ]
+}
+
+Here is the text:
+${text}
+    `.trim();
+    const response = await genAI.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: prompt,
+    });
+
+    const textResponse = response.text;
+    
+    //  parse the quiz JSON
+    const match = textResponse.match(/\{[\s\S]*\}/);
+    if (!match) throw new Error("Quiz format not found in response.");
+    
+    return JSON.parse(match[0]);
+  } catch (error) {
+    //console.error("Error in generateQuizFromText:", error); // we do not need it becuse i handel the erorr in the router
+    throw error; // Re-throw the error to be caught in the route handler
+  }
+}
+
+// Endpoint to handle PDF upload and quiz generation
+router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
+  try {
+    const title = req.body.title;
+    // Ensure title is provided
+    if (!title) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Quiz title is required." });
+    }
+    // Ensure file is uploaded
+    if (!req.file) {
+      return res
+        .status(402)
+        .json({ success: false, message: "No PDF file uploaded." });
+    }
+
+    
+    if (req.file && req.file.path) {
+     // console.log("req.file.path:", req.file.path);
+    }
+
+    
+    const filePath = req.file.path;
+    //console.log("Attempting to read file from:", filePath); // Log the file path
+
+   
+    if (!fs.existsSync(filePath)) {
+      console.error(`File not found at path: ${filePath}`);
+      return res.status(404).json({
+        success: false,
+        message: "Uploaded file not found on the server.",
+      });
+    }
+
+    const dataBuffer = fs.readFileSync(filePath);
+    const pdfData = await pdfParse(dataBuffer);
+
+    // Generate quiz using extracted text
+    const question = await generateQuizFromText(pdfData.text);
+
+    // Clean up uploaded file
+    fs.unlinkSync(filePath);
+
+    // Send only one response
+    res.status(200).json({
+      success: true,
+      message: "Quiz generated successfully",
+      quiz: { title: title, questions: question.questions },
+    });
+  } catch (error) {
+    console.error("Error:", error);
+    if(error== "Error: Quiz format not found in response."){
+ // Clean up uploaded file
+ fs.unlinkSync(req.file.path);
+      return res
+       .status(405)
+       .json({ success: false, message: "the ai failed to format the content as json" });
+    }
+    res.status(500).json({
+      success: false,
+      message: "Something went wrong generating the quiz.",
+    });
+  }
+});
 router.get("/myQuizList", async (req, res) => {
   try {
     const userId = req.user.id;
@@ -1022,7 +1138,7 @@ router.post("/storeQuiz", async (req, res) => {
     const authorId = req.user.id;
 
     await client.query("BEGIN");
-
+console.log("quiz :>> ", quiz);
     // Insert into quiz table
     const quizInsert = await client.query(
       `INSERT INTO quiz (authorid,title) VALUES ($1,$2) RETURNING id`,
