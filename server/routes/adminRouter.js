@@ -383,6 +383,35 @@ router.put("/unHideComment", async (req, res) => {
 //==================================================
 //================= quiz =========================
 //==================================================
+router.get("/hiddenQuizzes", async (req, res) => {
+  try {
+    const hiddenQuizzes = await db.query(
+      `select  hq.id as "hideId", hq.reason as "hideReason", hq.date as "hideDate", hq.creatorid as "adminExecutedHideId",a.name as "adminExecutedHideName",hq.reportId as "reportId",  ur.name as "reportAuthorName",q.id as "quizId" ,q.creationDate as "quizCreationDate", q.isshared as "quizIsShared", q.authorId as "quizAuthorId" , u.name as "quizAuthorName",q.title as "quizTitle" , q.courseid as "quizCourseId",c.code as "quizCourseCode" from quiz q 
+left join "user" u on u.id = q.authorid -- quiz author
+left join hidequiz hq on hq.quizid = q.id 
+left join course c on  q.courseid = c.id
+left join report r on  r.id = hq.reportid
+left join "user" ur on  ur.id = r.authorid -- report aouthor
+left join "user" a on  a.id = hq.creatorId -- admin 
+where hq.id IS NOT NULL  -- Exclude quizzes that not exist in hideQuiz table`
+    );
+
+    if (hiddenQuizzes.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No hidden quizzes were found on this.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "hidden quizzes retrieved successfully",
+      hiddenQuizzes: hiddenQuizzes.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 router.put("/hideQuiz", async (req, res) => {
   try {
@@ -412,12 +441,12 @@ router.put("/hideQuiz", async (req, res) => {
     let hideQuizResult;
     if (reportId && reason) {
       hideQuizResult = await db.query(
-        `INSERT INTO hideQuiz (quizId, reason, reportId ,creatorid) VALUES ($1, $2, $3) RETURNING *`,
+        `INSERT INTO hideQuiz (quizId, reason, reportId ,creatorid) VALUES ($1, $2, $3,$4) RETURNING *`,
         [quizId, reason, reportId, adminId]
       );
     } else if (reason) {
       hideQuizResult = await db.query(
-        `INSERT INTO hideQuiz (quizId, reason ,creatorid) VALUES ($1, $2) RETURNING *`,
+        `INSERT INTO hideQuiz (quizId, reason ,creatorid) VALUES ($1, $2,$3) RETURNING *`,
         [quizId, reason, adminId]
       );
     }
@@ -512,12 +541,12 @@ router.get("/reports/comments", async (req, res) => {
     CASE
         WHEN hc.commentId IS NOT NULL THEN TRUE
         ELSE FALSE
-    END AS "isCommentHidden",
+    END AS "isElementHidden",
     ha_user.name AS "adminExecutedHide",
     CASE
         WHEN bu.studentid IS NOT NULL THEN TRUE
         ELSE FALSE
-    END AS "isCommentAuthorBanned",
+    END AS "isAuthorBanned",
     ba_user.name AS "adminExecutedBan",
     json_build_object(
         'id', c.id,
