@@ -589,6 +589,56 @@ ORDER BY r.creationdate DESC;`);
   }
 });
 
+router.get("/reports/quizzes", async (req, res) => {
+  try {
+    const reports = await db.query(`SELECT
+    r.id AS "reportId",
+    r.authorid AS "authorId",
+    r.content AS "content",
+    r.creationdate AS "creationDate",
+    CASE
+        WHEN hq.quizId IS NOT NULL OR bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isResolved",
+    CASE
+        WHEN hq.quizId IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isElementHidden",
+    ha_user.name AS "adminExecutedHide",
+    CASE
+        WHEN bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isAuthorBanned",
+    ba_user.name AS "adminExecutedBan",
+    json_build_object(
+        'id', q.id,
+        'isShared', q.isshared,
+        'courseId', q.courseid,
+        'title', q.title,
+        'creationDate', q.creationdate, 
+		'authorId', q.authorid,
+        'authorName', u.name
+    ) AS quiz
+FROM report r
+JOIN report_quiz rq ON r.id = rq.reportid
+JOIN quiz q ON rq.quizid = q.id
+JOIN "user" u ON q.authorid = u.id
+LEFT JOIN hideQuiz hq ON q.id = hq.quizId
+LEFT JOIN "user" ha_user ON hq.creatorid = ha_user.id
+LEFT JOIN ban bu ON q.authorid = bu.studentid
+LEFT JOIN "user" ba_user ON bu.creatorid = ba_user.id
+ORDER BY r.creationdate DESC`);
+
+    res.status(200).json({
+      success: true,
+      reports: reports.rows,
+    });
+  } catch (error) {
+    console.error("Error retrieving quiz reports:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
 router.delete("/deleteReport", async (req, res) => {
   try {
     const { reportId } = req.body;
