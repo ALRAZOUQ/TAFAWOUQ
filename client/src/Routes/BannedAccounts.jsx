@@ -157,7 +157,7 @@ export default function BannedAccounts() {
 
             {/* Tablet and Desktop view - Table */}
             <div className="hidden sm:block bg-gray-50 shadow-md hover:shadow-lg rounded-lg mb-4">
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="min-w-full divide-y divide-gray-200 my-6">
                 <thead className="bg-TAF-300">
                   <tr>
                     <th className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-center text-[10px] sm:text-xs md:text-sm font-medium text-gray-500 uppercase tracking-wider">
