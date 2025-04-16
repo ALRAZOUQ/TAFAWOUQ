@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, path: "admin-home", element: <AdminHomePage /> },
           { path: "reports", element: <ReportsPage /> },
-          { path: "hiddencomments", element: <Hiddencomments /> },
+          { path: "hiddenItems", element: <Hiddencomments /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },
         ],
       },

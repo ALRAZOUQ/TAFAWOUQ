@@ -111,8 +111,8 @@ export default function MainHeader() {
                 route={"/admin/bannedaccounts"}
               />
               <NavigationLink
-                linkTo={"التعليقات المخفية"}
-                route={"/admin/hiddencomments"}
+                linkTo={"العناصر المخفية"}
+                route={"/admin/hiddenItems"}
               />
 
               <CreateTermModal>
