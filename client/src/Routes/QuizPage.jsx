@@ -53,7 +53,7 @@ export default function QuizPage() {
     console.log(quiz);
 
     return (
-        <Screen title="Quiz">
+        <Screen className={`p-4`} title="Quiz">
         <Page> {loading ? (
                 <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
