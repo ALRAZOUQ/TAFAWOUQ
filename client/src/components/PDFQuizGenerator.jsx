@@ -12,6 +12,7 @@ export default function PDFQuizGenerator() {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [buttonText, setButtonText] = useState("حان وقت إنشاء شيء رائع");
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState(null);
   const navigate = useNavigate();
 
   // Array of motivational button texts
@@ -96,6 +97,7 @@ export default function PDFQuizGenerator() {
       const formData = new FormData();
       formData.append("title", quizTitle);
       formData.append("pdf", selectedFile);
+      formData.append("numberOfQuestions", selectedQuestionCount || 10);
 
       const response = await axios.post(
         `${backendURL}protected/generateQuiz`,
@@ -113,6 +115,7 @@ export default function PDFQuizGenerator() {
       // Reset the form
       setQuizTitle("");
       setSelectedFile(null);
+      setSelectedQuestionCount(null);
 
       // You might want to do something with the quiz data here
       // For example, redirect to the quiz page or show a success message
@@ -196,6 +199,35 @@ export default function PDFQuizGenerator() {
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                       placeholder="ادخل عنوان الإختبار"
                     />
+                  </div>
+
+                  <div className="mb-4">
+                    <label
+                      htmlFor="numberOfQuestions"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                      عدد الأسئلة
+                    </label>
+
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {[5, 10, 15, 20, 25, 30].map((count) => (
+                        <button
+                          key={count}
+                          type="button"
+                          onClick={() => {
+                            setSelectedQuestionCount(count);
+                            setNumberOfQuestions("");
+                          }}
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            selectedQuestionCount === count
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          {count}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <div className="mb-4">
