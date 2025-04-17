@@ -1,51 +1,56 @@
-import { useState } from 'react';
-import {useNavigate} from "react-router-dom"
-import axios from '../api/axios';
-import { toast } from 'react-toastify';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "../api/axios";
+import { toast } from "react-toastify";
 
 const InteractiveQuiz = ({ quizData }) => {
-  const [quizState, setQuizState] = useState('in-progress'); // 'overview', 'in-progress', 'results' 3 interface states
+  const [quizState, setQuizState] = useState("in-progress"); // 'overview', 'in-progress', 'results' 3 interface states
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [userAnswers, setUserAnswers] = useState(Array(quizData.questions.length).fill(''));
-const navigate = useNavigate();
- // Handle handel store quiz
- const storeQuiz = async (quizData) => {
-  try {
-    // If quizData has no ID, it hasn't been stored yet
-    if (!quizData.id) {
-      const response = await axios.post("protected/storeQuiz", { quiz: quizData });
-      quizData.id = response.data.quizId; // Get the ID from the response
+  const [userAnswers, setUserAnswers] = useState(
+    Array(quizData.questions.length).fill("")
+  );
+  const navigate = useNavigate();
+  // Handle handel store quiz
+  const storeQuiz = async (quizData) => {
+    try {
+      // If quizData has no ID, it hasn't been stored yet
+      if (!quizData.id) {
+        const response = await axios.post("protected/storeQuiz", {
+          quiz: quizData,
+        });
+        quizData.id = response.data.quizId; // Get the ID from the response
+      }
+
+      console.log("quizId:", quizData?.id);
+
+      const addQuizToMyQuizListResult = await axios.post(
+        "protected/addQuizToMyQuizList",
+        {
+          quizId: quizData.id,
+        }
+      );
+
+      return addQuizToMyQuizListResult.status === 201;
+    } catch (error) {
+      console.error("Error storing quiz or adding to list:", error);
+      return false;
     }
-
-    console.log("quizId:", quizData?.id);
-
-   
-    const addQuizToMyQuizListResult = await axios.post("protected/addQuizToMyQuizList", {
-      quizId:quizData.id ,
-    });
-
-    return addQuizToMyQuizListResult.status === 201;
-  } catch (error) {
-    console.error("Error storing quiz or adding to list:", error);
-    return false;
-  }
-};
- // Handle handel store quiz
- const handeStoreQuiz = async () => {
-  if(await storeQuiz(quizData)){
-    toast.success("تم اضافة الاختبار الى قائمتك بنجاح");
-    navigate("/myquizzes")
-  }else{
-    toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
-  }
-  
-};
+  };
+  // Handle handel store quiz
+  const handeStoreQuiz = async () => {
+    if (await storeQuiz(quizData)) {
+      toast.success("تم اضافة الاختبار الى قائمتك بنجاح");
+      navigate("/myquizzes");
+    } else {
+      toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
+    }
+  };
 
   // Handle starting the quiz
   const startQuiz = () => {
-    setQuizState('in-progress');
+    setQuizState("in-progress");
     setCurrentQuestion(0);
-    setUserAnswers(Array(quizData.questions.length).fill(''));
+    setUserAnswers(Array(quizData.questions.length).fill(""));
   };
 
   // Handle answer selection
@@ -71,34 +76,42 @@ const navigate = useNavigate();
 
   // Finish the quiz and show results
   const finishQuiz = () => {
-    setQuizState('results');
+    setQuizState("results");
   };
 
   // Calculate final score
   const calculateScore = () => {
     return userAnswers.reduce((score, answer, index) => {
-      return answer === quizData.questions[index].correctAnswer ? score + 1 : score;
+      return answer === quizData.questions[index].correctAnswer
+        ? score + 1
+        : score;
     }, 0);
   };
 
   // Check if an answer is correct
   const isCorrectAnswer = (questionIndex, option) => {
-    return userAnswers[questionIndex] === option &&
-           option === quizData.questions[questionIndex].correctAnswer;
+    return (
+      userAnswers[questionIndex] === option &&
+      option === quizData.questions[questionIndex].correctAnswer
+    );
   };
 
   // Check if an answer is wrong
   const isWrongAnswer = (questionIndex, option) => {
-    return userAnswers[questionIndex] === option &&
-           option !== quizData.questions[questionIndex].correctAnswer;
+    return (
+      userAnswers[questionIndex] === option &&
+      option !== quizData.questions[questionIndex].correctAnswer
+    );
   };
 
   // Render Quiz Overview
-  if (quizState === 'overview') {
+  if (quizState === "overview") {
     return (
       <div className="min-h-screen p-6 flex flex-col items-center" dir="rtl">
         <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl">
-          <h1 className="text-3xl font-bold text-center mb-6">{quizData.title}</h1>
+          <h1 className="text-3xl font-bold text-center mb-6">
+            {quizData.title}
+          </h1>
 
           <div className="space-y-4 mb-8">
             <div className="flex justify-between text-gray-600">
@@ -107,7 +120,9 @@ const navigate = useNavigate();
             </div>
             <div className="flex justify-between text-gray-600">
               <span>تاريخ الإنشاء:</span>
-              <span className="font-medium">{new Date(quizData.creationDate).toLocaleDateString('ar-EG')}</span>
+              <span className="font-medium">
+                {new Date(quizData.creationDate).toLocaleDateString("ar-EG")}
+              </span>
             </div>
             <div className="flex justify-between text-gray-600">
               <span>عدد الأسئلة:</span>
@@ -127,7 +142,7 @@ const navigate = useNavigate();
   }
 
   // Render Quiz Interface
-  if (quizState === 'in-progress') {
+  if (quizState === "in-progress") {
     const question = quizData.questions[currentQuestion];
     const isLastQuestion = currentQuestion === quizData.questions.length - 1;
 
@@ -141,13 +156,20 @@ const navigate = useNavigate();
                 السؤال {currentQuestion + 1} من {quizData.questions.length}
               </span>
               <span className="text-sm text-gray-500">
-                {Math.round(((currentQuestion + 1) / quizData.questions.length) * 100)}%
+                {Math.round(
+                  ((currentQuestion + 1) / quizData.questions.length) * 100
+                )}
+                %
               </span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-2.5">
               <div
                 className="bg-blue-600 h-2.5 rounded-full"
-                style={{ width: `${((currentQuestion + 1) / quizData.questions.length) * 100}%` }}
+                style={{
+                  width: `${
+                    ((currentQuestion + 1) / quizData.questions.length) * 100
+                  }%`,
+                }}
               ></div>
             </div>
           </div>
@@ -164,8 +186,8 @@ const navigate = useNavigate();
                   onClick={() => selectAnswer(option)}
                   className={`p-4 border rounded-lg cursor-pointer transition-colors ${
                     userAnswers[currentQuestion] === option
-                      ? 'border-blue-500 bg-blue-50'
-                      : 'border-gray-300 hover:border-blue-300 hover:bg-blue-50'
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                   }`}
                 >
                   {option}
@@ -181,8 +203,8 @@ const navigate = useNavigate();
               disabled={currentQuestion === 0}
               className={`px-6 py-2 rounded-lg font-medium ${
                 currentQuestion === 0
-                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-200 hover:bg-gray-300 text-gray-700'
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
               }`}
             >
               السابق
@@ -191,11 +213,11 @@ const navigate = useNavigate();
             {isLastQuestion ? (
               <button
                 onClick={finishQuiz}
-                disabled={userAnswers.some(answer => answer === '')}
+                disabled={userAnswers.some((answer) => answer === "")}
                 className={`px-6 py-2 rounded-lg font-medium ${
-                  userAnswers.some(answer => answer === '')
-                    ? 'bg-green-300 text-white cursor-not-allowed'
-                    : 'bg-green-600 hover:bg-green-700 text-white'
+                  userAnswers.some((answer) => answer === "")
+                    ? "bg-green-300 text-white cursor-not-allowed"
+                    : "bg-green-600 hover:bg-green-700 text-white"
                 }`}
               >
                 إنهاء
@@ -209,13 +231,21 @@ const navigate = useNavigate();
               </button>
             )}
           </div>
+          <button
+            className="w-full bg-red-500 text-white px-6 py-2 rounded-lg font-medium mt-5"
+            onClick={() => {
+              navigate(-1);
+            }}
+          >
+            إنهاء
+          </button>
         </div>
       </div>
     );
   }
 
   // Render Results Page
-  if (quizState === 'results') {
+  if (quizState === "results") {
     const score = calculateScore();
 
     return (
@@ -225,12 +255,17 @@ const navigate = useNavigate();
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold mb-4">النتيجة النهائية</h1>
             <div className="text-5xl font-bold text-blue-600">
-              {score} <span className="text-gray-500">من</span> {quizData.questions.length}
+              {score} <span className="text-gray-500">من</span>{" "}
+              {quizData.questions.length}
             </div>
             <div className="mt-2 text-lg text-gray-600">
-              {score === quizData.questions.length ? 'ممتاز! إجابات صحيحة بالكامل' :
-                score >= quizData.questions.length * 0.7 ? 'أداء جيد جدًا!' :
-                score >= quizData.questions.length * 0.5 ? 'أداء مقبول' : 'حاول مرة أخرى'}
+              {score === quizData.questions.length
+                ? "ممتاز! إجابات صحيحة بالكامل"
+                : score >= quizData.questions.length * 0.7
+                ? "أداء جيد جدًا!"
+                : score >= quizData.questions.length * 0.5
+                ? "أداء مقبول"
+                : "حاول مرة أخرى"}
             </div>
           </div>
 
@@ -239,7 +274,10 @@ const navigate = useNavigate();
             <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg">
               مشاركة الكويز لمقرر
             </button>
-            <button onClick={handeStoreQuiz} className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg">
+            <button
+              onClick={handeStoreQuiz}
+              className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg"
+            >
               حفظ الكويز في قائمتي
             </button>
           </div>
@@ -260,10 +298,10 @@ const navigate = useNavigate();
                       key={oIndex}
                       className={`p-3 border rounded-lg ${
                         isCorrectAnswer(qIndex, option)
-                          ? 'bg-green-100 border-green-500'
+                          ? "bg-green-100 border-green-500"
                           : isWrongAnswer(qIndex, option)
-                            ? 'bg-red-100 border-red-500'
-                            : 'border-gray-200'
+                          ? "bg-red-100 border-red-500"
+                          : "border-gray-200"
                       }`}
                     >
                       {option}
@@ -278,11 +316,12 @@ const navigate = useNavigate();
                     </div>
                   ))}
 
-                  {userAnswers[qIndex] !== question.correctAnswer && userAnswers[qIndex] !== '' && (
-                    <div className="mt-2 text-green-600 font-medium pr-2">
-                      الإجابة الصحيحة: {question.correctAnswer}
-                    </div>
-                  )}
+                  {userAnswers[qIndex] !== question.correctAnswer &&
+                    userAnswers[qIndex] !== "" && (
+                      <div className="mt-2 text-green-600 font-medium pr-2">
+                        الإجابة الصحيحة: {question.correctAnswer}
+                      </div>
+                    )}
                 </div>
               </div>
             ))}
