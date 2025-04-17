@@ -138,7 +138,7 @@ export default function PDFQuizGenerator() {
       {/* Eye-catching button with dynamic text */}
       <motion.button
         onClick={() => setShowModal(true)}
-        className="w-full py-4 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-lg"
+        className="w-full py-4 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-TAF-100 via-purple-400 to-purple-600 hover:from-TAF-100 hover:via-purple-500 hover:to-purple-700 shadow-lg"
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}
