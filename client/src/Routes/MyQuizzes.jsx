@@ -1,35 +1,33 @@
 import Screen from "../components/Screen";
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import QuizCard from "../components/QuizCard";
 import Page from "../components/Page";
 import PDFQuizGenerator from "../components/PDFQuizGenerator";
+import axios from "../api/axios";
+
 export default function MyQuizzes() {
   //this just for test but navegates to real quiz retreved from database
-  const [MyQuizzes, setMyQuizzes] = useState([
-    {
-      id: 10,
-      title: "Chapter1_interodection_spm",
-      isShared: false,
-      authorId: 1,
-      authorName: "mohammed ",
-      courseId: 1,
-      courseCode: "CSC102",
-      creationDate: "2025-04-14T07:52:05.746Z",
-    },
-    {
-      id: 9,
-      title: "Chapter1_interodection_spm",
-      isShared: false,
-      authorId: 1,
-      authorName: "mohammed ",
-      courseId: 1,
-      courseCode: "CSC102",
-      creationDate: "2025-04-14T06:08:02.313Z",
-    },
-  ]);
+  const [MyQuizzes, setMyQuizzes] = useState([]);
+
+  useEffect(() => {
+    async function fetchMyQuizzes() {
+      try {
+        const response = await axios.get("/protected/myQuizList");
+
+        if (response.status === 200) {
+          setMyQuizzes(response.data.quiz);
+        } else {
+          console.error("Failed to fetch quizzes:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Error fetching quizzes:", error);
+      }
+    }
+
+    fetchMyQuizzes();
+  }, []);
 
   const handleStartQuiz = (quizId) => {
-    console.log(`Starting quiz with ID: ${quizId}`);
     // Add your navigation or quiz start logic here
   };
 

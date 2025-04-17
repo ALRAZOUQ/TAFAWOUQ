@@ -45,7 +45,8 @@ export default function BannedAccounts() {
   // Filter & pagination calculations
   const filteredAccounts = bannedAccounts.filter((account) => 
     account.result.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    account.result.user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    account.result.user.email.toLowerCase().includes(searchQuery.toLowerCase())||
+    account.result.ban.adminExecutedBan.toLowerCase().includes(searchQuery.toLowerCase())
   );
   
   const indexOfLastAccount = currentPage * accountsPerPage;

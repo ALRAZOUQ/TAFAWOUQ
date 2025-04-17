@@ -15,7 +15,7 @@ const Error404Page = lazy(() => import("./Routes/Error"));
 const Home_page = lazy(() => import("./Routes/Home_page"));
 const ReportsPage = lazy(() => import("./Routes/ReportsPage"));
 const BannedAccounts = lazy(() => import("./Routes/BannedAccounts"));
-const Hiddencomments = lazy(() => import("./Routes/HiddenItems"));
+const HiddenItems = lazy(() => import("./Routes/HiddenItems"));
 const PreviousSchedules = lazy(() => import("./Routes/PreviousSchedules"));
 const MyQuizzes = lazy(() => import("./Routes/MyQuizzes"));
 const AdminHomePage = lazy(() => import("./Routes/AdminHomePage"));
@@ -41,7 +41,7 @@ const router = createBrowserRouter([
         children: [
           { index: true, path: "admin-home", element: <AdminHomePage /> },
           { path: "reports", element: <ReportsPage /> },
-          { path: "hiddenItems", element: <Hiddencomments /> },
+          { path: "hiddenItems", element: <HiddenItems /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },
         ],
       },
