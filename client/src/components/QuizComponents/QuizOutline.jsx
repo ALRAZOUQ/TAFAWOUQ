@@ -2,6 +2,7 @@ import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { isWrongAnswer, isCorrectAnswer } from "../../util/QuizHelper";
+import ShareQuizModal from "./ShareQuizModal";
 export default function QuizOutline({
   score,
   quizData,
@@ -142,6 +143,7 @@ export default function QuizOutline({
           إنهاء
         </button>
       </div>
+      <ShareQuizModal isOpen={true} />
     </div>
   );
 }
