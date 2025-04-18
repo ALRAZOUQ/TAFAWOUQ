@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search } from "lucide-react";
+import { useCourseData } from "../../context/CourseContext";
+import { toast } from "react-toastify";
+import axios from "../../api/axios";
 
-export default function ShareQuizModal({
-  isOpen,
-  onClose,
-  courses = [{ name: "fff", code: "jfjf", id: 44 }],
-}) {
+export default function ShareQuizModal({ isOpen, onClose, quizId }) {
+  const { coursesData } = useCourseData();
+  const courses = coursesData;
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
 
@@ -15,6 +16,24 @@ export default function ShareQuizModal({
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
+  async function hadleShareQuiz() {
+    if (!quizId) {
+      toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
+      return;
+    }
+    try {
+      const response = await axios.post("/protected/shareQuiz", {
+        quizId,
+        courseId: selectedCourse.id,
+      });
+      if (response.status === 200) {
+        toast.success("تم اضافة الاختبار الى قائمة المقررات بنجاح");
+      }
+    } catch (error) {
+      toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
+    }
+    onClose();
+  }
 
   return (
     <AnimatePresence>
@@ -60,7 +79,8 @@ export default function ShareQuizModal({
               {filteredCourses.map((course) => (
                 <motion.div
                   key={course.id}
-                  whileHover={{ scale: 1.02 }}
+                  initial={{ scale: 0.98 }}
+                  whileHover={{ scale: 1 }}
                   whileTap={{ scale: 0.98 }}
                   className={`p-3 my-2 rounded-lg border cursor-pointer ${
                     selectedCourse?.id === course.id
@@ -77,7 +97,7 @@ export default function ShareQuizModal({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex justify-end space-x-3 border-t pt-3">
+            <div className="flex justify-between space-x-3 border-t pt-3">
               <button
                 className="px-4 py-2 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 transition"
                 onClick={onClose}
@@ -85,12 +105,9 @@ export default function ShareQuizModal({
                 إلغاء
               </button>
               <button
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+                className="px-4 py-2 bg-TAF-100 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                 disabled={!selectedCourse}
-                onClick={() => {
-                  // TODO: Implement share action
-                  onClose();
-                }}
+                onClick={hadleShareQuiz}
               >
                 مشاركة
               </button>

@@ -1,6 +1,7 @@
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { isWrongAnswer, isCorrectAnswer } from "../../util/QuizHelper";
 import ShareQuizModal from "./ShareQuizModal";
 export default function QuizOutline({
@@ -9,8 +10,11 @@ export default function QuizOutline({
   userAnswers,
   startQuiz,
 }) {
+  const [showShareModal, setShowShareModal] = useState(false);
   const navigate = useNavigate();
-  function handleShareQuiz() {}
+  function handleShareQuiz() {
+    setShowShareModal(true);
+  }
   const storeQuiz = async (quizData) => {
     try {
       // If quizData has no ID, it hasn't been stored yet
@@ -36,6 +40,9 @@ export default function QuizOutline({
       return false;
     }
   };
+  function handleCloseShareModal() {
+    setShowShareModal(false);
+  }
   const handeStoreQuiz = async () => {
     if (await storeQuiz(quizData)) {
       toast.success("تم اضافة الاختبار الى قائمتك بنجاح");
@@ -50,7 +57,7 @@ export default function QuizOutline({
         {/* Score header */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold mb-4">النتيجة النهائية</h1>
-          <div className="text-5xl font-bold text-blue-600">
+          <div className="text-5xl font-bold text-TAF-100">
             {score} <span className="text-gray-500">من</span>{" "}
             {quizData.questions.length}
           </div>
@@ -68,8 +75,7 @@ export default function QuizOutline({
         {/* Action buttons */}
         <div className="flex gap-4 mb-8">
           <button
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg"
-            on
+            className="flex-1 bg-TAF-100 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg"
             onClick={handleShareQuiz}
           >
             مشاركة الكويز لمقرر
@@ -143,7 +149,11 @@ export default function QuizOutline({
           إنهاء
         </button>
       </div>
-      <ShareQuizModal isOpen={true} />
+      <ShareQuizModal
+        isOpen={showShareModal}
+        onClose={handleCloseShareModal}
+        quizId={quizData.id}
+      />
     </div>
   );
 }

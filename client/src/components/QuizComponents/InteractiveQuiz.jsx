@@ -141,7 +141,7 @@ const InteractiveQuiz = ({ quizData }) => {
                     : "bg-green-600 hover:bg-green-700 text-white"
                 }`}
               >
-                خروج
+                إنهاء
               </button>
             ) : (
               <button
@@ -162,7 +162,7 @@ const InteractiveQuiz = ({ quizData }) => {
                   }
             }
           >
-            إنهاء
+            خروج من الاختبار
           </button>
         </div>
       </div>
