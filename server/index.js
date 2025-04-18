@@ -23,6 +23,7 @@ const port = process.env.PORT;
 
 env.config();
 // env.config({ path: 'server/.env' })
+app.use(express.json());
 
 // Session configuration
 app.use(
