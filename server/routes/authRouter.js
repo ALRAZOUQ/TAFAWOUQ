@@ -73,10 +73,17 @@ router.post("/login", (req, res, next) => {
       return next(err); // Handle errors
     }
     if (!user) {
-      if (info && info.message === 'You are banned.') {
-        return res.status(403).json({ success: false, message: 'this account is banded.' }); 
+      if (info && info.message === "You are banned.") {
+        return res
+          .status(403)
+          .json({ success: false, message: "this account is banded." });
       }
-      return res.status(401).json({ success: false, message: info ? info.message : 'Invalid email or password.' }); // 401 Unauthorized
+      return res
+        .status(401)
+        .json({
+          success: false,
+          message: info ? info.message : "Invalid email or password.",
+        }); // 401 Unauthorized
     }
     req.logIn(user, (err) => {
       if (err) {
@@ -343,7 +350,7 @@ WHERE c.courseId = $1  -- Filter by course ID
   AND hc.id IS NULL    -- Exclude hidden comments
   AND c.parentCommentId IS NULL  -- Only top-level comments (no parent)
 ORDER BY c.creationDate DESC;`,
-      [courseId,studentId]
+      [courseId, studentId]
     );
 
     if (comments.rows.length === 0) {
@@ -371,8 +378,6 @@ ORDER BY c.creationDate DESC;`,
     res.status(500).json({ success: false, message: error.message });
   }
 });
-
-
 
 router.get("/replies/:commentId", async (req, res) => {
   try {
@@ -410,7 +415,7 @@ LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $2
 WHERE ( c.parentCommentId = $1)  -- Fetch the main comment and its replies
   AND hc.id IS NULL  -- Exclude hidden comments
 ORDER BY c.creationDate ASC;  -- Sort by oldest to maintain thread order`,
-      [commentId,studentId]
+      [commentId, studentId]
     );
 
     if (comments.rows.length === 0) {
@@ -439,4 +444,51 @@ ORDER BY c.creationDate ASC;  -- Sort by oldest to maintain thread order`,
   }
 });
 
+//==================================================
+//================= quiz ========================
+//==================================================
+
+router.get("/course/quizzes/:courseId", async (req, res) => {
+  try {
+    const courseId = req.params.courseId;
+
+    // Get quizzes data
+    const quizzesResult = await db.query(
+      `select q.* ,c.code as "courseCode", u.name as "authorName" from quiz q 
+left join "user" u on u.id = q.authorid
+left join hidequiz hq on hq.quizid = q.id 
+left join course c on  q.courseid = c.id
+where c.id =$1 and hq.id IS NULL  -- Exclude quizzes that exist in hideQuiz table`,
+      [courseId]
+    );
+    if (quizzesResult.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No quizzes found for this course.",
+      });
+    }
+
+    const quizzeslist = quizzesResult.rows.map((quiz) => ({
+      id: quiz.id,
+      title: quiz.title,
+      isShared: quiz.isshared,
+      authorId: quiz.authorid,
+      authorName: quiz.authorName,
+      courseId: quiz.courseid,
+      courseCode: quiz.courseCode,
+      creationDate: quiz.creationdate,
+    }));
+
+    res.status(200).json({
+      success: true,
+      message: "quizzes retrieved sucssusfully",
+      quiz: quizzeslist,
+    });
+  } catch (error) {
+    console.error("Error fetching quizzes list:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Failed to retrieve quizzes list" });
+  }
+});
 export default router;

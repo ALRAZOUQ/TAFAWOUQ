@@ -1,19 +1,13 @@
-import { use, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 import { useAuth } from "../context/authContext";
 import Course from "../components/coursesPageComponents/Course";
 import CreateCourse from "../components/createCourseModal";
 import { useCourseData } from "../context/CourseContext";
 
 export default function CoursesPage() {
-  const navigate = useNavigate();
-  const { isAuthorized, user } = useAuth();
-  const {
-    coursesData,
-    addCourseToContext,
-    fetchCoursesContext,
-    onUpdateCourseIntoContext,
-  } = useCourseData(); //To update the fetched course data used in the search bar and courses page
+  const { user } = useAuth();
+  const { coursesData, addCourseToContext, fetchCoursesContext } =
+    useCourseData(); //To update the fetched course data used in the search bar and courses page
 
   //fetching the course
   useEffect(() => {

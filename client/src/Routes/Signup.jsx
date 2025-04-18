@@ -10,7 +10,9 @@ import { errorMapping } from "../util/errorMapping";
 import BackButton from "../components/BackButton";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
+import { useAuth } from "../context/authContext";
 export default function Signup() {
+  const { user, setUserStateLogin } = useAuth();
   const navigate = useNavigate();
   async function handleSignupSubmission(prevFormState, formData) {
     const username = formData.get("username"); // ✅ Extract username properly
@@ -112,8 +114,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="username"
-                className="block text-sm sm:text-base text-gray-600"
-              >
+                className="block text-sm sm:text-base text-gray-600">
                 الإسم
               </label>
               <input
@@ -127,8 +128,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="email"
-                className="block text-sm sm:text-base text-gray-600"
-              >
+                className="block text-sm sm:text-base text-gray-600">
                 الإيميل
               </label>
               <input
@@ -142,8 +142,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="password"
-                className="block text-sm sm:text-base text-gray-600"
-              >
+                className="block text-sm sm:text-base text-gray-600">
                 كلمة المرور
               </label>
               <input
@@ -157,8 +156,7 @@ export default function Signup() {
             <div className="mb-3 sm:mb-4">
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm sm:text-base text-gray-600"
-              >
+                className="block text-sm sm:text-base text-gray-600">
                 تأكيد كلمة المرور
               </label>
               <input
@@ -176,8 +174,7 @@ export default function Signup() {
                   {formState.errors.map((error) => (
                     <li
                       className="text-red-600 text-sm sm:text-base"
-                      key={error}
-                    >
+                      key={error}>
                       {errorMapping(error)}
                     </li>
                   ))}
@@ -192,8 +189,7 @@ export default function Signup() {
             <div className="flex justify-center mt-4 sm:mt-6">
               <Link
                 to="/login"
-                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
-              >
+                className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none">
                 لديك حساب؟ تسجيل الدخول
               </Link>
             </div>

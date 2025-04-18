@@ -13,6 +13,7 @@ import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import GenericForm from "../GenericForm";
 import { useAuth } from "../../context/authContext";
+import Course from "../coursesPageComponents/Course";
 
 // Separate the avatar component for reusability
 const UserAvatar = memo(({ name }) => (
@@ -21,12 +22,7 @@ const UserAvatar = memo(({ name }) => (
   </div>
 ));
 
-export default function Comment({
-  comment,
-  isReply = false,
-  courseId,
-  onDelete,
-}) {
+export default function Comment({ comment, isReply = false, courseId, onDelete, courseCode }) {
   const [replies, setReplies] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
@@ -175,29 +171,25 @@ export default function Comment({
     <div
       className={`border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow space-y-3 mb-4 ${
         isReply ? "ml-8" : ""
-      }`}>
+      }`}
+      id={comment.id}>
+      {/* avatar & data */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
           <UserAvatar name={comment.authorName} />
           <div>
-            <h3 className="font-semibold text-gray-800">
-              {comment.authorName}
-            </h3>
+            <h3 className="font-semibold text-gray-800">{comment.authorName}</h3>
             <small className="text-gray-500 text-sm">
               {new Date(comment.creationDate).toLocaleDateString("ar-SA")}
             </small>
           </div>
         </div>
         {!isReply && (
-          <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
-            {comment.tag}
-          </span>
+          <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">{comment.tag}</span>
         )}
       </div>
 
-      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">
-        {comment.content}
-      </p>
+      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">{comment.content}</p>
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
         <div className="flex gap-6">
@@ -226,7 +218,7 @@ export default function Comment({
               <span className="text-sm">{comment.tag}</span>
             </button>
           )}
-          {isAuthorized && (
+          {isAuthorized && !user.isAdmin &&(
             <GenericForm
               itemId={comment.id}
               title="ابلاغ"
@@ -272,6 +264,7 @@ export default function Comment({
       {/* Reply Form */}
       {showReplyForm && !isReply && (
         <ReplyForm
+          courseCode={courseCode}
           parentId={comment.id}
           onReplyAdded={handleReplyAdded}
           onCancel={() => setShowReplyForm(false)}
@@ -314,7 +307,7 @@ const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
 );
 
 // Reply form component
-const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
+const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel, courseCode }) => {
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -325,6 +318,7 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
     try {
       const response = await axios.post("/protected/postComment", {
         courseId,
+        courseCode,
         parentCommentId: parseInt(parentId),
         content: replyContent,
         tag: "رد", // Default tag for replies
@@ -355,9 +349,7 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel }) => {
         <div className="flex flex-row gap-2">
           <button
             className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
-              isSubmitting
-                ? "opacity-70 cursor-not-allowed"
-                : "hover:bg-blue-600"
+              isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
             }`}
             onClick={handleSubmitReply}
             disabled={isSubmitting || !replyContent.trim()}>

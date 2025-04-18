@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import Screen from "../components/Screen";
 import Schedule from "../components/Schedule";
 import axios from "../api/axios";
@@ -25,17 +25,22 @@ export default function PreviousSchedules() {
   }, [scheduleId]);
 
   return (
-    <Screen className="flex flex-col gap-4 justify-center items-center">
+    <Screen className="flex flex-col justify-center items-center p-8">
       {console.log(previosSchedules.length)}
       {previosSchedules.length > 0 ? (
         previosSchedules.map((schedule) => (
-          <Schedule
-            scheduleCourses={schedule.courses}
-            createScheduleHandler={() => {}}
-            Id={schedule.scheduleid}
-            key={schedule.scheduleid}
-            current={false}
-          />
+          <Fragment key={schedule.scheduleid}>
+            <h2 className="text-2xl font-bold text-gray-800 mt-2">
+              {schedule.termname}
+            </h2>
+            {console.log(schedule.scheduleid)}
+            <Schedule
+              scheduleCourses={schedule.courses}
+              createScheduleHandler={() => {}}
+              Id={schedule.scheduleid}
+              current={false}
+            />
+          </Fragment>
         ))
       ) : (
         <div className="text-2xl text-red-500">ليس لديك جدول سابق</div>

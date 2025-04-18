@@ -10,6 +10,7 @@ import SearchBar from "./SearchBarForMobile";
 import SearchBarForDesktop from "./SearchBarForDesktop";
 import CreateTermModal from "../CreateTermModal";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import InboxButton from "./InboxComponents/InboxButton";
 
 export default function MainHeader() {
   const route = useLocation();
@@ -43,7 +44,7 @@ export default function MainHeader() {
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
-            <Link to={isAuthorized ? "/home" : "/"}>
+            <Link to={isAuthorized ? (user.isAdmin ? "/admin/admin-home" : "/home") : "/"}>
               <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 flex items-center justify-center">
                 <motion.img
                   src={main_logo}
@@ -56,10 +57,7 @@ export default function MainHeader() {
             </Link>
           </h1>
 
-          <button
-            className="md:hidden text-TAF-100 focus:outline-none "
-            onClick={() => setIsOpen(!isOpen)}
-          >
+          <button className="md:hidden text-TAF-100 focus:outline-none " onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
@@ -67,38 +65,27 @@ export default function MainHeader() {
         <div
           className={`md:flex md:items-center md:gap-5 md:mx-5 ${
             isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
-          } md:flex-row md:justify-center`}
-        >
+          } md:flex-row md:justify-center`}>
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
-            route={isAuthorized ? "/home" : "/"}
+            route={isAuthorized ? (user.isAdmin ? "/admin/admin-home" : "/home") : "/"}
           />
 
           <NavigationLink linkTo={"المواد"} route={"/courses"} />
           {isAuthorized && !user.isAdmin && (
             <>
-              <NavigationLink
-                linkTo={"إختباراتي القصيرة"}
-                route={"/myquizzes"}
-              />
-              <NavigationLink
-                linkTo={"جداولي السابقة"}
-                route={"mypreviousschedules"}
-              />
+              <NavigationLink linkTo={"إختباراتي القصيرة"} route={"/myquizzes"} />
+              <NavigationLink linkTo={"جداولي السابقة"} route={"mypreviousschedules"} />
             </>
           )}
 
           {isAuthorized && user.isAdmin && (
             <>
-              <NavigationLink
-                linkTo={"الحسابات المحظورة"}
-                route={"/admin/bannedaccounts"}
-              />
-              <NavigationLink
-                linkTo={"التعليقات المخفية"}
-                route={"/admin/hiddencomments"}
-              />
+              <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
+              <NavigationLink linkTo={"الحسابات المحظورة"} route={"/admin/bannedaccounts"} />
+              <NavigationLink linkTo={"العناصر المخفية"} route={"/admin/hiddenItems"} />
+
               <CreateTermModal>
                 <motion.button
                   onClick={() => navigate("/admin/createTerm")}
@@ -107,36 +94,31 @@ export default function MainHeader() {
                   }}
                   transition={{ duration: 0.2 }}
                   className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
-                    route.pathname === "/admin/createTerm"
-                      ? "border-opacity-100"
-                      : "border-opacity-0"
-                  }`}
-                >
+                    route.pathname === "/admin/createTerm" ? "border-opacity-100" : "border-opacity-0"
+                  }`}>
                   إنشاء ترم
                 </motion.button>
               </CreateTermModal>
             </>
           )}
+          {isAuthorized && <InboxButton />}
         </div>
         {isAuthorized && <SearchBar isOpen={isOpen} />}
         {/* Sign Up Button mobile */}
         <div
           className={`w-full md:flex md:items-center md:gap-8 ${
             isOpen ? "flex flex-col gap-4" : "hidden"
-          } md:flex-row md:justify-start`}
-        >
+          } md:flex-row md:justify-start`}>
           {isAuthorized ? (
             <button
               className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-              onClick={handleLogout}
-            >
+              onClick={handleLogout}>
               تسجيل الخروج
             </button>
           ) : (
             <Link
               to="/login"
-              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-            >
+              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors">
               تسجيل الدخول
             </Link>
           )}
@@ -146,8 +128,7 @@ export default function MainHeader() {
             onClick={handleSearching}
             className={`hidden md:block md:ml-12 rounded-full p-2 hover:bg-gray-200 transition-colors ${
               isSearching ? "bg-gray-100 hover:bg-gray-200 p-2 ml-12" : ""
-            }`}
-          >
+            }`}>
             {isSearching ? "إلغاء" : <Search size={18} />}
           </button>
         )}

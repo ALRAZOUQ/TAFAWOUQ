@@ -213,20 +213,22 @@ router.get("/hiddenComments", async (req, res) => {
     const userId = req.user?.id;
     const hiddenComments = await db.query(
       `SELECT 
-  c.id,
-  c.content,
-  c.creationDate as "creationDate",
-  c.tag,
-  u.name AS author,
-  u.id AS "authorId",
-  COALESCE(l.num_likes, 0) AS "numOfLikes",
-  COALESCE(r.reply_count, 0) AS "numOfReplies",
-  CASE
-  WHEN sl.creatorid = $1 THEN true 
-          ELSE false 
-        END AS "isLiked",
-  hc.reason	as "hideReason",
-  hc.date as "hideDate"
+hc.id as "hideId",
+    hc.reason as "hideReason",
+   hc.date as "hideDate",
+    a.name as "adminExecutedHide",
+    hc.reportId as "reportId",
+    ur.name as "reportAuthorName",
+     hc.creatorid as "hideCreatorId",
+    c.id as "commentId",
+     c.content as "commentContent",
+     c.creationdate as "commentCreationDate",
+     c.tag as "commentTag",
+    u.name as "commentAuthor",
+    u.id as "commentAuthorId",
+     COALESCE(l.num_likes, 0) as "commentNumOfLikes",
+    COALESCE(r.reply_count, 0) as "commentNumOfReplies",
+    CASE WHEN sl.creatorid = $1 THEN true ELSE false END as "commentIsLiked"
 FROM comment c
 JOIN "user" u ON c.authorId = u.id
 LEFT JOIN (
@@ -237,26 +239,24 @@ LEFT JOIN (
 LEFT JOIN (
   SELECT parentCommentId, COUNT(*) AS reply_count
   FROM comment 
-  
   WHERE parentCommentId IS NOT NULL  
   GROUP BY parentCommentId
 ) r ON c.id = r.parentCommentId
 LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN report rep on rep.id =hc.reportId
+LEFT JOIN "user" ur on ur.id= rep.authorid --the user linked with reprt
 LEFT JOIN "like" sl ON c.id = sl.commentid AND sl.creatorid = $1
-
-WHERE  hc.id IS not NULL  -- to retreve all hidden comments
- -- AND c.parentCommentId IS NULL  -- Only top-level comments (no parent)
+LEFT JOIN "user" a ON a.id = hc.creatorId -- the admin user
+WHERE hc.id IS NOT NULL
 ORDER BY hc.date DESC;`,
       [userId]
     );
 
     if (hiddenComments.rows.length === 0) {
-      return res
-        .status(404)
-        .json({
-          success: false,
-          message: "No hidden comments or replies were found on this.",
-        });
+      return res.status(404).json({
+        success: false,
+        message: "No hidden comments or replies were found on this.",
+      });
     }
 
     res.status(200).json({
@@ -272,7 +272,8 @@ ORDER BY hc.date DESC;`,
 router.put("/hideComment", async (req, res) => {
   try {
     const { reason, reportId, commentId } = req.body;
-
+    const adminId = req.user.id;
+    const adminName = req.user.name;
     if (!commentId) {
       return res.status(400).json({
         success: false,
@@ -296,13 +297,13 @@ router.put("/hideComment", async (req, res) => {
     let hideCommentResult;
     if (reportId && reason) {
       hideCommentResult = await db.query(
-        `INSERT INTO hideComment (commentId, reason, reportId) VALUES ($1, $2, $3) RETURNING *`,
-        [commentId, reason, reportId]
+        `INSERT INTO hideComment (commentId, reason, reportId,creatorid) VALUES ($1, $2, $3,$4) RETURNING *`,
+        [commentId, reason, reportId, adminId]
       );
     } else if (reason) {
       hideCommentResult = await db.query(
-        `INSERT INTO hideComment (commentId, reason) VALUES ($1, $2) RETURNING *`,
-        [commentId, reason]
+        `INSERT INTO hideComment (commentId, reason,creatorid) VALUES ($1, $2,$3) RETURNING *`,
+        [commentId, reason, adminId]
       );
     }
 
@@ -311,7 +312,10 @@ router.put("/hideComment", async (req, res) => {
         success: true,
         message: "Comment hidden successfully.",
         //hiddenComment: hideCommentResult.rows[0],
-        hiddenCommentId: hideCommentResult.rows[0].commentid,
+        hiddenComment: {
+          commentId: hideCommentResult.rows[0].commentid,
+          adminExecutedHide: adminName,
+        },
       });
     }
   } catch (error) {
@@ -329,7 +333,7 @@ router.put("/hideComment", async (req, res) => {
 router.put("/unHideComment", async (req, res) => {
   try {
     const { commentId } = req.body;
-
+    const adminId = req.user.id;
     if (!commentId) {
       return res.status(400).json({
         success: false,
@@ -339,7 +343,7 @@ router.put("/unHideComment", async (req, res) => {
 
     // Check if the comment is currently hidden
     const existingComment = await db.query(
-      `SELECT 1 FROM hidecomment WHERE commentid = $1`,
+      `SELECT creatorId FROM hidecomment WHERE commentid = $1`,
       [commentId]
     );
 
@@ -351,6 +355,14 @@ router.put("/unHideComment", async (req, res) => {
       });
     }
 
+    // These 6 lines can be removed if any admin should be allowed to unhide it.
+    if (adminId !== existingComment.rows[0].creatorid) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You are not authorized to unhide this comment because you are not the admin who hid it.",
+      });
+    }
     // Remove the hideComment
     const result = await db.query(
       `DELETE FROM hideComment WHERE commentId = $1`,
@@ -371,11 +383,41 @@ router.put("/unHideComment", async (req, res) => {
 //==================================================
 //================= quiz =========================
 //==================================================
+router.get("/hiddenQuizzes", async (req, res) => {
+  try {
+    const hiddenQuizzes = await db.query(
+      `select  hq.id as "hideId", hq.reason as "hideReason", hq.date as "hideDate", hq.creatorid as "adminExecutedHideId",a.name as "adminExecutedHideName",hq.reportId as "reportId",  ur.name as "reportAuthorName",q.id as "quizId" ,q.creationDate as "quizCreationDate", q.isshared as "quizIsShared", q.authorId as "quizAuthorId" , u.name as "quizAuthorName",q.title as "quizTitle" , q.courseid as "quizCourseId",c.code as "quizCourseCode" from quiz q 
+left join "user" u on u.id = q.authorid -- quiz author
+left join hidequiz hq on hq.quizid = q.id 
+left join course c on  q.courseid = c.id
+left join report r on  r.id = hq.reportid
+left join "user" ur on  ur.id = r.authorid -- report aouthor
+left join "user" a on  a.id = hq.creatorId -- admin 
+where hq.id IS NOT NULL  -- Exclude quizzes that not exist in hideQuiz table`
+    );
+
+    if (hiddenQuizzes.rows.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No hidden quizzes were found on this.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "hidden quizzes retrieved successfully",
+      hiddenQuizzes: hiddenQuizzes.rows,
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
 
 router.put("/hideQuiz", async (req, res) => {
   try {
     const { reason, reportId, quizId } = req.body;
-
+    const adminId = req.user.id;
+    const adminName = req.user.name;
     if (!quizId) {
       return res.status(400).json({
         success: false,
@@ -399,13 +441,13 @@ router.put("/hideQuiz", async (req, res) => {
     let hideQuizResult;
     if (reportId && reason) {
       hideQuizResult = await db.query(
-        `INSERT INTO hideQuiz (quizId, reason, reportId) VALUES ($1, $2, $3) RETURNING *`,
-        [quizId, reason, reportId]
+        `INSERT INTO hideQuiz (quizId, reason, reportId ,creatorid) VALUES ($1, $2, $3,$4) RETURNING *`,
+        [quizId, reason, reportId, adminId]
       );
     } else if (reason) {
       hideQuizResult = await db.query(
-        `INSERT INTO hideQuiz (quizId, reason) VALUES ($1, $2) RETURNING *`,
-        [quizId, reason]
+        `INSERT INTO hideQuiz (quizId, reason ,creatorid) VALUES ($1, $2,$3) RETURNING *`,
+        [quizId, reason, adminId]
       );
     }
 
@@ -413,7 +455,10 @@ router.put("/hideQuiz", async (req, res) => {
       res.status(200).json({
         success: true,
         message: "Quiz hidden successfully.",
-        hiddenQuizId: hideQuizResult.rows[0].quizid,
+        hiddenQuiz: {
+          quizId: hideQuizResult.rows[0].quizid,
+          adminExecutedHide: adminName,
+        },
       });
     }
   } catch (error) {
@@ -432,7 +477,7 @@ router.put("/hideQuiz", async (req, res) => {
 router.put("/unHideQuiz", async (req, res) => {
   try {
     const { quizId } = req.body;
-
+    const adminId = req.user.id;
     if (!quizId) {
       return res.status(400).json({
         success: false,
@@ -442,7 +487,7 @@ router.put("/unHideQuiz", async (req, res) => {
 
     // Check if the quiz is currently hidden
     const existingQuiz = await db.query(
-      `SELECT 1 FROM hideQuiz WHERE quizId = $1`,
+      `SELECT creatorid FROM hideQuiz WHERE quizId = $1`,
       [quizId]
     );
 
@@ -451,6 +496,14 @@ router.put("/unHideQuiz", async (req, res) => {
         success: false,
         message:
           "quiz is not currently hidden or does not exist in the database.",
+      });
+    }
+    // These 6 lines can be removed if any admin should be allowed to unhide it.
+    if (adminId !== existingQuiz.rows[0].creatorid) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You are not authorized to unhide this quiz because you are not the admin who hid it.",
       });
     }
 
@@ -476,12 +529,25 @@ router.put("/unHideQuiz", async (req, res) => {
 
 router.get("/reports/comments", async (req, res) => {
   try {
-    const reports = await db.query(`
-      SELECT
+    const reports = await db.query(`SELECT
     r.id AS "reportId",
     r.authorid AS "authorId",
     r.content AS "content",
     r.creationdate AS "creationDate",
+    CASE
+        WHEN hc.commentId IS NOT NULL OR bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isResolved",
+    CASE
+        WHEN hc.commentId IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isElementHidden",
+    ha_user.name AS "adminExecutedHide",
+    CASE
+        WHEN bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isAuthorBanned",
+    ba_user.name AS "adminExecutedBan",
     json_build_object(
         'id', c.id,
         'content', c.content,
@@ -507,8 +573,11 @@ LEFT JOIN (
     WHERE parentCommentId IS NOT NULL
     GROUP BY parentCommentId
 ) rep ON c.id = rep.parentCommentId
-ORDER BY r.creationdate DESC;
-    `);
+LEFT JOIN hideComment hc ON c.id = hc.commentId
+LEFT JOIN "user" ha_user ON hc.creatorid = ha_user.id
+LEFT JOIN ban bu ON c.authorid = bu.studentid
+LEFT JOIN "user" ba_user ON bu.creatorid = ba_user.id
+ORDER BY r.creationdate DESC;`);
 
     res.status(200).json({
       success: true,
@@ -516,6 +585,56 @@ ORDER BY r.creationdate DESC;
     });
   } catch (error) {
     console.error("Error retrieving comment reports:", error);
+    res.status(500).json({ success: false, message: error.message });
+  }
+});
+
+router.get("/reports/quizzes", async (req, res) => {
+  try {
+    const reports = await db.query(`SELECT
+    r.id AS "reportId",
+    r.authorid AS "authorId",
+    r.content AS "content",
+    r.creationdate AS "creationDate",
+    CASE
+        WHEN hq.quizId IS NOT NULL OR bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isResolved",
+    CASE
+        WHEN hq.quizId IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isElementHidden",
+    ha_user.name AS "adminExecutedHide",
+    CASE
+        WHEN bu.studentid IS NOT NULL THEN TRUE
+        ELSE FALSE
+    END AS "isAuthorBanned",
+    ba_user.name AS "adminExecutedBan",
+    json_build_object(
+        'id', q.id,
+        'isShared', q.isshared,
+        'courseId', q.courseid,
+        'title', q.title,
+        'creationDate', q.creationdate, 
+		'authorId', q.authorid,
+        'authorName', u.name
+    ) AS quiz
+FROM report r
+JOIN report_quiz rq ON r.id = rq.reportid
+JOIN quiz q ON rq.quizid = q.id
+JOIN "user" u ON q.authorid = u.id
+LEFT JOIN hideQuiz hq ON q.id = hq.quizId
+LEFT JOIN "user" ha_user ON hq.creatorid = ha_user.id
+LEFT JOIN ban bu ON q.authorid = bu.studentid
+LEFT JOIN "user" ba_user ON bu.creatorid = ba_user.id
+ORDER BY r.creationdate DESC`);
+
+    res.status(200).json({
+      success: true,
+      reports: reports.rows,
+    });
+  } catch (error) {
+    console.error("Error retrieving quiz reports:", error);
     res.status(500).json({ success: false, message: error.message });
   }
 });
@@ -576,11 +695,16 @@ router.get("/bannendAccounts", async (req, res) => {
     'id', b.id,
     'reason', b.reason,
     'date', b.date,
-    'reportId', b.reportid
+    'reportId', b.reportid,
+     'hideCreatorId', b.creatorId,
+    'adminExecutedBan', a.name
   )
 ) AS result
 FROM ban b
-LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
+LEFT JOIN "user" u ON b.studentid = u.id 
+LEFT JOIN "user" a ON b.creatorId = a.id 
+order by b.date desc
+;`
     );
 
     if (bannendAccounts.rows.length === 0) {
@@ -602,7 +726,8 @@ LEFT JOIN "user" u ON b.studentid = u.id order by b.date;`
 router.post("/banUser", async (req, res) => {
   try {
     const { reason, studentId, reportId } = req.body;
-
+    const adminId = req.user.id;
+    const adminName = req.user.name;
     if (!studentId || !reason) {
       return res.status(400).json({
         success: false,
@@ -626,20 +751,54 @@ router.post("/banUser", async (req, res) => {
     let banUserResult;
     if (reportId) {
       banUserResult = await db.query(
-        `INSERT INTO ban (studentId, reason,reportId ) VALUES ($1, $2 ,$3) RETURNING *`,
-        [studentId, reason, reportId]
+        `INSERT INTO ban (studentId, reason,reportId ,creatorId) VALUES ($1, $2 ,$3,$4) RETURNING *`,
+        [studentId, reason, reportId, adminId]
       );
     } else {
       banUserResult = await db.query(
-        `INSERT INTO ban (studentId ,reason) VALUES ($1, $2) RETURNING *`,
-        [studentId, reason]
+        `INSERT INTO ban (studentId ,reason,creatorId) VALUES ($1, $2,$3) RETURNING *`,
+        [studentId, reason, adminId]
       );
+    }
+
+    if (banUserResult.rows.length > 0) {
+      // Find and destroy the session of the banned user
+      if (req.sessionStore) {
+        req.sessionStore.all((err, sessions) => {
+          if (err) {
+            console.error("Error retrieving sessions:", err);
+          } else if (sessions) {
+            Object.keys(sessions).forEach((sid) => {
+              const session = sessions[sid];
+              if (
+                session.passport &&
+                session.passport.user &&
+                session.passport.user.id === parseInt(studentId)
+              ) {
+                req.sessionStore.destroy(sid, (destroyErr) => {
+                  if (destroyErr) {
+                    console.error("Error destroying session:", destroyErr);
+                  } else {
+                    console.log(
+                      `Session destroyed for banned user ${studentId}`
+                    );
+                  }
+                });
+              }
+            });
+          }
+        });
+      }
     }
 
     if (banUserResult.rows.length > 0) {
       res.status(200).json({
         success: true,
         message: "User banned successfully.",
+        bannedUser: {
+          studentId: banUserResult.rows[0].studentid,
+          adminExecutedban: adminName,
+        },
       });
     }
   } catch (error) {
@@ -651,7 +810,7 @@ router.post("/banUser", async (req, res) => {
 router.put("/unBanUser", async (req, res) => {
   try {
     const { studentId } = req.body;
-
+    const adminId = req.user.id;
     if (!studentId) {
       return res.status(400).json({
         success: false,
@@ -661,7 +820,7 @@ router.put("/unBanUser", async (req, res) => {
 
     // Check if the user is currently banned
     const existingBan = await db.query(
-      `SELECT 1 FROM ban WHERE studentId = $1`,
+      `SELECT creatorid FROM ban WHERE studentId = $1`,
       [studentId]
     );
 
@@ -670,6 +829,14 @@ router.put("/unBanUser", async (req, res) => {
         success: false,
         message:
           "User is not currently banned or does not exist in the database.",
+      });
+    }
+    // These 6 lines can be removed if any admin should be allowed to unban the user it.
+    if (adminId !== existingBan.rows[0].creatorid) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "You are not authorized to unBan this account because you are not the admin who ban it.",
       });
     }
 
@@ -695,7 +862,7 @@ router.put("/unBanUser", async (req, res) => {
 
 router.post("/AddTerm", async (req, res) => {
   const { name, startDate, endDate } = req.body;
-const creatorId = req.user?.id;
+  const creatorId = req.user?.id;
   // Validate required fields
   if (!name || !startDate || !endDate || !creatorId) {
     return res
@@ -706,10 +873,7 @@ const creatorId = req.user?.id;
   // Validate and parse dates
   const startDateObj = new Date(startDate);
   const endDateObj = new Date(endDate);
-  if (
-    isNaN(startDateObj.getTime()) ||
-    isNaN(endDateObj.getTime())
-  ) {
+  if (isNaN(startDateObj.getTime()) || isNaN(endDateObj.getTime())) {
     return res
       .status(400)
       .json({ success: false, message: "Invalid date format." });
@@ -748,12 +912,10 @@ const creatorId = req.user?.id;
     const overlapExists = overlapResult.rows[0].exists;
 
     if (overlapExists) {
-      return res
-        .status(403)
-        .json({
-          success: false,
-          message: "Term dates overlap with existing terms.",
-        });
+      return res.status(403).json({
+        success: false,
+        message: "Term dates overlap with existing terms.",
+      });
     }
 
     const insertQuery = `
@@ -768,9 +930,10 @@ const creatorId = req.user?.id;
   } catch (error) {
     console.error("Database error:", error);
     if (error.constraint === "term_pkey")
-      return res
-        .status(409)
-        .json({ success: false, message: `there are term with the same name: ${name}` });
+      return res.status(409).json({
+        success: false,
+        message: `there are term with the same name: ${name}`,
+      });
 
     res.status(500).json({ success: false, message: "Internal server error." });
   }
@@ -778,13 +941,14 @@ const creatorId = req.user?.id;
 
 router.delete("/deleteTerm", async (req, res) => {
   const { termName } = req.body;
-    try {
-        // Start a transaction
-        await db.query('BEGIN');
+  try {
+    // Start a transaction
+    await db.query("BEGIN");
 
-        /* Delete courses grads that related to this term because the schedule will be automatically deleted after deleting the term(on delete casecade),
+    /* Delete courses grads that related to this term because the schedule will be automatically deleted after deleting the term(on delete casecade),
          so any grads associated with the schedule that will be deleted must be deleted.*/
-        await db.query(`
+    await db.query(
+      `
             DELETE FROM grade g
             WHERE g.courseid IN (
                 SELECT sc.courseid
@@ -792,12 +956,15 @@ router.delete("/deleteTerm", async (req, res) => {
                 JOIN schedule s ON sc.scheduleid = s.id
                 WHERE s.termname = $1
             )
-        `, [termName]);
+        `,
+      [termName]
+    );
 
-        /*  Delete courses rates that related to this term because the schedule will be automatically deleted after deleting the term(on delete casecade),
+    /*  Delete courses rates that related to this term because the schedule will be automatically deleted after deleting the term(on delete casecade),
          so any rates associated with the schedule that will be deleted must be deleted.
         */
-        await db.query(`
+    await db.query(
+      `
             DELETE FROM rate r
             WHERE r.courseid IN (
                 SELECT sc.courseid
@@ -805,37 +972,37 @@ router.delete("/deleteTerm", async (req, res) => {
                 JOIN schedule s ON sc.scheduleid = s.id
                 WHERE s.termname = $1
             )
-        `, [termName]);
+        `,
+      [termName]
+    );
 
-        // Delete the term (will cascade delete schedules)
-        const result = await db.query(
-            'DELETE FROM term WHERE name = $1', 
-            [termName]
-        );
+    // Delete the term (will cascade delete schedules)
+    const result = await db.query("DELETE FROM term WHERE name = $1", [
+      termName,
+    ]);
 
-        // Commit the transaction
-        await db.query('COMMIT');
+    // Commit the transaction
+    await db.query("COMMIT");
 
-        // Check if any rows were deleted
-        if (result.rowCount === 0) {
-            return res.status(404).json({ 
-                message: 'Term not found' 
-            });
-        }
+    // Check if any rows were deleted
+    if (result.rowCount === 0) {
+      return res.status(404).json({
+        message: "Term not found",
+      });
+    }
 
-        res.status(200).json({ 
-            message: 'Term deleted successfully',
-            deletedTerm: termName 
-        });
-
-    } catch (error) {
-        // Rollback the transaction in case of error
-        await db.query('ROLLBACK');
-        console.error('Error deleting term:', error);
-        res.status(500).json({ 
-            message: 'Error deleting term', 
-            error: error.message 
-        });
-    } 
+    res.status(200).json({
+      message: "Term deleted successfully",
+      deletedTerm: termName,
+    });
+  } catch (error) {
+    // Rollback the transaction in case of error
+    await db.query("ROLLBACK");
+    console.error("Error deleting term:", error);
+    res.status(500).json({
+      message: "Error deleting term",
+      error: error.message,
+    });
+  }
 });
 export default router;

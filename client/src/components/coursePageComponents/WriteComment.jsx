@@ -7,9 +7,9 @@ import { toast } from "react-toastify";
 const TagSelectionModal = ({ isOpen, onClose, onSelectTag }) => {
   // Move tags inside the component
   const tags = ["عملي", "محاضرة", "ملاحظات", "عام", "مراجعة", "سؤال"];
-  
+
   if (!isOpen) return null;
-  
+
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-center bg-gray-500 bg-opacity-50">
       <div className="bg-white p-4 rounded-lg shadow-lg w-80">
@@ -24,8 +24,7 @@ const TagSelectionModal = ({ isOpen, onClose, onSelectTag }) => {
             <button
               key={tag}
               className="px-4 py-2 bg-gray-100 rounded-lg hover:bg-gray-200"
-              onClick={() => onSelectTag(tag)}
-            >
+              onClick={() => onSelectTag(tag)}>
               {tag}
             </button>
           ))}
@@ -88,8 +87,7 @@ export default function WriteComment({ courseId, onCommentAdded }) {
         placeholder="اكتب تعليقك هنا..."
         value={comment}
         onChange={(e) => setComment(e.target.value)}
-        disabled={isSubmitting}
-      ></textarea>
+        disabled={isSubmitting}></textarea>
 
       <div className="flex justify-between items-center mt-2">
         <button
@@ -97,13 +95,12 @@ export default function WriteComment({ courseId, onCommentAdded }) {
             isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
           }`}
           onClick={handlePost}
-          disabled={isSubmitting}
-        >
+          disabled={isSubmitting}>
           <Send size={16} /> نشر
         </button>
       </div>
 
-      <TagSelectionModal 
+      <TagSelectionModal
         isOpen={showTags}
         onClose={() => setShowTags(false)}
         onSelectTag={handleTagSelection}

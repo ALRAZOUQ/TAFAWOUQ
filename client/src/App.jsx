@@ -2,28 +2,24 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { useState, useEffect, lazy, Suspense } from "react";
 import Signup from "./Routes/Signup";
 import Login from "./Routes/Login";
-// import Error404Page from "./Routes/Error";
 import Landing from "./Routes/Landing";
-// import Home_page from "./Routes/Home_page";
 import RootLayout from "./Routes/RootLayout";
-// import CoursePage from "./Routes/CoursePage";
-// import AdminHomePage from "./Routes/AdminHomePage";
 import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
-import CreateTermModal from "./components/CreateTermModal";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
-import Screen from "./components/Screen";
 
 // HASSAN: lazy to optimize the performance for the app and load the page in the background
 const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
 const CoursePage = lazy(() => import("./Routes/CoursePage"));
 const Error404Page = lazy(() => import("./Routes/Error"));
 const Home_page = lazy(() => import("./Routes/Home_page"));
-const AdminHomePage = lazy(() => import("./Routes/AdminHomePage"));
+const ReportsPage = lazy(() => import("./Routes/ReportsPage"));
 const BannedAccounts = lazy(() => import("./Routes/BannedAccounts"));
-const Hiddencomments = lazy(() => import("./Routes/HiddenComments"));
+const HiddenItems = lazy(() => import("./Routes/HiddenItems"));
 const PreviousSchedules = lazy(() => import("./Routes/PreviousSchedules"));
-const Quizzes = lazy(() => import("./Routes/Quizzes"));
+const MyQuizzes = lazy(() => import("./Routes/MyQuizzes"));
+const AdminHomePage = lazy(() => import("./Routes/AdminHomePage"));
+const QuizPage = lazy(() => import("./Routes/QuizPage"));
 
 // ✅ Define Routes
 const router = createBrowserRouter([
@@ -38,12 +34,14 @@ const router = createBrowserRouter([
 
       { path: "courses/:courseId", element: <CoursePage /> },
       { path: "mypreviousschedules", element: <PreviousSchedules /> },
-      { path: "myquizzes", element: <Quizzes /> },
+      { path: "myquizzes", element: <MyQuizzes /> },
+      { path: "quiz/:quizId", element: <QuizPage /> },
       {
         path: "admin",
         children: [
           { index: true, path: "admin-home", element: <AdminHomePage /> },
-          { path: "hiddencomments", element: <Hiddencomments /> },
+          { path: "reports", element: <ReportsPage /> },
+          { path: "hiddenItems", element: <HiddenItems /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },
         ],
       },
