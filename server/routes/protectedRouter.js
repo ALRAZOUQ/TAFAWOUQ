@@ -791,14 +791,16 @@ router.post("/postComment", async (req, res) => {
             anotherName,
           ]
         );
+        // send the push notification
         try {
           let personToBeNotified = await db.query(
             `SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`,
             [parentcommentauthorid]
           );
 
-          if (personToBeNotified.rows.length && !firebaseAdmin) {
+          if (personToBeNotified.rows.length && firebaseAdmin) {
             // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
+            console.log(firebaseAdmin);
             let dynamic_url = process.env.NODE_ENV
               ? process.env.PRODUCTION_CLIENT_URL
               : process.env.DEVELOPMENT_CLIENT_URL;
@@ -992,7 +994,6 @@ router.put("/readANotification", async (req, res) => {
         RETURNING *;`,
       [id, userId]
     );
-    console.table({ rows: updatedNotification.rows, id, userId });
     res.status(200).json(updatedNotification.rows);
   } catch (error) {
     console.error("/readANotification error: ", error)

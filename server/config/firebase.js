@@ -1,7 +1,6 @@
 import firebaseAdmin from "firebase-admin";
 import env from "dotenv";
 env.config();
-
 const serviceAccount = {
   type: process.env.type,
   project_id: process.env.project_id,
@@ -25,6 +24,6 @@ if (serviceAccount.type) {
 } else {
   firebaseAdmin_or_false = false
 }
-
+console.log(`firebaseAdmin_or_false: ${firebaseAdmin_or_false}`);
 export default firebaseAdmin_or_false;
 
