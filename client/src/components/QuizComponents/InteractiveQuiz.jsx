@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "../../api/axios";
-import { toast } from "react-toastify";
 import QuizOutline from "./QuizOutline";
+import QuizOverview from "./QuizOverview";
 
 const InteractiveQuiz = ({ quizData }) => {
   const [quizState, setQuizState] = useState("in-progress"); // 'overview', 'in-progress', 'results' 3 interface states
@@ -11,11 +10,10 @@ const InteractiveQuiz = ({ quizData }) => {
     Array(quizData.questions.length).fill("")
   );
   const navigate = useNavigate();
- 
+
   // Handle handel store quiz
-  
+
   // Handle handel store quiz
-  
 
   // Handle starting the quiz
   const startQuiz = () => {
@@ -59,57 +57,9 @@ const InteractiveQuiz = ({ quizData }) => {
     }, 0);
   }
 
-  // Check if an answer is correct
-  const isCorrectAnswer = (questionIndex, option) => {
-    return (
-      userAnswers[questionIndex] === option &&
-      option === quizData.questions[questionIndex].correctAnswer
-    );
-  };
-
-  // Check if an answer is wrong
-  const isWrongAnswer = (questionIndex, option) => {
-    return (
-      userAnswers[questionIndex] === option &&
-      option !== quizData.questions[questionIndex].correctAnswer
-    );
-  };
-
   // Render Quiz Overview
   if (quizState === "overview") {
-    return (
-      <div className="min-h-screen p-6 flex flex-col items-center" dir="rtl">
-        <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-2xl">
-          <h1 className="text-3xl font-bold text-center mb-6">
-            {quizData.title}
-          </h1>
-
-          <div className="space-y-4 mb-8">
-            <div className="flex justify-between text-gray-600">
-              <span>اسم المنشئ:</span>
-              <span className="font-medium">{quizData.authorName}</span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>تاريخ الإنشاء:</span>
-              <span className="font-medium">
-                {new Date(quizData.creationDate).toLocaleDateString("ar-EG")}
-              </span>
-            </div>
-            <div className="flex justify-between text-gray-600">
-              <span>عدد الأسئلة:</span>
-              <span className="font-medium">{quizData.questions.length}</span>
-            </div>
-          </div>
-
-          <button
-            onClick={startQuiz}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition duration-200"
-          >
-            بدء حل الكويز
-          </button>
-        </div>
-      </div>
-    );
+    return <QuizOverview quizData={quizData} startQuiz={startQuiz} />;
   }
 
   // Render Quiz Interface
@@ -224,14 +174,12 @@ const InteractiveQuiz = ({ quizData }) => {
     const score = calculateScore();
 
     return (
-     <QuizOutline
-     score={score}
-     quizData={quizData}
-     userAnswers={userAnswers}
-     startQuiz={startQuiz}
-     isCorrectAnswer={isCorrectAnswer}
-     isWrongAnswer={isWrongAnswer}
-     />
+      <QuizOutline
+        score={score}
+        quizData={quizData}
+        userAnswers={userAnswers}
+        startQuiz={startQuiz}
+      />
     );
   }
 

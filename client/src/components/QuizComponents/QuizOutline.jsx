@@ -1,15 +1,14 @@
 import axios from "../../api/axios";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { isWrongAnswer, isCorrectAnswer } from "../../util/QuizHelper";
 export default function QuizOutline({
   score,
   quizData,
   userAnswers,
   startQuiz,
-  isCorrectAnswer,
-  isWrongAnswer
 }) {
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   function handleShareQuiz() {}
   const storeQuiz = async (quizData) => {
     try {
@@ -97,20 +96,20 @@ export default function QuizOutline({
                   <div
                     key={oIndex}
                     className={`p-3 border rounded-lg ${
-                      isCorrectAnswer(qIndex, option)
+                      isCorrectAnswer(qIndex, option, userAnswers, quizData)
                         ? "bg-green-100 border-green-500"
-                        : isWrongAnswer(qIndex, option)
+                        : isWrongAnswer(qIndex, option, userAnswers, quizData)
                         ? "bg-red-100 border-red-500"
                         : "border-gray-200"
                     }`}
                   >
                     {option}
 
-                    {isCorrectAnswer(qIndex, option) && (
+                    {isCorrectAnswer(qIndex, option, userAnswers, quizData) && (
                       <span className="mr-2 text-green-600 text-sm">✓</span>
                     )}
 
-                    {isWrongAnswer(qIndex, option) && (
+                    {isWrongAnswer(qIndex, option, userAnswers, quizData) && (
                       <span className="mr-2 text-red-600 text-sm">✗</span>
                     )}
                   </div>
