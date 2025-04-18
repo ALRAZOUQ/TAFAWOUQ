@@ -1,6 +1,12 @@
+const flowbiteReact = require("flowbite-react/plugin/tailwindcss");
+
 export default {
   mode: "jit",
-  content: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+    "./public/index.html",
+    ".flowbite-react\\class-list.json"
+  ],
   darkMode: ["class"],
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
@@ -69,5 +75,9 @@ export default {
       },
     },
   },
-  plugins: [require("tailwind-scrollbar"), require("tailwindcss-animate")],
+  plugins: [
+    require("tailwind-scrollbar"),
+    require("tailwindcss-animate"),
+    flowbiteReact
+  ],
 };
