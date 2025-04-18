@@ -13,7 +13,7 @@ export default function QuizPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const location = useLocation();
-    const {  quizData } = location.state || {}; // to retreve quiz data from url
+    const { quizData } = location.state || {}; // to retreve quiz data from url
     // API Calls
     const fetchQuiz = async () => {
         setLoading(true);
@@ -53,7 +53,7 @@ export default function QuizPage() {
     console.log(quiz);
 
     return (
-        <Screen title="Quiz">
+        <Screen className={`p-4`} title="Quiz">
         <Page> {loading ? (
                 <div className="flex justify-center items-center h-64">
                     <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>

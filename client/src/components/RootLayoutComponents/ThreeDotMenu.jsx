@@ -4,6 +4,7 @@ import { useAuth } from "../../context/authContext";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useSchedule } from "../../context/ScheduleContext";
+import useClickOutside from "../../helperHocks/useClickOutside";
 
 export default function ThreeDotMenu() {
   const navigate = useNavigate();
@@ -25,8 +26,13 @@ export default function ThreeDotMenu() {
       console.error("Logout failed:", error);
     }
   };
+  // Use the custom hook to handle clicks outside of the menu
+  const menuRef = useClickOutside(() => {
+    if (isOpen) setIsOpen(false);
+  });
+
   return (
-    <div className="relative md:inline-block text-left hidden">
+    <div className="relative md:inline-block text-left hidden" ref={menuRef}>
       {/* Kebab Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}

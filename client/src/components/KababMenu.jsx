@@ -1,4 +1,6 @@
 import { MoreVertical } from "lucide-react";
+import useClickOutside from "../helperHocks/useClickOutside";
+
 export default function KababMenu({
   menuOpen,
   setMenuOpen,
@@ -6,8 +8,11 @@ export default function KababMenu({
   position,
   reverse=false
 }) {
+  const menuRef = useClickOutside(() => {
+    setMenuOpen(false);
+  });
   return (
-    <div className={`${position}`}>
+    <div className={`${position}`} ref={menuRef}>
       <button
         onClick={() => {
           setMenuOpen((menuOpen) => !menuOpen);

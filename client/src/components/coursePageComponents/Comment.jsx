@@ -218,7 +218,7 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
               <span className="text-sm">{comment.tag}</span>
             </button>
           )}
-          {isAuthorized && (
+          {isAuthorized && !user.isAdmin &&(
             <GenericForm
               itemId={comment.id}
               title="ابلاغ"

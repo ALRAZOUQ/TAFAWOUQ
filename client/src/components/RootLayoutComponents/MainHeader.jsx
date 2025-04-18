@@ -84,7 +84,7 @@ export default function MainHeader() {
             <>
               <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
               <NavigationLink linkTo={"الحسابات المحظورة"} route={"/admin/bannedaccounts"} />
-              <NavigationLink linkTo={"التعليقات المخفية"} route={"/admin/hiddencomments"} />
+              <NavigationLink linkTo={"العناصر المخفية"} route={"/admin/hiddenItems"} />
 
               <CreateTermModal>
                 <motion.button
