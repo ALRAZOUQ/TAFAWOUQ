@@ -12,7 +12,6 @@ import errorHandler from "./middleware/errorHandler.js";
 import mainRouter from "./routes/mainRouter.js"; // all route's middlewares
 import cors from "cors";
 
-
 const app = express();
 
 app.use(flash());
@@ -24,9 +23,6 @@ const port = process.env.PORT;
 
 env.config();
 // env.config({ path: 'server/.env' })
-
-app.use(express.json());
-const port = process.env.PORT;
 
 // Session configuration
 app.use(
@@ -120,7 +116,6 @@ app.use(
 app.get("/", (req, res) => {
   res.json("Home page :) ");
 });
-
 
 // Use this if u want to debug client-requests-mistakes
 // app.use((req, res, next) => {
