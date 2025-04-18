@@ -1,8 +1,8 @@
 import Screen from "../components/Screen";
 import { useState, useEffect } from "react";
-import QuizCard from "../components/QuizCard";
+import QuizCard from "../components/QuizComponents/QuizCard";
 import Page from "../components/Page";
-import PDFQuizGenerator from "../components/PDFQuizGenerator";
+import PDFQuizGenerator from "../components/QuizComponents/PDFQuizGenerator";
 import axios from "../api/axios";
 
 export default function MyQuizzes() {

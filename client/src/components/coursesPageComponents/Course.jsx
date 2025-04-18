@@ -7,6 +7,7 @@ import { useSchedule } from "../../context/ScheduleContext";
 import DifficultyProgressBar from "../DifficultyProgressBar";
 import KababMenu from "../KababMenu";
 import ThreeDotMenuButton from "../ThreeDotMenuButton";
+import { motion } from "framer-motion";
 
 export default function Course({
   id,
@@ -27,7 +28,13 @@ export default function Course({
   }
 
   return (
-    <div className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto">
+    <motion.div
+      className="relative bg-white shadow-lg rounded-2xl p-4 border-y border-y-gray-200 border-x-4 border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
+    >
       {isAuthorized && (
         <KababMenu
           setMenuOpen={setMenuOpen}
@@ -70,7 +77,7 @@ export default function Course({
       )}
 
       <Link to={`/courses/${id}`}>
-        <div>
+        <motion.div whileTap={{ scale: 0.98 }}>
           {/* Course Code */}
           <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">
             {code}
@@ -84,8 +91,8 @@ export default function Course({
               <DifficultyProgressBar value={avgRating} />
             </div>
           </div>
-        </div>
+        </motion.div>
       </Link>
-    </div>
+    </motion.div>
   );
 }

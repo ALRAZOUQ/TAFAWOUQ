@@ -1,9 +1,9 @@
 import React , { useMemo , useCallback} from'react';
 import {  Tag, ChevronRight,Trash2 ,MessageSquareWarning } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from "../context/authContext";
-import GenericForm from "./GenericForm";
-import axios from "../api/axios";
+import { useAuth } from "../../context/authContext";
+import GenericForm from "../GenericForm";
+import axios from "../../api/axios";
 import { toast } from "react-toastify";
 // Custom Course Avatar component
 const CourseAvatar = ({ code }) => {
