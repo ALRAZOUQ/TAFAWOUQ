@@ -4,7 +4,7 @@ import express from "express";
 import passport from "passport";
 import session from "express-session";
 import { Strategy as LocalStrategy } from "passport-local";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import db from "./config/db.js"; // database conection
 import env from "dotenv";
 import flash from "connect-flash";
