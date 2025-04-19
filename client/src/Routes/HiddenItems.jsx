@@ -7,9 +7,11 @@ import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthor
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 // Lazy load Pagination component
-const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
+const Pagination = lazy(() =>
+  import("../components/coursePageComponents/Pagination")
+);
 
-export default function HiddenComments() {
+export default function HiddenItems() {
   const { user } = useAuth();
   useRouteIfAuthorizedAndHeIsNotAdmin();
   const [hiddenComments, setHiddenComments] = useState([]);
@@ -60,20 +62,30 @@ export default function HiddenComments() {
   useEffect(() => {
     fetchHiddenComments();
   }, []);
-  
+
   // Preload Pagination component
   useEffect(() => {
     import("../components/coursePageComponents/Pagination");
   }, []);
-  
+
   // Filter & pagination calculations
-  const filteredComments = hiddenComments.filter((comment) => 
-    comment.commentContent.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredComments = hiddenComments.filter(
+    (comment) =>
+      comment.commentContent
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      comment.adminExecutedHide
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      comment.hideReason.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  
+
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
-  const currentComments = filteredComments.slice(indexOfFirstComment, indexOfLastComment);
+  const currentComments = filteredComments.slice(
+    indexOfFirstComment,
+    indexOfLastComment
+  );
   const totalPages = Math.ceil(filteredComments.length / commentsPerPage);
 
   const handleUnhide = async (commentId) => {
@@ -103,12 +115,12 @@ export default function HiddenComments() {
     );
   }
   return (
-    <Screen title="Hidden Comments" >
+    <Screen title="Hidden Comments">
       <Page>
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center sm:text-right">
           التعليقات المخفية
         </h1>
-        
+
         {/* Search Button */}
         <SearchButton
           placeholder="ابحث في التعليقات المخفية..."
@@ -118,7 +130,7 @@ export default function HiddenComments() {
             setCurrentPage(1); // Reset to first page on search
           }}
         />
-        
+
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
@@ -226,14 +238,14 @@ export default function HiddenComments() {
                 </div>
               ))}
             </div>
-            
+
             {/* Pagination */}
             {hiddenComments.length > 0 && (
               <Suspense fallback={<div>Loading pagination...</div>}>
-                <Pagination 
-                  currentPage={currentPage} 
-                  totalPages={totalPages} 
-                  setCurrentPage={setCurrentPage} 
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
                 />
               </Suspense>
             )}

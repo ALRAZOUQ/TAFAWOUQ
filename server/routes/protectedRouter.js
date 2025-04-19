@@ -101,7 +101,7 @@ router.post("/addCourseToSchedule", async (req, res) => {
       `SELECT * FROM schedule WHERE id = $1 AND studentId = $2`,
       [scheduleId, userId]
     );
-
+          {isAuthorized && <InboxButton className=""/>}
     if (userSchedule.rows.length === 0) {
       return res
         .status(404)
@@ -791,14 +791,16 @@ router.post("/postComment", async (req, res) => {
             anotherName,
           ]
         );
+        // send the push notification
         try {
           let personToBeNotified = await db.query(
             `SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`,
             [parentcommentauthorid]
           );
 
-          if (personToBeNotified.rows.length && !firebaseAdmin) {
+          if (personToBeNotified.rows.length && firebaseAdmin) {
             // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
+            console.log(firebaseAdmin);
             let dynamic_url = process.env.NODE_ENV
               ? process.env.PRODUCTION_CLIENT_URL
               : process.env.DEVELOPMENT_CLIENT_URL;
@@ -958,20 +960,45 @@ router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
 });
 
 router.get("/myNotifications", async (req, res) => {
-  let notifications = await db.query(
-    `SELECT 
-                                          *,
-                                          CASE 
-                                              WHEN NOW() - timestamp < INTERVAL '1 hour' THEN CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' minutes ago')
-                                              WHEN NOW() - timestamp < INTERVAL '1 day' THEN CONCAT(EXTRACT(HOUR FROM NOW() - timestamp)::int, ' hours ago')
-                                              ELSE CONCAT(EXTRACT(DAY FROM NOW() - timestamp)::int, ' days ago')
-                                          END AS time_ago
-                                      FROM notifications
-                                      Where parentcommentauthorid=$1;
-                                      `,
-    [req.user.id]
-  );
-  res.status(200).json(notifications.rows);
+  try {
+    let notifications = await db.query(
+      `SELECT
+                    *,
+                    CASE
+                        WHEN NOW() - timestamp < INTERVAL '1 hour' THEN
+                            CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' دقيقة')
+                        WHEN NOW() - timestamp < INTERVAL '1 day' THEN
+                            CONCAT(EXTRACT(HOUR FROM NOW() - timestamp)::int, ' ساعة')
+                        ELSE
+                            CONCAT(EXTRACT(DAY FROM NOW() - timestamp)::int, ' يوم')
+                    END AS time_ago
+                FROM notifications
+                Where parentcommentauthorid=$1;`,
+      [req.user.id]
+    );
+    res.status(200).json(notifications.rows);
+  } catch (error) {
+    console.error("/myNotifications error: ", error)
+    res.status(400).json({ message: "فشل أثناء جلب بيانات التنبيهات" })
+  }
+});
+
+router.put("/readANotification", async (req, res) => {
+  const { id } = req.body;
+  const userId = req.user.id
+  try {
+    let updatedNotification = await db.query(
+      `UPDATE public.notifications
+        SET readed = true
+        WHERE id = $1 AND parentcommentauthorid = $2
+        RETURNING *;`,
+      [id, userId]
+    );
+    res.status(200).json(updatedNotification.rows);
+  } catch (error) {
+    console.error("/readANotification error: ", error)
+    res.status(400).json({ message: `لم يتم تعيين الإشعار بالمعرف ${id} كمقروء` })
+  }
 });
 
 //==================================================
@@ -981,24 +1008,35 @@ router.get("/myNotifications", async (req, res) => {
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Helper function to generate quiz from text
-async function generateQuizFromText(text) {
+async function generateQuizFromText(text, numOfQuestions) {
+  if(!numOfQuestions || numOfQuestions === 0){
+    numOfQuestions = 10;
+  }
   try {
     const prompt = `
 You are an AI tutor. Based on the following text, create a quiz with these requirements:
-- 10 multiple-choice questions
-- Each question must have either 2 or 4 options
-- Include the correct answer for each question
-- Format the output as JSON, like this:
+  ${numOfQuestions} questions total
+    The questions should be a mix of:
+        True/False questions (2 options: "True", "False")
+        Multiple-choice questions with 4 options
+    Each question must include the correct answer
+    Format the output as JSON, like this:
 
 {
-    "questions": [
+  "questions": [
     {
-        "question": "Sample question?",
-        "options": ["A", "B", "C", "D"],
-        "correctAnswer": "A"
+      "question": "Sample question?",
+      "options": ["True", "False"],
+      "correctAnswer": "True"
+    },
+    {
+      "question": "Another question?",
+      "options": ["A", "B", "C", "D"],
+      "correctAnswer": "B"
     }
-    ]
+  ]
 }
+make sure the output is json only
 
 Here is the text:
 ${text}
@@ -1009,11 +1047,13 @@ ${text}
     });
 
     const textResponse = response.text;
-    
+
+
     //  parse the quiz JSON
     const match = textResponse.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("Quiz format not found in response.");
-    
+
+
     return JSON.parse(match[0]);
   } catch (error) {
     //console.error("Error in generateQuizFromText:", error); // we do not need it becuse i handel the erorr in the router
@@ -1025,11 +1065,15 @@ ${text}
 router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
   try {
     const title = req.body.title;
+    const numOfQuestions = req.body.numOfQuestions;
     // Ensure title is provided
-    if (!title) {
+    if (!title ) {
       return res
         .status(400)
-        .json({ success: false, message: "Quiz title is required." });
+        .json({
+          success: false,
+          message: "the quiz title  is required.",
+        });
     }
     // Ensure file is uploaded
     if (!req.file) {
@@ -1038,16 +1082,13 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
         .json({ success: false, message: "No PDF file uploaded." });
     }
 
-    
     if (req.file && req.file.path) {
-     // console.log("req.file.path:", req.file.path);
+      // console.log("req.file.path:", req.file.path);
     }
 
-    
     const filePath = req.file.path;
     //console.log("Attempting to read file from:", filePath); // Log the file path
 
-   
     if (!fs.existsSync(filePath)) {
       console.error(`File not found at path: ${filePath}`);
       return res.status(404).json({
@@ -1060,7 +1101,7 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
     const pdfData = await pdfParse(dataBuffer);
 
     // Generate quiz using extracted text
-    const question = await generateQuizFromText(pdfData.text);
+    const question = await generateQuizFromText(pdfData.text, numOfQuestions);
 
     // Clean up uploaded file
     fs.unlinkSync(filePath);
@@ -1073,12 +1114,15 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
     });
   } catch (error) {
     console.error("Error:", error);
-    if(error== "Error: Quiz format not found in response."){
- // Clean up uploaded file
- fs.unlinkSync(req.file.path);
+    if (error == "Error: Quiz format not found in response.") {
+      // Clean up uploaded file
+      fs.unlinkSync(req.file.path);
       return res
-       .status(405)
-       .json({ success: false, message: "the ai failed to format the content as json" });
+        .status(405)
+        .json({
+          success: false,
+          message: "the ai failed to format the content as json",
+        });
     }
     res.status(500).json({
       success: false,
@@ -1092,11 +1136,13 @@ router.get("/myQuizList", async (req, res) => {
 
     // Get quizzes data
     const quizzesResult = await db.query(
-      `select q.* ,c.code as "courseCode", u.name as "authorName" from quiz q 
+      `select q.* ,c.code as "courseCode", u.name as "authorName", COUNT(qu.id) AS "numOfQuestions" from quiz q 
 left join "user" u on u.id = q.authorid
 left join hidequiz hq on hq.quizid = q.id 
 left join course c on  q.courseid = c.id
-where  q.id in(select quizid from myquizlist mql where studentid =$1)`,
+left JOIN question qu ON qu.quizid = q.id
+where  q.id in(select quizid from myquizlist mql where studentid =$1)
+GROUP BY q.id, c.id, u.id;`,
       [userId]
     );
     if (quizzesResult.rows.length === 0) {
@@ -1115,12 +1161,13 @@ where  q.id in(select quizid from myquizlist mql where studentid =$1)`,
       courseId: quiz.courseid,
       courseCode: quiz.courseCode,
       creationDate: quiz.creationdate,
+      numOfQuestions: parseInt(quiz.numOfQuestions),
     }));
 
     res.status(200).json({
       success: true,
       message: "quizzes retrieved sucssusfully of myQuizList",
-      quiz: quizzeslist,
+      quizzes: quizzeslist,
     });
   } catch (error) {
     console.error("Error fetching myQuizList:", error);
@@ -1138,7 +1185,7 @@ router.post("/storeQuiz", async (req, res) => {
     const authorId = req.user.id;
 
     await client.query("BEGIN");
-console.log("quiz :>> ", quiz);
+    //console.log("quiz :>> ", quiz);
     // Insert into quiz table
     const quizInsert = await client.query(
       `INSERT INTO quiz (authorid,title) VALUES ($1,$2) RETURNING id`,
@@ -1218,7 +1265,7 @@ router.post("/addQuizToMyQuizList", async (req, res) => {
   }
 });
 
-router.delete("/removeQuizToMyQuizList", async (req, res) => {
+router.delete("/removeQuizFromMyQuizList", async (req, res) => {
   try {
     const { quizId } = req.body;
     const userId = req.user.id;

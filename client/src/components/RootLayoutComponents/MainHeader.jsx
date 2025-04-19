@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, LogOut, LogIn } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import ThreeDotMenu from "./ThreeDotMenu";
 import NavigationLink from "./NavigationLink";
 import SearchBar from "./SearchBarForMobile";
 import SearchBarForDesktop from "./SearchBarForDesktop";
 import CreateTermModal from "../CreateTermModal";
 import { useLocation, useNavigate, Link } from "react-router-dom";
+import InboxButton from "./InboxComponents/InboxButton";
+import { useMediaQuery } from "../../helperHocks/useMediaQuery";
 
 export default function MainHeader() {
   const route = useLocation();
@@ -111,8 +112,8 @@ export default function MainHeader() {
                 route={"/admin/bannedaccounts"}
               />
               <NavigationLink
-                linkTo={"التعليقات المخفية"}
-                route={"/admin/hiddencomments"}
+                linkTo={"العناصر المخفية"}
+                route={"/admin/hiddenItems"}
               />
 
               <CreateTermModal>
@@ -133,6 +134,7 @@ export default function MainHeader() {
               </CreateTermModal>
             </>
           )}
+          {isAuthorized && <InboxButton />}
         </div>
         {isAuthorized && <SearchBar isOpen={isOpen} />}
         {/* Sign Up Button mobile */}
@@ -157,17 +159,44 @@ export default function MainHeader() {
             </Link>
           )}
         </div>
-        {isAuthorized && (
-          <button
-            onClick={handleSearching}
-            className={`hidden md:block md:ml-12 rounded-full p-2 hover:bg-gray-200 transition-colors ${
-              isSearching ? "bg-gray-100 hover:bg-gray-200 p-2 ml-12" : ""
-            }`}
-          >
-            {isSearching ? "إلغاء" : <Search size={18} />}
-          </button>
-        )}
-        <ThreeDotMenu />
+        {/* Action Icons with Tooltips */}
+        <div className="flex items-center gap-3">
+          {isAuthorized && (
+            <div className="relative group">
+              <button
+                onClick={handleSearching}
+                className={`hidden md:block rounded-full p-2 hover:bg-gray-200 transition-colors ${
+                  isSearching ? "bg-gray-100 hover:bg-gray-200" : ""
+                }`}
+                aria-label="بحث"
+              >
+                {isSearching ? "إلغاء" : <Search size={18} />}
+              </button>
+              <div className="absolute -bottom-8 right-0 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                بحث
+              </div>
+            </div>
+          )}
+          <div className="relative group">
+            <button
+              onClick={
+                isAuthorized
+                  ? handleLogout
+                  : () => {
+                      navigate("/login");
+                      setIsOpen(false);
+                    }
+              }
+              className="hidden md:block md:rounded-full md:p-2 md: hover:bg-gray-200 md:transition-colors"
+              aria-label={isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+            >
+              {isAuthorized ? <LogOut size={18} /> : <LogIn size={18} />}
+            </button>
+            <div className="absolute -bottom-8 left-1 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              {isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+            </div>
+          </div>
+        </div>
       </nav>
 
       {isSearching && <SearchBarForDesktop handleSearching={handleSearching} />}

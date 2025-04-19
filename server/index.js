@@ -31,6 +31,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
@@ -105,6 +106,7 @@ app.use(
     origin: [
       "https://nwsb8x0b-5173.inc1.devtunnels.ms",
       process.env.DEVELOPMENT_CLIENT_URL,
+      process.env.DEVELOPMENT_CLIENT2_URL,
       process.env.PRODUCTION_CLIENT_URL,
     ], //React link. we have to check if will work normally or not
     credentials: true,
