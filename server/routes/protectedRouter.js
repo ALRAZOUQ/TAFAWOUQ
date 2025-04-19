@@ -101,7 +101,7 @@ router.post("/addCourseToSchedule", async (req, res) => {
       `SELECT * FROM schedule WHERE id = $1 AND studentId = $2`,
       [scheduleId, userId]
     );
-
+          {isAuthorized && <InboxButton className=""/>}
     if (userSchedule.rows.length === 0) {
       return res
         .status(404)
@@ -791,14 +791,16 @@ router.post("/postComment", async (req, res) => {
             anotherName,
           ]
         );
+        // send the push notification
         try {
           let personToBeNotified = await db.query(
             `SELECT fcmtoken FROM public.pushnotificationsregistration WHERE user_id=$1`,
             [parentcommentauthorid]
           );
 
-          if (personToBeNotified.rows.length && !firebaseAdmin) {
+          if (personToBeNotified.rows.length && firebaseAdmin) {
             // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
+            console.log(firebaseAdmin);
             let dynamic_url = process.env.NODE_ENV
               ? process.env.PRODUCTION_CLIENT_URL
               : process.env.DEVELOPMENT_CLIENT_URL;
@@ -958,20 +960,45 @@ router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
 });
 
 router.get("/myNotifications", async (req, res) => {
-  let notifications = await db.query(
-    `SELECT 
-                                          *,
-                                          CASE 
-                                              WHEN NOW() - timestamp < INTERVAL '1 hour' THEN CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' minutes ago')
-                                              WHEN NOW() - timestamp < INTERVAL '1 day' THEN CONCAT(EXTRACT(HOUR FROM NOW() - timestamp)::int, ' hours ago')
-                                              ELSE CONCAT(EXTRACT(DAY FROM NOW() - timestamp)::int, ' days ago')
-                                          END AS time_ago
-                                      FROM notifications
-                                      Where parentcommentauthorid=$1;
-                                      `,
-    [req.user.id]
-  );
-  res.status(200).json(notifications.rows);
+  try {
+    let notifications = await db.query(
+      `SELECT
+                    *,
+                    CASE
+                        WHEN NOW() - timestamp < INTERVAL '1 hour' THEN
+                            CONCAT(EXTRACT(MINUTE FROM NOW() - timestamp)::int, ' دقيقة')
+                        WHEN NOW() - timestamp < INTERVAL '1 day' THEN
+                            CONCAT(EXTRACT(HOUR FROM NOW() - timestamp)::int, ' ساعة')
+                        ELSE
+                            CONCAT(EXTRACT(DAY FROM NOW() - timestamp)::int, ' يوم')
+                    END AS time_ago
+                FROM notifications
+                Where parentcommentauthorid=$1;`,
+      [req.user.id]
+    );
+    res.status(200).json(notifications.rows);
+  } catch (error) {
+    console.error("/myNotifications error: ", error)
+    res.status(400).json({ message: "فشل أثناء جلب بيانات التنبيهات" })
+  }
+});
+
+router.put("/readANotification", async (req, res) => {
+  const { id } = req.body;
+  const userId = req.user.id
+  try {
+    let updatedNotification = await db.query(
+      `UPDATE public.notifications
+        SET readed = true
+        WHERE id = $1 AND parentcommentauthorid = $2
+        RETURNING *;`,
+      [id, userId]
+    );
+    res.status(200).json(updatedNotification.rows);
+  } catch (error) {
+    console.error("/readANotification error: ", error)
+    res.status(400).json({ message: `لم يتم تعيين الإشعار بالمعرف ${id} كمقروء` })
+  }
 });
 
 //==================================================
@@ -1021,9 +1048,11 @@ ${text}
 
     const textResponse = response.text;
 
+
     //  parse the quiz JSON
     const match = textResponse.match(/\{[\s\S]*\}/);
     if (!match) throw new Error("Quiz format not found in response.");
+
 
     return JSON.parse(match[0]);
   } catch (error) {

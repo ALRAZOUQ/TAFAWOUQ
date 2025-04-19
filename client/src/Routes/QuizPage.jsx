@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Screen from "../components/Screen";
 import { useParams, useNavigate ,useLocation } from "react-router-dom";
 import axios from "../api/axios";
-import InteractiveQuiz from "../components/InteractiveQuiz";
+import InteractiveQuiz from "../components/QuizComponents/InteractiveQuiz";
 import { toast } from "react-toastify";
 import  Page  from "../components/Page";
 

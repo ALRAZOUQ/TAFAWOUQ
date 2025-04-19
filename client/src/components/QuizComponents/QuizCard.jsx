@@ -1,14 +1,14 @@
 import React , { useMemo , useCallback} from'react';
 import {  Tag, ChevronRight,Trash2 ,MessageSquareWarning } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { useAuth } from "../context/authContext";
-import GenericForm from "./GenericForm";
-import axios from "../api/axios";
+import { useAuth } from "../../context/authContext";
+import GenericForm from "../GenericForm";
+import axios from "../../api/axios";
 import { toast } from "react-toastify";
 // Custom Course Avatar component
 const CourseAvatar = ({ code }) => {
-  // Extract initials from course code
-  const initials = code.substring(0, 2);
+  // Extract initials from course code (with null check)
+  const initials = code ? code.substring(0, 2) : "--";
     
   // Generate consistent color based on the code
   const getColorClass = () => {
@@ -16,6 +16,8 @@ const CourseAvatar = ({ code }) => {
       "bg-blue-500", "bg-emerald-500", "bg-amber-500", 
       "bg-rose-500", "bg-violet-500", "bg-cyan-500"
     ];
+    // Add null check before using code
+    if (!code) return colors[0]; // Default color if code is null
     const hash = code.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
   };
