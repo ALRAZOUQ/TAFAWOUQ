@@ -25,7 +25,7 @@ env.config();
 // env.config({ path: 'server/.env' })
 app.use(express.json());
 
-app.set('trust proxy', 1) // trust first proxy
+//app.set('trust proxy', 1) // trust first proxy
 // Session configuration
 app.use(
   session({
@@ -35,7 +35,7 @@ app.use(
     cookie: {
       secure: true,//this shall be true only and only if it is in production (main) or excute this process.env.NODE_ENV === "production NODE_ENV="production" in the .env  process.env.NODE_ENV === "production"
       httpOnly: true,
-      sameSite: 'none',
+      sameSite: 'none',//this line shall be exist only in production (main)
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
