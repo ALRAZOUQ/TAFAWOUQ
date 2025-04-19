@@ -455,11 +455,13 @@ router.get("/course/quizzes/:courseId", async (req, res) => {
 
     // Get quizzes data
     const quizzesResult = await db.query(
-      `select q.* ,c.code as "courseCode", u.name as "authorName" from quiz q 
+      `select q.* ,c.code as "courseCode", u.name as "authorName", COUNT(qu.id) AS "numOfQuestions" from quiz q 
 left join "user" u on u.id = q.authorid
 left join hidequiz hq on hq.quizid = q.id 
 left join course c on  q.courseid = c.id
-where c.id =$1 and hq.id IS NULL  -- Exclude quizzes that exist in hideQuiz table`,
+left join question qu ON qu.quizid = q.id
+where c.id =$1 and hq.id IS NULL  -- Exclude quizzes that exist in hideQuiz table
+GROUP BY q.id, c.id, u.id;`,
       [courseId]
     );
     if (quizzesResult.rows.length === 0) {
@@ -478,6 +480,7 @@ where c.id =$1 and hq.id IS NULL  -- Exclude quizzes that exist in hideQuiz tabl
       courseId: quiz.courseid,
       courseCode: quiz.courseCode,
       creationDate: quiz.creationdate,
+      numOfQuestions: parseInt(quiz.numOfQuestions),
     }));
 
     res.status(200).json({

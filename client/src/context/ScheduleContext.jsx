@@ -159,7 +159,6 @@ export function ScheduleProvider({ children }) {
       } else {
         console.error("Schedule fetch error:", error);
       }
-      
     }
   }, []);
 
@@ -173,11 +172,11 @@ export function ScheduleProvider({ children }) {
           scheduleId: data.scheduleId,
           scheduleName: data.scheduleName,
           startDate: data.startDate,
-          endDate:data.endDate,
+          endDate: data.endDate,
           scheduleCourses: [],
         }));
-        
-       // console.log("================", schedule)
+
+        // console.log("================", schedule)
       }
     } catch (error) {
       console.error("Failed to create schedule", error);
@@ -193,7 +192,7 @@ export function ScheduleProvider({ children }) {
         await updateGpa();
       }
     };
-  
+
     fetchData();
   }, [user]);
 
@@ -205,7 +204,7 @@ export function ScheduleProvider({ children }) {
         await updateGpa();
       }
     };
-  
+
     fetchData();
   }, [schedule.scheduleId]);
 
@@ -227,6 +226,7 @@ export function ScheduleProvider({ children }) {
   );
 }
 
+// Change from arrow function to named function declaration for Fast Refresh compatibility
 export function useSchedule() {
   return useContext(ScheduleContext);
 }

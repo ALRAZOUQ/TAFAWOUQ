@@ -1,16 +1,16 @@
 import { useState } from "react";
-import { Menu, X, Search } from "lucide-react";
+import { Menu, X, Search, LogOut, LogIn } from "lucide-react";
 import main_logo from "../../assets/mainLogo.svg";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import ThreeDotMenu from "./ThreeDotMenu";
 import NavigationLink from "./NavigationLink";
 import SearchBar from "./SearchBarForMobile";
 import SearchBarForDesktop from "./SearchBarForDesktop";
 import CreateTermModal from "../CreateTermModal";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import InboxButton from "./InboxComponents/InboxButton";
+import { useMediaQuery } from "../../helperHocks/useMediaQuery";
 
 export default function MainHeader() {
   const route = useLocation();
@@ -44,7 +44,15 @@ export default function MainHeader() {
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
-            <Link to={isAuthorized ? (user.isAdmin ? "/admin/admin-home" : "/home") : "/"}>
+            <Link
+              to={
+                isAuthorized
+                  ? user.isAdmin
+                    ? "/admin/admin-home"
+                    : "/home"
+                  : "/"
+              }
+            >
               <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 flex items-center justify-center">
                 <motion.img
                   src={main_logo}
@@ -57,7 +65,10 @@ export default function MainHeader() {
             </Link>
           </h1>
 
-          <button className="md:hidden text-TAF-100 focus:outline-none " onClick={() => setIsOpen(!isOpen)}>
+          <button
+            className="md:hidden text-TAF-100 focus:outline-none "
+            onClick={() => setIsOpen(!isOpen)}
+          >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
           </button>
         </div>
@@ -65,26 +76,45 @@ export default function MainHeader() {
         <div
           className={`md:flex md:items-center md:gap-5 md:mx-5 ${
             isOpen ? "flex flex-col gap-4 mb-2" : "hidden"
-          } md:flex-row md:justify-center`}>
+          } md:flex-row md:justify-center`}
+        >
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
-            route={isAuthorized ? (user.isAdmin ? "/admin/admin-home" : "/home") : "/"}
+            route={
+              isAuthorized
+                ? user.isAdmin
+                  ? "/admin/admin-home"
+                  : "/home"
+                : "/"
+            }
           />
 
           <NavigationLink linkTo={"المواد"} route={"/courses"} />
           {isAuthorized && !user.isAdmin && (
             <>
-              <NavigationLink linkTo={"إختباراتي القصيرة"} route={"/myquizzes"} />
-              <NavigationLink linkTo={"جداولي السابقة"} route={"mypreviousschedules"} />
+              <NavigationLink
+                linkTo={"إختباراتي القصيرة"}
+                route={"/myquizzes"}
+              />
+              <NavigationLink
+                linkTo={"جداولي السابقة"}
+                route={"mypreviousschedules"}
+              />
             </>
           )}
 
           {isAuthorized && user.isAdmin && (
             <>
               <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
-              <NavigationLink linkTo={"الحسابات المحظورة"} route={"/admin/bannedaccounts"} />
-              <NavigationLink linkTo={"العناصر المخفية"} route={"/admin/hiddenItems"} />
+              <NavigationLink
+                linkTo={"الحسابات المحظورة"}
+                route={"/admin/bannedaccounts"}
+              />
+              <NavigationLink
+                linkTo={"العناصر المخفية"}
+                route={"/admin/hiddenItems"}
+              />
 
               <CreateTermModal>
                 <motion.button
@@ -94,8 +124,11 @@ export default function MainHeader() {
                   }}
                   transition={{ duration: 0.2 }}
                   className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
-                    route.pathname === "/admin/createTerm" ? "border-opacity-100" : "border-opacity-0"
-                  }`}>
+                    route.pathname === "/admin/createTerm"
+                      ? "border-opacity-100"
+                      : "border-opacity-0"
+                  }`}
+                >
                   إنشاء ترم
                 </motion.button>
               </CreateTermModal>
@@ -108,31 +141,62 @@ export default function MainHeader() {
         <div
           className={`w-full md:flex md:items-center md:gap-8 ${
             isOpen ? "flex flex-col gap-4" : "hidden"
-          } md:flex-row md:justify-start`}>
+          } md:flex-row md:justify-start`}
+        >
           {isAuthorized ? (
             <button
               className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-              onClick={handleLogout}>
+              onClick={handleLogout}
+            >
               تسجيل الخروج
             </button>
           ) : (
             <Link
               to="/login"
-              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors">
+              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+            >
               تسجيل الدخول
             </Link>
           )}
         </div>
-        {isAuthorized && (
-          <button
-            onClick={handleSearching}
-            className={`hidden md:block md:ml-12 rounded-full p-2 hover:bg-gray-200 transition-colors ${
-              isSearching ? "bg-gray-100 hover:bg-gray-200 p-2 ml-12" : ""
-            }`}>
-            {isSearching ? "إلغاء" : <Search size={18} />}
-          </button>
-        )}
-        <ThreeDotMenu />
+        {/* Action Icons with Tooltips */}
+        <div className="flex items-center gap-3">
+          {isAuthorized && (
+            <div className="relative group">
+              <button
+                onClick={handleSearching}
+                className={`hidden md:block rounded-full p-2 hover:bg-gray-200 transition-colors ${
+                  isSearching ? "bg-gray-100 hover:bg-gray-200" : ""
+                }`}
+                aria-label="بحث"
+              >
+                {isSearching ? "إلغاء" : <Search size={18} />}
+              </button>
+              <div className="absolute -bottom-8 right-0 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                بحث
+              </div>
+            </div>
+          )}
+          <div className="relative group">
+            <button
+              onClick={
+                isAuthorized
+                  ? handleLogout
+                  : () => {
+                      navigate("/login");
+                      setIsOpen(false);
+                    }
+              }
+              className="hidden md:block md:rounded-full md:p-2 md: hover:bg-gray-200 md:transition-colors"
+              aria-label={isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+            >
+              {isAuthorized ? <LogOut size={18} /> : <LogIn size={18} />}
+            </button>
+            <div className="absolute -bottom-8 left-1 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              {isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+            </div>
+          </div>
+        </div>
       </nav>
 
       {isSearching && <SearchBarForDesktop handleSearching={handleSearching} />}

@@ -37,6 +37,6 @@ if (noNullsInServiceAccount) {
 
     firebaseAdmin_or_false = false
 }
-
+console.log(`firebaseAdmin_or_false: ${firebaseAdmin_or_false}`);
 export default firebaseAdmin_or_false;
 
