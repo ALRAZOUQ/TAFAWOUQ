@@ -15,7 +15,7 @@ export default function MyQuizzes() {
         const response = await axios.get("/protected/myQuizList");
 
         if (response.status === 200) {
-          setMyQuizzes(response.data.quiz);
+          setMyQuizzes(response.data.quizzes);
         } else {
           console.error("Failed to fetch quizzes:", response.statusText);
         }
@@ -38,7 +38,7 @@ export default function MyQuizzes() {
         <h1 className="text-2xl font-bold text-gray-800 mb-6">
           اختباراتي القصيرة
         </h1>
-        {MyQuizzes.length === 0 ? (
+        {MyQuizzes?.length === 0 ? (
           <div className="text-center py-10 rounded-lg shadow">
             <p className="text-gray-500">
               لا توجد اختبارت قصيرة مضافة في قائمتك بعد.
@@ -46,7 +46,7 @@ export default function MyQuizzes() {
           </div>
         ) : (
           <div className="mx-auto ">
-            {MyQuizzes.map((quiz) => (
+            {MyQuizzes?.map((quiz) => (
               <QuizCard
                 key={quiz.id}
                 quiz={quiz}
