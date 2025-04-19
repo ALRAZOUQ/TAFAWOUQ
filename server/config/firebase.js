@@ -26,6 +26,7 @@ if (noNullsInServiceAccount) {
     try {
         firebaseAdmin.initializeApp({ credential: firebaseAdmin.credential.cert(serviceAccount) })
         firebaseAdmin_or_false = firebaseAdmin
+        console.log(`🔔 irebaseAdmin initialized correctly 💛 `)
 
     } catch (error) {
         console.error(`error while initializing firebaseAdmin 😭 ${error}`)
