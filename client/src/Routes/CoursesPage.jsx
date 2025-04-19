@@ -1,13 +1,12 @@
 import { useEffect } from "react";
 import { useAuth } from "../context/authContext";
 import Course from "../components/coursesPageComponents/Course";
-import CreateCourse from "../components/createCourseModal";
+import CreateCourse from "../components/CreateCourseModal";
 import { useCourseData } from "../context/CourseContext";
 
 export default function CoursesPage() {
   const { user } = useAuth();
-  const { coursesData, addCourseToContext, fetchCoursesContext } =
-    useCourseData(); //To update the fetched course data used in the search bar and courses page
+  const { coursesData, addCourseToContext, fetchCoursesContext } = useCourseData(); //To update the fetched course data used in the search bar and courses page
 
   //fetching the course
   useEffect(() => {
@@ -35,9 +34,7 @@ export default function CoursesPage() {
     <div className="w-full min-h-screen bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200">
       {coursesData && (
         <div className="w-full h-auto grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 p-6 gap-6">
-          {user?.isAdmin && (
-            <CreateCourse handleAddNewCourse={handleAddNewCourse} />
-          )}
+          {user?.isAdmin && <CreateCourse handleAddNewCourse={handleAddNewCourse} />}
           {coursesData.map((course) => (
             <Course
               key={course.id}
