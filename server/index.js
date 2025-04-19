@@ -25,7 +25,7 @@ env.config();
 // env.config({ path: 'server/.env' })
 app.use(express.json());
 
-//app.set('trust proxy', 1) // trust first proxy
+app.set('trust proxy', 1) // trust first proxy
 // Session configuration
 app.use(
   session({
