@@ -723,29 +723,20 @@ order by b.date desc
   }
 });
 
+
 router.post("/banUser", async (req, res) => {
   try {
     const { reason, studentId, reportId } = req.body;
     const adminId = req.user.id;
     const adminName = req.user.name;
+
     if (!studentId || !reason) {
-      return res.status(400).json({
-        success: false,
-        message: "User ID is required.",
-      });
+      return res.status(400).json({ message: "User ID and reason are required." });
     }
 
-    // Check if the user is already banned
-    const existingBan = await db.query(
-      `SELECT 1 FROM ban WHERE studentId = $1`,
-      [studentId]
-    );
-
+    const existingBan = await db.query(`SELECT 1 FROM ban WHERE studentId = $1`, [studentId]);
     if (existingBan.rows.length > 0) {
-      return res.status(409).json({
-        success: false,
-        message: "User is already banned.",
-      });
+      return res.status(409).json({ message: "User is already banned." });
     }
 
     let banUserResult;
@@ -761,49 +752,63 @@ router.post("/banUser", async (req, res) => {
       );
     }
 
-    if (banUserResult.rows.length > 0) {
-      // Find and destroy the session of the banned user
-      if (req.sessionStore) {
-        req.sessionStore.all((err, sessions) => {
-          if (err) {
-            console.error("Error retrieving sessions:", err);
-          } else if (sessions) {
-            Object.keys(sessions).forEach((sid) => {
-              const session = sessions[sid];
-              if (
-                session.passport &&
-                session.passport.user &&
-                session.passport.user.id === parseInt(studentId)
-              ) {
-                req.sessionStore.destroy(sid, (destroyErr) => {
-                  if (destroyErr) {
-                    console.error("Error destroying session:", destroyErr);
-                  } else {
-                    console.log(
-                      `Session destroyed for banned user ${studentId}`
-                    );
-                  }
-                });
-              }
+    let logoutSuccess = true;
+    let logoutErrors = [];
+
+    if (banUserResult.rows.length > 0 && req.sessionStore && req.sessionStore.sessions) {
+      const studentIdToBan = parseInt(studentId);
+      const sessionIds = Object.keys(req.sessionStore.sessions);
+      const destroyPromises = [];
+
+      for (const sid of sessionIds) {
+        try {
+          const sessionData = JSON.parse(req.sessionStore.sessions[sid]);
+          if (sessionData?.passport?.user === studentIdToBan) {
+            const destroyPromise = new Promise((resolve, reject) => {
+              req.sessionStore.destroy(sid, (err) => {
+                if (err) {
+                  console.error(`Error destroying session ${sid}:`, err);
+                  logoutErrors.push(`Error destroying session ${sid}: ${err.message}`);
+                  resolve(false); // Indicate failure, but don't stop all promises
+                } else {
+                  console.log(`Session ${sid} destroyed for banned user ${studentId}`);
+                  resolve(true); // Indicate success
+                }
+              });
             });
+            destroyPromises.push(destroyPromise);
           }
-        });
+        } catch (parseError) {
+          console.error(`Error parsing session ${sid}:`, parseError);
+          logoutErrors.push(`Error parsing session ${sid}: ${parseError.message}`);
+        }
       }
+
+      const results = await Promise.all(destroyPromises);
+      logoutSuccess = results.every(res => res); // True if all destructions were successful
+
+      if (logoutErrors.length > 0) {
+        console.error("Errors during session destruction:", logoutErrors);
+        // Optionally, you could include these errors in the response if needed for debugging
+      }
+      //console.log(`Attempted to logout ${destroyPromises.length} sessions for banned user ${studentId}. Success: ${logoutSuccess}`);
     }
 
     if (banUserResult.rows.length > 0) {
-      res.status(200).json({
+      return res.status(200).json({
         success: true,
         message: "User banned successfully.",
         bannedUser: {
           studentId: banUserResult.rows[0].studentid,
           adminExecutedban: adminName,
         },
+        logoutSuccess: logoutSuccess, // Indicate if logout was successful
+        logoutErrors: logoutErrors,   // Optionally include errors
       });
     }
   } catch (error) {
     console.error("Error banning user:", error);
-    res.status(500).json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 });
 
