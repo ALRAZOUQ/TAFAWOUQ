@@ -97,6 +97,7 @@ passport.deserializeUser(async (id, done) => {
     //console.log("test values" , rows[0])
     done(null, rows[0]);
   } catch (error) {
+    console.error(error)
     done(error);
   }
 });
@@ -112,7 +113,7 @@ app.use(
     credentials: true,
   })
 );
-
+console.log(process.env.PRODUCTION_CLIENT_URL);
 // TODO Razouq: after merging with the main branch, this will be removed, and the user will see the main front end page when he open the sserver port in the browser
 // app.get("/", (req, res) => {
 //   res.json("Home page :) ");
