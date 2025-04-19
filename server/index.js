@@ -32,7 +32,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: true,//this shall be true only and only if it is in production (main) or excute this process.env.NODE_ENV === "production NODE_ENV="production" in the .env  process.env.NODE_ENV === "production"
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
