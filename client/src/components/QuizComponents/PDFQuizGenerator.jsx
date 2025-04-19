@@ -97,7 +97,7 @@ export default function PDFQuizGenerator() {
       const formData = new FormData();
       formData.append("title", quizTitle);
       formData.append("pdf", selectedFile);
-      formData.append("numberOfQuestions", selectedQuestionCount || 10);
+      formData.append("numOfQuestions", selectedQuestionCount ?? 10);
 
       const response = await axios.post(
         `${backendURL}protected/generateQuiz`,
