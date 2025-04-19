@@ -1067,12 +1067,12 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
     const title = req.body.title;
     const numOfQuestions = req.body.numOfQuestions;
     // Ensure title is provided
-    if (!title || !numOfQuestions) {
+    if (!title ) {
       return res
         .status(400)
         .json({
           success: false,
-          message: "Either the quiz title or the numOfQuestions is required.",
+          message: "the quiz title  is required.",
         });
     }
     // Ensure file is uploaded
