@@ -12,9 +12,14 @@ export default function PDFQuizGenerator() {
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [buttonText, setButtonText] = useState("حان وقت إنشاء شيء رائع");
-  const [selectedQuestionCount, setSelectedQuestionCount] = useState(null);
+  const [selectedQuestionCount, setSelectedQuestionCount] = useState(10);
+  const [selectedQuestionType, setSelectedQuestionType] = useState("mixed");
   const navigate = useNavigate();
-
+const questionsTypes = {
+  "mixed": "منوع",
+  "truefalse": "صح/خطأ",
+  "multiplechoice": "اختيار متعدد",
+}
   // Array of motivational button texts
   const buttonTexts = [
     "أنت الآن قريبًا من أنشاء اختبار رائع",
@@ -42,6 +47,10 @@ export default function PDFQuizGenerator() {
     });
   };
   const handleDragOver = (e) => {
+    e.preventDefault();
+    setIsDragging(true);
+  };
+  const map = (e) => {
     e.preventDefault();
     setIsDragging(true);
   };
@@ -98,6 +107,7 @@ export default function PDFQuizGenerator() {
       formData.append("title", quizTitle);
       formData.append("pdf", selectedFile);
       formData.append("numOfQuestions", selectedQuestionCount ?? 10);
+      formData.append("typeOfQuestions", selectedQuestionType ?? "mixed");
 
       const response = await axios.post(
         `${backendURL}protected/generateQuiz`,
@@ -115,7 +125,8 @@ export default function PDFQuizGenerator() {
       // Reset the form
       setQuizTitle("");
       setSelectedFile(null);
-      setSelectedQuestionCount(null);
+      setSelectedQuestionCount(10);
+      setSelectedQuestionType("mixed");
 
       // You might want to do something with the quiz data here
       // For example, redirect to the quiz page or show a success message
@@ -216,7 +227,7 @@ export default function PDFQuizGenerator() {
                           type="button"
                           onClick={() => {
                             setSelectedQuestionCount(count);
-                            setNumberOfQuestions("");
+                            
                           }}
                           className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                             selectedQuestionCount === count
@@ -225,6 +236,34 @@ export default function PDFQuizGenerator() {
                           }`}
                         >
                           {count}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="mb-4">
+                    <label
+                      htmlFor="numberOfQuestions"
+                      className="block text-sm font-medium text-gray-700 mb-1"
+                    >
+                     نوع الاسئلة
+                    </label>
+
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {Object.entries(questionsTypes).map(([key,value]) => (
+                        <button
+                          key={key}
+                          type="button"
+                          onClick={() => {
+                            setSelectedQuestionType(key);
+                            
+                          }}
+                          className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                            selectedQuestionType === key
+                              ? "bg-blue-500 text-white"
+                              : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                          }`}
+                        >
+                          {value}
                         </button>
                       ))}
                     </div>
