@@ -31,11 +31,11 @@ if (noNullsInServiceAccount) {
 
     } catch (error) {
         console.error(`error while initializing firebaseAdmin 😭 ${error}`)
-        console.table(serviceAccount);
         firebaseAdmin_or_false = false
     }
 } else {
     console.warn("⚠️ Missing Firebase environment variables.");
+    console.table(serviceAccount);
     firebaseAdmin_or_false = false
 }
 console.log(`firebaseAdmin_or_false: ${firebaseAdmin_or_false}`);
