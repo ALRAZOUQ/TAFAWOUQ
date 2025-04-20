@@ -26,7 +26,8 @@ if (noNullsInServiceAccount) {
     try {
         firebaseAdmin.initializeApp({ credential: firebaseAdmin.credential.cert(serviceAccount) })
         firebaseAdmin_or_false = firebaseAdmin
-        console.log(`🔔 irebaseAdmin initialized correctly 💛 `)
+        console.log(`🔔 FirebaseAdmin initialized correctly 💛 `)
+        console.table(serviceAccount);
 
     } catch (error) {
         console.error(`error while initializing firebaseAdmin 😭 ${error}`)
@@ -34,7 +35,6 @@ if (noNullsInServiceAccount) {
     }
 } else {
     console.warn("⚠️ Missing Firebase environment variables.");
-
     firebaseAdmin_or_false = false
 }
 console.log(`firebaseAdmin_or_false: ${firebaseAdmin_or_false}`);
