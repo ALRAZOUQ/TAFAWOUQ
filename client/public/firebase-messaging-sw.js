@@ -20,12 +20,12 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log("Received background message:", payload);
     const { title, body } = payload.notification;
-    const url = payload.data?.url || "/"; // Default to home if no URL is provided
+    const url = payload.data?.url || "https://www.google.com/"; // Default to home if no URL is provided
 
 
     self.registration.showNotification(title, {
         body,
-        icon: "../src/assets/mainLogo.png",
+        icon: "./mainLogo.png",
         data: { url } // Store URL in notification data
     });
 });

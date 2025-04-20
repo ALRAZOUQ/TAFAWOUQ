@@ -834,7 +834,8 @@ router.post("/postComment", async (req, res) => {
                 notification: {
                   title: `${anotherName} replied to your comment about ${courseCode}`,
                   body: content,
-                  icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png",
+                  // icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png",
+                  icon: "https://static.vecteezy.com/system/resources/thumbnails/016/940/260/small/apple-fruit-isolated-on-white-background-photo.jpg",
                 },
                 data: {
                   url: dynamic_url,
@@ -1009,7 +1010,7 @@ const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Helper function to generate quiz from text
 async function generateQuizFromText(text, numOfQuestions) {
-  if(!numOfQuestions || numOfQuestions === 0){
+  if (!numOfQuestions || numOfQuestions === 0) {
     numOfQuestions = 10;
   }
   try {
@@ -1067,7 +1068,7 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
     const title = req.body.title;
     const numOfQuestions = req.body.numOfQuestions;
     // Ensure title is provided
-    if (!title ) {
+    if (!title) {
       return res
         .status(400)
         .json({
