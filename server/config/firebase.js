@@ -31,6 +31,7 @@ if (noNullsInServiceAccount) {
 
     } catch (error) {
         console.error(`error while initializing firebaseAdmin 😭 ${error}`)
+        console.table(serviceAccount);
         firebaseAdmin_or_false = false
     }
 } else {
