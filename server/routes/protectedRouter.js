@@ -1009,19 +1009,26 @@ router.put("/readANotification", async (req, res) => {
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
 // Helper function to generate quiz from text
-async function generateQuizFromText(text, numOfQuestions) {
+async function generateQuizFromText(text, numOfQuestions, typeOfQuestions) {
   if (!numOfQuestions || numOfQuestions === 0) {
     numOfQuestions = 10;
   }
+  if (!typeOfQuestions || typeOfQuestions === "") {
+    typeOfQuestions = "mixed";
+  }
+
   try {
     const prompt = `
 You are an AI tutor. Based on the following text, create a quiz with these requirements:
   ${numOfQuestions} questions total
-    The questions should be a mix of:
-        True/False questions (2 options: "True", "False")
-        Multiple-choice questions with 4 options
-    Each question must include the correct answer
-    Format the output as JSON, like this:
+  Question type: ${typeOfQuestions} 
+    - If "mixed": include a combination of True/False and Multiple Choice questions
+    - If "truefalse": only include True/False questions (2 options: "True", "False")
+    - If "multiplechoice": only include multiple-choice questions with 4 options
+
+  Each question must include the correct answer.
+  The questions and answers must be written in the **same language used in the input text**.
+  Format the output as JSON, like this:
 
 {
   "questions": [
@@ -1037,7 +1044,7 @@ You are an AI tutor. Based on the following text, create a quiz with these requi
     }
   ]
 }
-make sure the output is json only
+Make sure the output is JSON only.
 
 Here is the text:
 ${text}
@@ -1067,6 +1074,7 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
   try {
     const title = req.body.title;
     const numOfQuestions = req.body.numOfQuestions;
+    const typeOfQuestions = req.body.typeOfQuestions;
     // Ensure title is provided
     if (!title) {
       return res
@@ -1102,7 +1110,7 @@ router.post("/generateQuiz", upload.single("pdf"), async (req, res) => {
     const pdfData = await pdfParse(dataBuffer);
 
     // Generate quiz using extracted text
-    const question = await generateQuizFromText(pdfData.text, numOfQuestions);
+    const question = await generateQuizFromText(pdfData.text, numOfQuestions, typeOfQuestions);
 
     // Clean up uploaded file
     fs.unlinkSync(filePath);
