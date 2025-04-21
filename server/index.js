@@ -4,14 +4,13 @@ import express from "express";
 import passport from "passport";
 import session from "express-session";
 import { Strategy as LocalStrategy } from "passport-local";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import db from "./config/db.js"; // database conection
 import env from "dotenv";
 import flash from "connect-flash";
 import errorHandler from "./middleware/errorHandler.js";
 import mainRouter from "./routes/mainRouter.js"; // all route's middlewares
 import cors from "cors";
-
 
 const app = express();
 
@@ -22,7 +21,11 @@ env.config();
 app.use(express.json());
 const port = process.env.PORT;
 
+env.config();
+// env.config({ path: 'server/.env' })
+app.use(express.json());
 
+app.set('trust proxy', 1) // trust first proxy
 // Session configuration
 app.use(
   session({
@@ -30,8 +33,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      secure: process.env.NODE_ENV === "production",
+      secure: process.env.NODE_ENV === "production", //this shall be true only and only if it is in production 
       httpOnly: true,
+      // sameSite: 'none',//this line shall be exist only in production (main)
       maxAge: 24 * 60 * 60 * 1000, // 24 hours
     },
   })
@@ -96,6 +100,7 @@ passport.deserializeUser(async (id, done) => {
     //console.log("test values" , rows[0])
     done(null, rows[0]);
   } catch (error) {
+    console.error(error)
     done(error);
   }
 });
@@ -114,10 +119,9 @@ app.use(
 );
 
 // TODO Razouq: after merging with the main branch, this will be removed, and the user will see the main front end page when he open the sserver port in the browser
-app.get("/", (req, res) => {
-  res.json("Home page :) ");
-});
-
+// app.get("/", (req, res) => {
+//   res.json("Home page :) ");
+// });
 
 // Use this if u want to debug client-requests-mistakes
 // app.use((req, res, next) => {
@@ -131,6 +135,23 @@ app.get("/", (req, res) => {
 // one router for all routes
 app.use("/api", mainRouter);
 
+// Razouq: this snippet is necassry for the deployment:
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+// Get the directory name in ES modules
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve static files from React's build folder
+app.use(express.static(path.join(__dirname, '../client/dist')));
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+});
+// Razouq: END OF THE DEPLOYMENT CODE
+
 // Error handling
 app.use(errorHandler);
+
 app.listen(port, () => console.log(`Server listen to the port ${port}`));

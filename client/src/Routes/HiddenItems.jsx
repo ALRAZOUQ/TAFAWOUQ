@@ -2,14 +2,12 @@ import Screen from "../components/Screen";
 import { useState, useEffect, lazy, Suspense } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/authContext";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 // Lazy load Pagination component
-const Pagination = lazy(() =>
-  import("../components/coursePageComponents/Pagination")
-);
+const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 
 export default function HiddenItems() {
   const { user } = useAuth();
@@ -71,30 +69,21 @@ export default function HiddenItems() {
   // Filter & pagination calculations
   const filteredComments = hiddenComments.filter(
     (comment) =>
-      comment.commentContent
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      comment.adminExecutedHide
-        .toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
+      comment.commentContent.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      comment.adminExecutedHide.toLowerCase().includes(searchQuery.toLowerCase()) ||
       comment.hideReason.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const indexOfLastComment = currentPage * commentsPerPage;
   const indexOfFirstComment = indexOfLastComment - commentsPerPage;
-  const currentComments = filteredComments.slice(
-    indexOfFirstComment,
-    indexOfLastComment
-  );
+  const currentComments = filteredComments.slice(indexOfFirstComment, indexOfLastComment);
   const totalPages = Math.ceil(filteredComments.length / commentsPerPage);
 
   const handleUnhide = async (commentId) => {
     try {
       const response = await axios.put(`/admin/unhideComment`, { commentId });
       if (response.status === 200) {
-        setHiddenComments((prev) =>
-          prev.filter((comment) => comment.commentId !== commentId)
-        );
+        setHiddenComments((prev) => prev.filter((comment) => comment.commentId !== commentId));
         toast.success("تم إظهار التعليق بنجاح");
       } else {
         toast.error("حدث خطأ أثناء إظهار التعليق");
@@ -106,10 +95,7 @@ export default function HiddenItems() {
   };
   if (hiddenComments.length === 0) {
     return (
-      <Screen
-        title="Banned Accounts"
-        className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
-      >
+      <Screen title="Banned Accounts" className="p-2 sm:p-4 md:p-6 flex items-center justify-center">
         <div className="text-red-400 text-2xl">لا يوجد تعليقات مخفية</div>
       </Screen>
     );
@@ -142,19 +128,13 @@ export default function HiddenItems() {
                 <div
                   key={x.commentId}
                   className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
-            transition-shadow duration-300 flex flex-col h-full"
-                >
+            transition-shadow duration-300 flex flex-col h-full">
                   <div className="p-5 space-y-4 flex-grow flex flex-col">
                     {/* User Info Section */}
-                    <h2>
-                      لقد تم اخفاء هذا التعليق بواسطة المشرف{" "}
-                      {x.adminExecutedHide || "غير محدد"}
-                    </h2>
+                    <h2>لقد تم اخفاء هذا التعليق بواسطة المشرف {x.adminExecutedHide || "غير محدد"}</h2>
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                        <span className="text-sm font-semibold  text-gray-900">
-                          المستخدم:
-                        </span>
+                        <span className="text-sm font-semibold  text-gray-900">المستخدم:</span>
                         <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
                           {x.commentAuthor}
                         </span>
@@ -169,8 +149,7 @@ export default function HiddenItems() {
                         </span>
                         <p
                           className="text-sm text-gray-600 break-words overflow-hidden text-ellipsis 
-                    max-h-[100px] overflow-y-auto"
-                        >
+                    max-h-[100px] overflow-y-auto">
                           {x.commentContent}
                         </p>
                       </div>
@@ -178,25 +157,19 @@ export default function HiddenItems() {
 
                     {/* Hide Reason Section */}
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <span className="text-sm font-semibold text-gray-900">
-                        سبب الإخفاء:
-                      </span>
+                      <span className="text-sm font-semibold text-gray-900">سبب الإخفاء:</span>
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
                         {x.hideReason || "غير محدد"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <span className="text-sm font-semibold text-gray-900">
-                        تاريخ الإخفاء:
-                      </span>
+                      <span className="text-sm font-semibold text-gray-900">تاريخ الإخفاء:</span>
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
                         {formatTime(x.hideDate).date.formatted || "غير محدد"}
                       </span>
                     </div>
                     <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                      <span className="text-sm font-semibold text-gray-900">
-                        وقت الإخفاء:
-                      </span>
+                      <span className="text-sm font-semibold text-gray-900">وقت الإخفاء:</span>
                       <span className="text-sm text-gray-600 truncate max-w-[200px]">
                         {formatTime(x.hideDate).time.formatted || "غير محدد"}
                       </span>
@@ -206,12 +179,8 @@ export default function HiddenItems() {
                       {x.reportId ? (
                         <>
                           {" "}
-                          <span className="text-sm font-semibold text-gray-900">
-                            رقم البلاغ
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {x.reportId}
-                          </span>
+                          <span className="text-sm font-semibold text-gray-900">رقم البلاغ</span>
+                          <span className="text-sm text-gray-600 truncate max-w-[200px]">{x.reportId}</span>
                         </>
                       ) : (
                         <span className="text-sm font-semibold text-gray-900">
@@ -228,8 +197,7 @@ export default function HiddenItems() {
                           className="w-3/4 bg-red-500 text-white py-2 px-4 rounded-md 
                     hover:bg-red-600 transition-colors duration-200 
                     focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
-                    active:scale-95"
-                        >
+                    active:scale-95">
                           اعادة إظهار التعليق
                         </button>
                       </div>

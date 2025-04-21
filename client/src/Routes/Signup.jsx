@@ -66,7 +66,7 @@ export default function Signup() {
 
       if (response.status === 201) {
         toast.success("تم تسجيل الدخول بنجاح!");
-        setUserStateLogin(response.data.user);
+        // setUserStateLogin(response.data.user);
         return { success: true, message: response.data.message };
       }
     } catch (error) {

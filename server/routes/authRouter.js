@@ -1,6 +1,6 @@
 import express from "express";
 import passport from "passport";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import db from "../config/db.js";
 import authController from "../controllers/authController.js"
 const router = express.Router();
@@ -77,6 +77,7 @@ router.post("/login", (req, res, next) => {
       if (err) {
         return next(err);
       }
+
       return res.status(200).json({
         success: true,
         message: "Logged in successfully",

@@ -178,7 +178,7 @@ router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
       .status(200)
       .json({
         success: true,
-        message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully`,
+        message: `The user's FCM Token for his ${deletionResult.rows[0]?.devicetype} is deleted successfully`,
       });
   } catch (error) {
     console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`);

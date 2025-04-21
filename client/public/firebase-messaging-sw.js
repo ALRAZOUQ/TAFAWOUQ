@@ -16,35 +16,37 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const messaging = firebase.messaging();
 
+
+// TODO Razouq: ALL OF THIS IS USELESS, AI IS DUMP!!!!!!!!
 // Background notification handler
-messaging.onBackgroundMessage((payload) => {
-    console.log("Received background message:", payload);
-    const { title, body } = payload.notification;
-    const url = payload.data?.url || "/"; // Default to home if no URL is provided
+// messaging.onBackgroundMessage((payload) => {
+//     console.log("Received background message:", payload);
+//     const { title, body } = payload.notification;
+//     const url = payload.data?.url || "https://www.google.com/"; // Default to home if no URL is provided
 
 
-    self.registration.showNotification(title, {
-        body,
-        icon: "../src/assets/mainLogo.png",
-        data: { url } // Store URL in notification data
-    });
-});
+//     self.registration.showNotification(title, {
+//         body,
+//         icon: "./mainLogo.png",
+//         data: { url } // Store URL in notification data
+//     });
+// });
 
-// 🔔 Handle click on notification
-self.addEventListener("notificationclick", (event) => {
-    event.notification.close();
-    const targetUrl = event.notification.data?.url || "/"; // Use stored URL or default
-    console.log(targetUrl);
-    event.waitUntil(
-        clients
-            .matchAll({ type: "window", includeUncontrolled: true })
-            .then((clientList) => {
-                for (const client of clientList) {
-                    if (client.url === targetUrl && "focus" in client) {
-                        return client.focus();
-                    }
-                }
-                return clients.openWindow(targetUrl); // Open new tab if not already open
-            })
-    );
-}); 
+// // 🔔 Handle click on notification
+// self.addEventListener("notificationclick", (event) => {
+//     event.notification.close();
+//     const targetUrl = event.notification.data?.url || "/"; // Use stored URL or default
+//     console.log(targetUrl);
+//     event.waitUntil(
+//         clients
+//             .matchAll({ type: "window", includeUncontrolled: true })
+//             .then((clientList) => {
+//                 for (const client of clientList) {
+//                     if (client.url === targetUrl && "focus" in client) {
+//                         return client.focus();
+//                     }
+//                 }
+//                 return clients.openWindow(targetUrl); // Open new tab if not already open
+//             })
+//     );
+// }); 
