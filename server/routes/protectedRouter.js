@@ -800,7 +800,6 @@ router.post("/postComment", async (req, res) => {
 
           if (personToBeNotified.rows.length && firebaseAdmin) {
             // check if the personToBeNotified allowed notifications && check if firebaseAdmin is initilized correctly
-            console.log(firebaseAdmin);
             let dynamic_url = process.env.NODE_ENV
               ? process.env.PRODUCTION_CLIENT_URL
               : process.env.DEVELOPMENT_CLIENT_URL;
