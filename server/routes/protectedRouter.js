@@ -826,20 +826,20 @@ router.post("/postComment", async (req, res) => {
 
             const pushNotification = {
               tokens: tokens, // Razouq: send to all of his devices
-              notification: {
-                title: `${anotherName} replied to your comment about ${courseCode}`,
-                body: content,
-              },
+              // notification: {
+              //   title: `${anotherName} replied to your comment about ${courseCode}`,
+              //   body: content,
+              // },
               webpush: {
                 notification: {
                   title: `${anotherName} replied to your comment about ${courseCode}`,
                   body: content,
-                  // icon: "https://raw.githubusercontent.com/ALRAZOUQ/TAFAWOUQ/refs/heads/develop/client/src/assets/mainLogo.png",
-                  icon: "https://static.vecteezy.com/system/resources/thumbnails/016/940/260/small/apple-fruit-isolated-on-white-background-photo.jpg",
+                  icon: "./mainLogo.png",
                 },
-                data: {
-                  url: dynamic_url,
+                fcm_options: {
+                  link: dynamic_url,
                 },
+
               },
             };
 
@@ -947,7 +947,7 @@ router.delete("/deleteMyOldFCMTokenForThisDevice", async (req, res) => {
       .status(200)
       .json({
         success: true,
-        message: `The user's FCM Token for his ${deletionResult.rows[0].devicetype} is deleted successfully`,
+        message: `The user's FCM Token for his ${deletionResult.rows[0]?.devicetype} is deleted successfully`,
       });
   } catch (error) {
     console.error(`/deleteMyOldFCMTokenForThisDevice DB error ${error}`);
