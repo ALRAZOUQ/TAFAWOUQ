@@ -53,7 +53,8 @@ export function ScheduleProvider({ children }) {
       });
       if (status === 200) {
         toast.success("تمت إضافة المادة الى الجدول بنجاح");
-        fetchScheduleCourses();
+        await fetchScheduleCourses();
+       
       }
     } catch (error) {
       if (error.response?.status === 400) {
@@ -81,6 +82,7 @@ export function ScheduleProvider({ children }) {
             (course) => course.id !== courseId
           ),
         }));
+        await updateGpa();
       }
     } catch (error) {
       console.error(error.response?.data?.message || "Failed to remove course");
@@ -93,11 +95,14 @@ export function ScheduleProvider({ children }) {
       const { data } = await axios.get(`/protected/viewGpa`);
       setSchedule((prevSchedule) => ({
         ...prevSchedule,
-        totalGPA: data.averageGPA || 0.0,
+        totalGPA: data.averageGPA ,
       }));
     } catch (error) {
       if (error.response?.status === 404) {
-        console.error("GPA: No grades found for the student");
+        setSchedule((prevSchedule) => ({
+          ...prevSchedule,
+          totalGPA: 0.0,
+        }));
       } else {
         console.error(" GPA fetch error:", error);
       }
@@ -114,11 +119,14 @@ export function ScheduleProvider({ children }) {
       );
       setSchedule((prevSchedule) => ({
         ...prevSchedule,
-        currentScheduleGPA: data.averageGPA || 0.0,
+        currentScheduleGPA: data.averageGPA,
       }));
     } catch (error) {
       if (error.response?.status === 404) {
-        console.error("curentGPA: No grades found for the student");
+        setSchedule((prevSchedule) => ({
+          ...prevSchedule,
+          currentScheduleGPA: 0.0,
+        }));
       } else {
         console.error(" curent GPA fetch error:", error);
       }
@@ -130,6 +138,7 @@ export function ScheduleProvider({ children }) {
       await fetchGPA();
       await fetchCurrentGPA();
     } catch (error) {
+      if(error.response?.status === 500)
       console.error("Error updating GPAs:", error);
     }
   };
@@ -142,21 +151,22 @@ export function ScheduleProvider({ children }) {
   const fetchScheduleCourses = useCallback(async () => {
     try {
       const { data, status } = await axios.get("/protected/currentSchedule");
+      console.log("data", data);
       if (status === 200) {
-        setSchedule({
+        setSchedule((prevSchedule) => ({
+          ...prevSchedule,
           scheduleCourses: data.courses || [],
           scheduleId: data.scheduleId || null,
           scheduleName: data.scheduleName || null,
           startDate: data.startDate || null,
           endDate: data.endDate || null,
-          totalGPA: schedule.totalGPA,
-          currentScheduleGPA: schedule.currentScheduleGPA,
-        });
+        }));
       }
     } catch (error) {
       if (error.response?.status === 404) {
-        console.error("No schedule found for the student");
+        //console.error("No schedule found for the student");
       } else {
+        //this for unknoun erorr
         console.error("Schedule fetch error:", error);
       }
     }
