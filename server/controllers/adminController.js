@@ -93,17 +93,18 @@ const adminController = {
         [name, code, overview, creditHours, courseId]
       );
 
-      if (updatedCourse.rows.length === 0) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Failed to update course" });
-      }
+      
 
       res.status(200).json({
         success: true,
         message: "Course updated successfully",
       });
     } catch (error) {
+      if (error.code === '23505' && error.constraint === 'course_code_key') {
+        return res
+          .status(400)
+          .json({ success: false, message: "There is a course with the same course code" });
+      }
       res.status(500).json({ success: false, message: error.message });
     }
   },

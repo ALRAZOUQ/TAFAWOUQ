@@ -49,14 +49,20 @@ export function CourseProvider({ children }) {
 
           return prevCourses.map((course) =>
             course.id === courseId
-              ? { ...course, ...formData } // ✅ Spread formData to ensure updates are applied
+              ? { ...course, ...formData } 
               : course
           );
         });
       }
     } catch (error) {
-      const errorMessage =
+      let errorMessage ;
+      if(error.response?.status === 400){
+        errorMessage ="هناك مقرر له نفس الرمز المراد التعديل اليه"
+      }else{
+        errorMessage =
         error.response?.data?.message || "حدث خطأ أثناء تحديث المقرر";
+      }
+      
       toast.error(errorMessage);
     }
   };
@@ -69,7 +75,11 @@ export function CourseProvider({ children }) {
         setCoursesData(response.data.courses);
       }
     } catch (error) {
-      console.error("Error fetching courses:", error);
+      if(error.response?.status === 404){
+        toast.error("لا يوجد مقررات في قاعدة البيانات");
+      }else{
+        console.error("Error fetching courses:", error);
+      }
       setCoursesData(null);
     }
   };

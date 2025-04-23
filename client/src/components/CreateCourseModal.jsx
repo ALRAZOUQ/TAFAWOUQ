@@ -77,7 +77,6 @@ export default function CreateCourse({ handleAddNewCourse }) {
       closeModal();
       toast.success("تم إنشاء المقرر بنجاح");
     } catch (error) {
-      console.error("Error creating course:", error.response);
       const message =
         error.response?.status === 401
           ? "هذا المقرر موجود بالفعل"
