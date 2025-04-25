@@ -1,10 +1,8 @@
+/* Dashboard Sub-project styles */
+@import "./Dashboard-Sub-project/css/additional-styles/utility-patterns.css";
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @import "tailwindcss";
-@layer components {
-  @import "../../client/src/Dashboard-Sub-project/css/additional-styles/utility-patterns.css";
-} */
 @layer base {
   :root {
     --background: 0 0% 100%;

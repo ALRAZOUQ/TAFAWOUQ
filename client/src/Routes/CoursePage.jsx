@@ -8,11 +8,21 @@ import { useCourseData } from "../context/CourseContext";
 
 // ✅ Lazy Load Components
 const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
-const CourseCard = lazy(() => import("../components/coursePageComponents/CourseCard"));
-const Comment = lazy(() => import("../components/coursePageComponents/Comment"));
-const FilterControls = lazy(() => import("../components/coursePageComponents/FilterControls"));
-const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
-const WriteComment = lazy(() => import("../components/coursePageComponents/WriteComment"));
+const CourseCard = lazy(() =>
+  import("../components/coursePageComponents/CourseCard")
+);
+const Comment = lazy(() =>
+  import("../components/coursePageComponents/Comment")
+);
+const FilterControls = lazy(() =>
+  import("../components/coursePageComponents/FilterControls")
+);
+const Pagination = lazy(() =>
+  import("../components/coursePageComponents/Pagination")
+);
+const WriteComment = lazy(() =>
+  import("../components/coursePageComponents/WriteComment")
+);
 
 const CoursePage = () => {
   // Hooks
@@ -24,6 +34,7 @@ const CoursePage = () => {
   // State
   const [course, setCourse] = useState(null);
   const [comments, setComments] = useState([]);
+  const [quizzes, setQuizzes] = useState([]);
   const [filterTag, setFilterTag] = useState("");
   const [sortBy, setSortBy] = useState("recent");
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,6 +83,19 @@ const CoursePage = () => {
       console.error("Error fetching comments:", error);
     }
   };
+  async function fetchQuizzes() {
+    try {
+      const response = await axios.get(`auth/course/quizzes/${courseId}`);
+      if (response.status === 200) {
+        setQuizzes(response.data.quiz);
+      }
+    } catch (error) {
+      if (error.response?.status === 404) {
+        setQuizzes([]);
+      }
+      console.error("Error fetching quizzes:", error);
+    }
+  }
 
   // Event Handlers
   const deleteCourse = async () => {
@@ -98,6 +122,7 @@ const CoursePage = () => {
         const courseResult = await fetchCourse();
         if (courseResult !== false && mounted) {
           await fetchComments();
+          await fetchQuizzes();
         }
       }
     };
@@ -108,7 +133,9 @@ const CoursePage = () => {
   }, [courseId]);
 
   useEffect(() => {
-    const totalPages = Math.ceil(filteredAndSortedComments.length / commentsPerPage);
+    const totalPages = Math.ceil(
+      filteredAndSortedComments.length / commentsPerPage
+    );
     if (currentPage > totalPages) {
       setCurrentPage(Math.max(1, totalPages));
     }
@@ -116,10 +143,13 @@ const CoursePage = () => {
 
   // Filter & Sort Comments
   const filteredAndSortedComments = comments
-    .filter((comment) => comment.content.toLowerCase().includes(searchQuery.toLowerCase()))
+    .filter((comment) =>
+      comment.content.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     .filter((comment) => (filterTag ? comment.tag === filterTag : true))
     .sort((a, b) => {
-      if (sortBy === "recent") return new Date(b.creationDate) - new Date(a.creationDate);
+      if (sortBy === "recent")
+        return new Date(b.creationDate) - new Date(a.creationDate);
       if (sortBy === "mostLikes") return b.numOfLikes - a.numOfLikes;
       if (sortBy === "mostReplies") return b.numOfReplies - a.numOfReplies;
       return 0;
@@ -131,11 +161,15 @@ const CoursePage = () => {
     currentPage * commentsPerPage
   );
 
-  const totalPages = Math.ceil(filteredAndSortedComments.length / commentsPerPage);
+  const totalPages = Math.ceil(
+    filteredAndSortedComments.length / commentsPerPage
+  );
 
   const handleDeleteComment = (commentId) => {
     console.log("Comment ID to delete:", commentId);
-    setComments((prevComments) => prevComments?.filter((comment) => comment.id !== commentId));
+    setComments((prevComments) =>
+      prevComments?.filter((comment) => comment.id !== commentId)
+    );
   };
 
   return (
@@ -143,7 +177,11 @@ const CoursePage = () => {
       <div className="w-auto mx-auto container p-4">
         {/* ✅ Lazy Loading Components with Suspense */}
         <Suspense fallback={<div>Loading Course...</div>}>
-          <CourseCard course={course} isAdmin={user?.isAdmin} onDelete={() => setIsConfirmOpen(true)} />
+          <CourseCard
+            course={course}
+            isAdmin={user?.isAdmin}
+            onDelete={() => setIsConfirmOpen(true)}
+          />
         </Suspense>
 
         <Suspense fallback={<div>Loading...</div>}>
@@ -197,7 +235,11 @@ const CoursePage = () => {
         </div>
 
         <Suspense fallback={<div>Loading pagination...</div>}>
-          <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            setCurrentPage={setCurrentPage}
+          />
         </Suspense>
       </div>
     </div>

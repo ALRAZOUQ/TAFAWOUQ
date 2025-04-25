@@ -11,6 +11,9 @@ export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
+      shasdow: {
+        xs: "0 35px 60px -15px rgba(0, 0, 0, 0.3)",
+      },
       animation: {
         bounce200: "bounce 1s infinite 200ms",
         bounce400: "bounce 1s infinite 400ms",

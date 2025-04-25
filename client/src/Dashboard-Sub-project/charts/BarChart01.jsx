@@ -1,4 +1,5 @@
 import React, { useRef, useEffect, useState } from "react";
+// Removed ThemeProvider import as we're only using light theme
 
 import { chartColors } from "./ChartjsConfig";
 import { Chart, BarController, BarElement, LinearScale, TimeScale, Tooltip, Legend } from "chart.js";
@@ -13,7 +14,9 @@ function BarChart01({ data, width, height }) {
   const [chart, setChart] = useState(null);
   const canvas = useRef(null);
   const legend = useRef(null);
+  // Using only light theme as per user's requirement
   const { textColor, gridColor, tooltipBodyColor, tooltipBgColor, tooltipBorderColor } = chartColors;
+  const darkMode = false; // Setting to false since we're only using light theme
 
   useEffect(() => {
     const ctx = canvas.current;
@@ -41,7 +44,7 @@ function BarChart01({ data, width, height }) {
               color: textColor.light,
             },
             grid: {
-              color: textColor.light,
+              color: gridColor.light,
             },
           },
           x: {
@@ -156,6 +159,20 @@ function BarChart01({ data, width, height }) {
     return () => newChart.destroy();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!chart) return;
+
+    // Using light theme settings since we're not using dark mode
+    chart.options.scales.x.ticks.color = textColor.light;
+    chart.options.scales.y.ticks.color = textColor.light;
+    chart.options.scales.y.grid.color = gridColor.light;
+    chart.options.plugins.tooltip.bodyColor = tooltipBodyColor.light;
+    chart.options.plugins.tooltip.backgroundColor = tooltipBgColor.light;
+    chart.options.plugins.tooltip.borderColor = tooltipBorderColor.light;
+    
+    chart.update('none');
+  }, [chart]);
 
   return (
     <React.Fragment>

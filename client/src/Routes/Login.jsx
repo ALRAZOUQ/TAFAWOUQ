@@ -39,14 +39,14 @@ export default function Login() {
         setUserStateLogin(response.data.user);
 
         toast.success("تم تسجيل الدخول بنجاح!");
-        navigate("/home");
+        navigate(response.data.user.isAdmin ? "admin/admin-home" : "/home");
         return { success: true, message: response.data.message };
       }
     } catch (error) {
       if (error.response) {
         if (error.response.status === 401) {
           return { errors: ["email or password is incorrect"] };
-        }else if(error.response.status === 403){
+        } else if (error.response.status === 403) {
           return { errors: ["This account is banded"] };
         } else {
           return { errors: [error.response.data.message] };
@@ -74,7 +74,7 @@ export default function Login() {
   }, [formState.success, navigate]);
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-b from-TAF-200 via-white to-TAF-200">
-      <BackButton route={".."}/>
+      <BackButton route={".."} />
       {/* Responsive container */}
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl p-4 sm:p-6 md:p-8 mx-auto border-y-8 border-TAF-300 bg-gray-50 rounded-lg shadow-md">
         <div className="flex flex-col gap-2 mb-4 sm:mb-6">
@@ -89,14 +89,12 @@ export default function Login() {
                 htmlFor="email"
                 className="block text-sm sm:text-base text-gray-600"
               >
-
                 الإيميل
               </label>
               <input
                 type="email"
                 id="email"
                 name="email"
-
                 defaultValue={formState.enteredValues?.email}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -108,14 +106,12 @@ export default function Login() {
                 htmlFor="password"
                 className="block text-sm sm:text-base text-gray-600"
               >
-
                 كلمة المرور
               </label>
               <input
                 type="password"
                 id="password"
                 name="password"
-
                 defaultValue={formState.enteredValues?.password}
                 className="w-full p-2 sm:p-3 mt-1 sm:mt-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base"
               />
@@ -142,7 +138,6 @@ export default function Login() {
               <Link
                 to="/signup"
                 className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
-
               >
                 ليس لديك حساب؟ التسجيل
               </Link>
