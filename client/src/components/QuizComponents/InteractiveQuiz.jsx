@@ -3,8 +3,9 @@ import { useNavigate } from "react-router-dom";
 import QuizOutline from "./QuizOutline";
 import QuizOverview from "./QuizOverview";
 
-const InteractiveQuiz = ({ quizData }) => {
+const InteractiveQuiz = ({ quiz }) => {
   const [quizState, setQuizState] = useState("in-progress"); // 'overview', 'in-progress', 'results' 3 interface states
+  const [quizData, setQuizData] = useState(quiz);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [userAnswers, setUserAnswers] = useState(
     Array(quizData.questions.length).fill("")
@@ -12,14 +13,17 @@ const InteractiveQuiz = ({ quizData }) => {
   const navigate = useNavigate();
 
   // Handle handel store quiz
-
-  // Handle handel store quiz
-
-  // Handle starting the quiz
   const startQuiz = () => {
     setQuizState("in-progress");
     setCurrentQuestion(0);
     setUserAnswers(Array(quizData.questions.length).fill(""));
+  };
+
+  const updateQuizDataAttribute = (attributeName, attributeValue) => {
+    setQuizData(prevData => ({
+      ...prevData,
+      [attributeName]: attributeValue
+    }));
   };
 
   // Handle answer selection
@@ -177,6 +181,7 @@ const InteractiveQuiz = ({ quizData }) => {
       <QuizOutline
         score={score}
         quizData={quizData}
+        updateQuizDataAttribute={updateQuizDataAttribute}
         userAnswers={userAnswers}
         startQuiz={startQuiz}
       />

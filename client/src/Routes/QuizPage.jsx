@@ -63,7 +63,7 @@ export default function QuizPage() {
                     {error}
                 </div>
             ) : quiz ? (
-                <InteractiveQuiz quizData={quiz} />
+                <InteractiveQuiz quiz={quiz} />
             ) : (
                 <div className="text-center p-4">
                     لا يوجد كويز

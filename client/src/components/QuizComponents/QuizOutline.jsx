@@ -7,6 +7,7 @@ import ShareQuizModal from "./ShareQuizModal";
 export default function QuizOutline({
   score,
   quizData,
+  updateQuizDataAttribute,
   userAnswers,
   startQuiz,
 }) {
@@ -74,17 +75,20 @@ export default function QuizOutline({
 
         {/* Action buttons */}
         <div className="flex gap-4 mb-8">
-          <button
-            className="flex-1 bg-TAF-100 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg"
-            onClick={handleShareQuiz}
-          >
-            مشاركة الكويز لمقرر
-          </button>
+          {!(quizData.isShared) && (
+            
+            <button
+              className="flex-1 bg-TAF-100 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-lg"
+              onClick={handleShareQuiz}
+            >
+              مشاركة الاختبار لمقرر
+            </button>
+          )}
           <button
             onClick={handeStoreQuiz}
             className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg"
           >
-            حفظ الكويز في قائمتي
+            حفظ الاختبار في قائمتي
           </button>
         </div>
 
@@ -152,7 +156,8 @@ export default function QuizOutline({
       <ShareQuizModal
         isOpen={showShareModal}
         onClose={handleCloseShareModal}
-        quizId={quizData.id}
+        quizData={quizData}
+        updateQuizDataAttribute={updateQuizDataAttribute}
       />
     </div>
   );
