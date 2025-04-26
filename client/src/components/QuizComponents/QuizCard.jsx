@@ -40,7 +40,7 @@ const formatDate = (dateString) => {
 
 
 
-export default function QuizCard({ quiz, onStartQuiz }) {
+export default function QuizCard({ quiz, onStartQuiz, onDelete }) {
   const reportFields = useMemo(
     () => [
       {
@@ -76,7 +76,7 @@ export default function QuizCard({ quiz, onStartQuiz }) {
       });
 
       if (response.data.success) {
-       // onDelete(formData.id); //to delete the quiz from the Quiz list  // we have to update the quiz list using on delete function not implmented yet suld be implemented in the course page (remove it from Quizzes state)
+        onDelete(formData.id); //to delete the quiz from the Quiz list  
         toast.success("تم إخفاء الاختبار بنجاح");
       }
     } catch (error) {

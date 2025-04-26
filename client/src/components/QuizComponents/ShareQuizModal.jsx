@@ -5,7 +5,7 @@ import { useCourseData } from "../../context/CourseContext";
 import { toast } from "react-toastify";
 import axios from "../../api/axios";
 
-export default function ShareQuizModal({ isOpen, onClose, quizId }) {
+export default function ShareQuizModal({ isOpen, onClose, quizData ,updateQuizDataAttribute}) {
   const { coursesData } = useCourseData();
   const courses = coursesData;
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,21 +16,33 @@ export default function ShareQuizModal({ isOpen, onClose, quizId }) {
       course.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.code.toLowerCase().includes(searchQuery.toLowerCase())
   );
-  async function hadleShareQuiz() {
-    if (!quizId) {
-      toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
-      return;
-    }
+  async function hadleShareQuiz(quizData) {
     try {
-      const response = await axios.post("/protected/shareQuiz", {
-        quizId,
-        courseId: selectedCourse.id,
-      });
-      if (response.status === 200) {
-        toast.success("تم اضافة الاختبار الى قائمة المقررات بنجاح");
+      // If quizData has no ID, it hasn't been stored yet in the database
+      if (!quizData.id) {
+        const response = await axios.post("protected/storeQuiz", {
+          quiz: quizData,
+        });
+        quizData.id = response.data.quizId; // Get the ID from the response
       }
+
+      console.log("quizId:", quizData?.id);
+
+      const shareQuizResponse = await axios.post(
+        "protected/shareQuiz",
+        {
+          quizId: quizData.id,
+          courseId: selectedCourse.id,
+        }
+      );
+      if (shareQuizResponse.status === 200) {
+        toast.success("تم مشاركة الاختبار  بنجاح");
+        updateQuizDataAttribute("isShared",true)
+      }
+     
     } catch (error) {
-      toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
+      console.error("Error share quiz to course list:", error);
+      
     }
     onClose();
   }
@@ -107,7 +119,7 @@ export default function ShareQuizModal({ isOpen, onClose, quizId }) {
               <button
                 className="px-4 py-2 bg-TAF-100 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
                 disabled={!selectedCourse}
-                onClick={hadleShareQuiz}
+                onClick={() => hadleShareQuiz(quizData)}
               >
                 مشاركة
               </button>

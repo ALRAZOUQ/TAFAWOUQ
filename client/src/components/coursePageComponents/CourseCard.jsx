@@ -21,6 +21,8 @@ export default function CourseCard({
   isAdmin,
   onDelete,
   onCourseUpdate,
+  activeTab,
+  setActiveTab,
 }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -166,7 +168,7 @@ export default function CourseCard({
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-1">
+        <div className="flex items-center gap-2 mt-1 relative">
           <h3 className="text-xl text-gray-700">{course.name}</h3>
           <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
             عدد الساعات {course.creditHours}
@@ -231,6 +233,22 @@ export default function CourseCard({
           </motion.div>
         </div>
       </div>
+      {/*<div className="absolute top---4">
+      {["comments", "quizzes"].map((tab) => (
+            <button
+              key={tab}
+              className={`py-2 px-4 h-16 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
+        ${
+          activeTab === tab
+            ? "text-black font-extrabold border-b-4 border-b-TAF-600"
+            : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
+        }`}
+              onClick={() => setActiveTab(tab)}
+            >
+              {tab === "comments" ? "التعليقات" : "الاختبارات"}
+            </button>
+          ))}
+          </div>*/}
     </div>
   );
 }
