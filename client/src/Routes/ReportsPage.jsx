@@ -1,34 +1,48 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import axios from "../api/axios";
-import ReportCard from "../components/ReportCard";
+import ReportCard from "../components/CommentReportCard";
 import { toast } from "react-toastify";
 import Screen from "../components/Screen";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 // Lazy load Pagination component
-const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
+const Pagination = lazy(() =>
+  import("../components/coursePageComponents/Pagination")
+);
 
 export default function AdminHomePage() {
   useRouteIfAuthorizedAndHeIsNotAdmin();
-  const [reports, setReports] = useState([]);
+  const [commentReports, setCommentReports] = useState([]);
+  const [quizReports, setQuizReports] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
   const reportsPerPage = 6;
 
   useEffect(() => {
-    const fetchReports = async () => {
+    const fetchCommentReports = async () => {
       try {
         const response = await axios.get("/admin/reports/comments");
         if (response.data.success) {
-          setReports(response.data.reports);
+          setCommentReports(response.data.reports);
+        }
+      } catch (error) {
+        console.error("Error fetching reports:", error);
+      }
+    };
+    const fetchQuizReports = async () => {
+      try {
+        const response = await axios.get("/admin/reports/comments");
+        if (response.data.success) {
+          setQuizReports(response.data.reports);
         }
       } catch (error) {
         console.error("Error fetching reports:", error);
       }
     };
 
-    fetchReports();
+    fetchCommentReports();
+    fetchQuizReports();
   }, []);
 
   async function onReject(reportId) {
@@ -64,13 +78,16 @@ export default function AdminHomePage() {
   }
 
   // Filter & pagination calculations
-  const filteredReports = reports.filter((report) => 
+  const filteredReports = commentReports.filter((report) =>
     report.comment.content.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const indexOfLastReport = currentPage * reportsPerPage;
   const indexOfFirstReport = indexOfLastReport - reportsPerPage;
-  const currentReports = filteredReports.slice(indexOfFirstReport, indexOfLastReport);
+  const currentReports = filteredReports.slice(
+    indexOfFirstReport,
+    indexOfLastReport
+  );
   const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
 
   // Preload Pagination component
@@ -80,7 +97,7 @@ export default function AdminHomePage() {
 
   return (
     <Screen>
-        <Page>
+      <Page>
         {/* Search Button */}
         <SearchButton
           placeholder="ابحث في البلاغات..."
@@ -93,12 +110,12 @@ export default function AdminHomePage() {
 
         <div
           className={`${
-            reports.length > 0
+            commentReports.length > 0
               ? "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2 mx-4 p-4"
               : "flex items-center justify-center h-screen"
           }`}
         >
-          {reports.length > 0 ? (
+          {commentReports.length > 0 ? (
             currentReports.map((report) => (
               <ReportCard
                 key={report.reportId}
@@ -116,16 +133,15 @@ export default function AdminHomePage() {
         </div>
 
         {/* Pagination */}
-        {reports.length > 0 && (
+        {commentReports.length > 0 && (
           <Suspense fallback={<div>Loading pagination...</div>}>
-            <Pagination 
-              currentPage={currentPage} 
-              totalPages={totalPages} 
-              setCurrentPage={setCurrentPage} 
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
             />
           </Suspense>
         )}
-     
       </Page>
     </Screen>
   );

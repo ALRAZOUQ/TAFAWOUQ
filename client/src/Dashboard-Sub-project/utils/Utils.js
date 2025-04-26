@@ -41,7 +41,7 @@ export const adjustColorOpacity = (color, opacity) => {
   // Handle undefined or null color values
   if (!color) {
     console.log(`Received undefined or null color value with opacity: ${opacity}`);
-    return adjustHexOpacity("#6b7280", opacity || 0.25);
+    return adjustHexOpacity("#0b8eca", opacity || 0.25);
   }
   
   try {
@@ -53,11 +53,11 @@ export const adjustColorOpacity = (color, opacity) => {
       return adjustOKLCHOpacity(color, opacity);
     } else {
       console.log(`Unsupported color format: ${color}`);
-      return adjustHexOpacity("#6b7280", opacity || 0.25);
+      return adjustHexOpacity("#0b8eca", opacity || 0.25);
     }
   } catch (error) {
     console.error(`Error processing color: ${error.message}`);
-    return adjustHexOpacity("#6b7280", opacity || 0.25);
+    return adjustHexOpacity("#0b8eca", opacity || 0.25);
   }
 };
 

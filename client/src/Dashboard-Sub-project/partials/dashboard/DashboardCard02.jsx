@@ -8,7 +8,7 @@ import EditMenu from "../../components/DropdownEditMenu";
 import { adjustColorOpacity, getCssVariable } from "../../utils/Utils";
 
 function DashboardCard02() {
-  const raw = getCssVariable("--color-violet-500");
+  const raw = getCssVariable("0b8eca");
   console.log("–– raw Violet 500:", JSON.stringify(raw));
 
   const chartData = {
