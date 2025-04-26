@@ -98,9 +98,43 @@ const InteractiveQuiz = ({ quiz }) => {
               ></div>
             </div>
           </div>
+          
+          {/* Question Overview */}
+          <div className="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
+              <h3 className="text-md font-semibold mb-1 sm:mb-0">نظرة عامة على الأسئلة</h3>
+              <div className="flex items-center text-xs text-gray-600 space-x-2 rtl:space-x-reverse">
+                <div className="flex items-center">
+                  <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-1"></span>
+                  <span>تمت الإجابة</span>
+                </div>
+                <div className="flex items-center">
+                  <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-1"></span>
+                  <span>لم تتم الإجابة</span>
+                </div>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {quizData.questions.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentQuestion(index)}
+                  className={`
+                    w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center 
+                    text-xs sm:text-sm font-medium transition-all duration-300 transform
+                    ${currentQuestion === index ? 'ring-2 ring-blue-500 ring-offset-2 scale-110 shadow-md' : ''}
+                    ${userAnswers[index] ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}
+                  `}
+                  aria-label={`الانتقال إلى السؤال ${index + 1}`}
+                >
+                  {index + 1}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Question */}
-          <div className="mb-6">
+          <div className="mb-6 transition-opacity duration-300 ease-in-out">
             <h2 className="text-xl font-semibold mb-4">{question.question}</h2>
 
             {/* Answer options */}
@@ -109,9 +143,9 @@ const InteractiveQuiz = ({ quiz }) => {
                 <div
                   key={index}
                   onClick={() => selectAnswer(option)}
-                  className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                  className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 transform hover:scale-[1.01] ${
                     userAnswers[currentQuestion] === option
-                      ? "border-blue-500 bg-blue-50"
+                      ? "border-blue-500 bg-blue-50 shadow-sm"
                       : "border-gray-300 hover:border-blue-300 hover:bg-blue-50"
                   }`}
                 >
@@ -122,52 +156,75 @@ const InteractiveQuiz = ({ quiz }) => {
           </div>
 
           {/* Navigation buttons */}
-          <div className="flex justify-between mt-8">
-            <button
-              onClick={goToPrevious}
-              disabled={currentQuestion === 0}
-              className={`px-6 py-2 rounded-lg font-medium ${
-                currentQuestion === 0
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-gray-200 hover:bg-gray-300 text-gray-700"
-              }`}
-            >
-              السابق
-            </button>
-
-            {isLastQuestion ? (
+          <div className="flex flex-col sm:flex-row justify-between gap-3 mt-8">
+            <div className="flex justify-between sm:justify-start gap-2 sm:gap-3 w-full sm:w-auto">
               <button
-                onClick={finishQuiz}
-                disabled={userAnswers.some((answer) => answer === "")}
-                className={`px-6 py-2 rounded-lg font-medium ${
-                  userAnswers.some((answer) => answer === "")
-                    ? "bg-green-300 text-white cursor-not-allowed"
-                    : "bg-green-600 hover:bg-green-700 text-white"
+                onClick={goToPrevious}
+                disabled={currentQuestion === 0}
+                className={`px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 flex-1 sm:flex-none ${
+                  currentQuestion === 0
+                    ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                    : "bg-gray-200 hover:bg-gray-300 text-gray-700 hover:shadow-md"
                 }`}
               >
-                إنهاء
+                <span className="flex items-center justify-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                  السابق
+                </span>
               </button>
-            ) : (
-              <button
-                onClick={goToNext}
-                className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
-              >
-                التالي
-              </button>
-            )}
+
+              {isLastQuestion ? (
+                <button
+                  onClick={finishQuiz}
+                  disabled={userAnswers.some((answer) => answer === "")}
+                  className={`px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 flex-1 sm:flex-none ${
+                    userAnswers.some((answer) => answer === "")
+                      ? "bg-green-300 text-white cursor-not-allowed"
+                      : "bg-green-600 hover:bg-green-700 text-white hover:shadow-md"
+                  }`}
+                >
+                  <span className="flex items-center justify-center">
+                    إنهاء
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                </button>
+              ) : (
+                <button
+                  onClick={goToNext}
+                  className="px-4 sm:px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all duration-200 hover:shadow-md flex-1 sm:flex-none"
+                >
+                  <span className="flex items-center justify-center">
+                    التالي
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    </svg>
+                  </span>
+                </button>
+              )}
+            </div>
+            
+            <button
+              className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-md"
+              onClick={
+                isLastQuestion || !userAnswers.includes("") 
+                  ? finishQuiz
+                  : () => {
+                      navigate(-1);
+                    }
+              }
+            >
+              <span className="flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                </svg>
+                {!userAnswers.includes("") ? "إنهاء الاختبار" : "خروج من الاختبار"}
+              </span>
+            </button>
           </div>
-          <button
-            className="w-full bg-red-500 text-white px-6 py-2 rounded-lg font-medium mt-5"
-            onClick={
-              isLastQuestion
-                ? finishQuiz
-                : () => {
-                    navigate(-1);
-                  }
-            }
-          >
-            خروج من الاختبار
-          </button>
         </div>
       </div>
     );
