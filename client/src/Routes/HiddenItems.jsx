@@ -27,41 +27,81 @@ export default function HiddenItems() {
     try {
       const response = await axios.get("/admin/hiddenComments");
       if (response.status === 200) {
-        setHiddenComments(response.data.hiddenComments);
-        console.log(hiddenComments);
+        setHiddenComments(response.data.hiddenComments || []);
         setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching hidden comments:", error);
       toast.error("حدث خطأ أثناء جلب التعليقات المخفية");
+      setHiddenComments([]);
       setIsLoading(false);
     }
   }
   function formatTime(isoString) {
-    const date = new Date(isoString);
+    if (!isoString) {
+      return {
+        date: {
+          year: "",
+          month: "",
+          day: "",
+          formatted: "غير محدد",
+        },
+        time: {
+          hours: "",
+          minutes: "",
+          seconds: "",
+          formatted: "غير محدد",
+        },
+      };
+    }
+    
+    try {
+      const date = new Date(isoString);
+      
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        throw new Error("Invalid date");
+      }
 
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
 
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
 
-    return {
-      date: {
-        year,
-        month,
-        day,
-        formatted: `${year}-${month}-${day}`,
-      },
-      time: {
-        hours,
-        minutes,
-        seconds,
-        formatted: `${hours}:${minutes}:${seconds}`,
-      },
-    };
+      return {
+        date: {
+          year,
+          month,
+          day,
+          formatted: `${year}-${month}-${day}`,
+        },
+        time: {
+          hours,
+          minutes,
+          seconds,
+          formatted: `${hours}:${minutes}:${seconds}`,
+        },
+      };
+    } catch (error) {
+      console.error("Error formatting date:", error);
+      return {
+        date: {
+          year: "",
+          month: "",
+          day: "",
+          formatted: "غير محدد",
+        },
+        time: {
+          hours: "",
+          minutes: "",
+          seconds: "",
+          formatted: "غير محدد",
+        },
+      };
+    }
   }
 
   async function fetchHiddenQuizzes() {
@@ -69,13 +109,13 @@ export default function HiddenItems() {
     try {
       const response = await axios.get("/admin/hiddenQuizzes");
       if (response.status === 200) {
-        setHiddenQuizzes(response.data.hiddenQuizzes);
-        console.log(hiddenQuizzes);
+        setHiddenQuizzes(response.data.hiddenQuizzes || []);
         setIsLoading(false);
       }
     } catch (error) {
       console.error("Error fetching hidden quizzes:", error);
       toast.error("حدث خطأ أثناء جلب الإختبارات القصيرة المخفية");
+      setHiddenQuizzes([]);
       setIsLoading(false);
     }
   }
@@ -106,24 +146,24 @@ export default function HiddenItems() {
   );
 
   // Filter & pagination calculations for quizzes
-  const filteredQuizzes = hiddenQuizzes.filter(
+  const filteredQuizzes = hiddenQuizzes?.filter(
     (quiz) =>
-      quiz.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      quiz.adminExecutedHide
+      quiz?.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      quiz?.adminExecutedHide
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      quiz.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
+  ) || [];
 
   const currentItems = toggleHiddenItems
-    ? filteredQuizzes.slice(
+    ? filteredQuizzes?.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
       )
     : filteredComments?.slice(
         (currentPage - 1) * itemsPerPage,
         currentPage * itemsPerPage
-      );
+      ) || [];
 
   const totalPages = Math.ceil(
     (toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length) /
@@ -164,45 +204,25 @@ export default function HiddenItems() {
     }
   };
 
-  if (!toggleHiddenItems && hiddenComments?.length === 0) {
-    return (
-      <Screen
-        title="Hidden Items"
-        className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
-      >
-        <div className="text-red-400 text-2xl">لا يوجد تعليقات مخفية</div>
-      </Screen>
-    );
-  }
-
-  if (toggleHiddenItems && hiddenQuizzes.length === 0) {
-    return (
-      <Screen
-        title="Hidden Items"
-        className="p-2 sm:p-4 md:p-6 flex items-center justify-center"
-      >
-        <div className="text-red-400 text-2xl">لا يوجد اختبارات مخفية</div>
-      </Screen>
-    );
-  }
+  // Empty state handling is now done in the main render function with conditional rendering
 
   return (
     <Screen title={toggleHiddenItems ? "Hidden Quizzes" : "Hidden Comments"}>
-      <Page>
+      <Page className="px-2 sm:px-4 md:px-6">
         <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
           <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
             {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
           </h1>
 
           {/* Toggle Button */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center bg-gray-100 rounded-lg p-1 shadow-sm">
             <button
               onClick={() => {
                 setToggleHiddenItems(false);
                 setCurrentPage(1);
                 setSearchQuery("");
               }}
-              className={`px-4 py-2 rounded-md transition-all duration-200 ${
+              className={`px-3 py-2 sm:px-5 sm:py-3 rounded-md transition-all duration-200 text-sm sm:text-base font-medium min-w-[80px] sm:min-w-[100px] ${
                 !toggleHiddenItems
                   ? "bg-TAF-100 text-white shadow-md"
                   : "text-gray-700 hover:bg-gray-200"
@@ -216,7 +236,7 @@ export default function HiddenItems() {
                 setCurrentPage(1);
                 setSearchQuery("");
               }}
-              className={`px-4 py-2 rounded-md transition-all duration-200 ${
+              className={`px-3 py-2 sm:px-5 sm:py-3 rounded-md transition-all duration-200 text-sm sm:text-base font-medium min-w-[80px] sm:min-w-[100px] ${
                 toggleHiddenItems
                   ? "bg-TAF-100 text-white shadow-md"
                   : "text-gray-700 hover:bg-gray-200"
@@ -228,33 +248,41 @@ export default function HiddenItems() {
         </div>
 
         {/* Search Button */}
-        <SearchButton
-          placeholder={
-            toggleHiddenItems
-              ? "ابحث في الإختبارات المخفية..."
-              : "ابحث في التعليقات المخفية..."
-          }
-          value={searchQuery}
-          onChange={(value) => {
-            setSearchQuery(value);
-            setCurrentPage(1); // Reset to first page on search
-          }}
-        />
+        <div className="mb-4 sm:mb-6 w-full max-w-md mx-auto">
+          <SearchButton
+            placeholder={
+              toggleHiddenItems
+                ? "ابحث في الإختبارات المخفية..."
+                : "ابحث في التعليقات المخفية..."
+            }
+            value={searchQuery}
+            onChange={(value) => {
+              setSearchQuery(value);
+              setCurrentPage(1); // Reset to first page on search
+            }}
+          />
+        </div>
 
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
             <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-t-2 border-b-2 border-TAF-100"></div>
           </div>
+        ) : !currentItems || currentItems.length === 0 ? (
+          <div className="flex justify-center items-center py-10">
+            <div className="text-red-400 text-lg sm:text-xl md:text-2xl">
+              {toggleHiddenItems ? "لا يوجد اختبارات مخفية" : "لا يوجد تعليقات مخفية"}
+            </div>
+          </div>
         ) : (
           <div className="w-full px-4 py-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {!toggleHiddenItems
                 ? // Comments Display
                   currentItems?.map((x) => (
                     <div
                       key={x.commentId}
                       className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
-                    transition-shadow duration-300 flex flex-col h-full"
+                    transition-shadow duration-300 flex flex-col h-full overflow-hidden"
                     >
                       <div className="p-5 space-y-4 flex-grow flex flex-col">
                         {/* User Info Section */}
@@ -356,7 +384,7 @@ export default function HiddenItems() {
                     <div
                       key={x.quizId}
                       className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
-                    transition-shadow duration-300 flex flex-col h-full"
+                    transition-shadow duration-300 flex flex-col h-full overflow-hidden"
                     >
                       <div className="p-5 space-y-4 flex-grow flex flex-col">
                         {/* Quiz Info Section */}
@@ -456,14 +484,16 @@ export default function HiddenItems() {
             </div>
 
             {/* Pagination */}
-            {currentItems?.length > 0 && (
-              <Suspense fallback={<div>Loading pagination...</div>}>
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  setCurrentPage={setCurrentPage}
-                />
-              </Suspense>
+            {currentItems?.length > 0 && totalPages > 1 && (
+              <div className="mt-6 sm:mt-8">
+                <Suspense fallback={<div className="text-center py-2">Loading pagination...</div>}>
+                  <Pagination
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    setCurrentPage={setCurrentPage}
+                  />
+                </Suspense>
+              </div>
             )}
           </div>
         )}
