@@ -20,9 +20,9 @@ const InteractiveQuiz = ({ quiz }) => {
   };
 
   const updateQuizDataAttribute = (attributeName, attributeValue) => {
-    setQuizData(prevData => ({
+    setQuizData((prevData) => ({
       ...prevData,
-      [attributeName]: attributeValue
+      [attributeName]: attributeValue,
     }));
   };
 
@@ -98,18 +98,20 @@ const InteractiveQuiz = ({ quiz }) => {
               ></div>
             </div>
           </div>
-          
+
           {/* Question Overview */}
           <div className="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-200">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-3">
-              <h3 className="text-md font-semibold mb-1 sm:mb-0">نظرة عامة على الأسئلة</h3>
-              <div className="flex items-center text-xs text-gray-600 space-x-2 rtl:space-x-reverse">
-                <div className="flex items-center">
-                  <span className="inline-block w-3 h-3 bg-green-500 rounded-full mr-1"></span>
+              <h3 className="text-md font-semibold mb-1 sm:mb-0">
+                نظرة عامة على الأسئلة
+              </h3>
+              <div className="flex items-center justify-center text-xs text-gray-600 space-x-2 rtl:space-x-reverse">
+                <div className="flex items-center justify-center">
+                  <span className="inline-block w-3 h-3 bg-green-500 rounded-full ml-1"></span>
                   <span>تمت الإجابة</span>
                 </div>
                 <div className="flex items-center">
-                  <span className="inline-block w-3 h-3 bg-red-500 rounded-full mr-1"></span>
+                  <span className="inline-block w-3 h-3 bg-red-500 rounded-full ml-1"></span>
                   <span>لم تتم الإجابة</span>
                 </div>
               </div>
@@ -122,8 +124,16 @@ const InteractiveQuiz = ({ quiz }) => {
                   className={`
                     w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center 
                     text-xs sm:text-sm font-medium transition-all duration-300 transform
-                    ${currentQuestion === index ? 'ring-2 ring-blue-500 ring-offset-2 scale-110 shadow-md' : ''}
-                    ${userAnswers[index] ? 'bg-green-500 text-white hover:bg-green-600' : 'bg-red-500 text-white hover:bg-red-600'}
+                    ${
+                      currentQuestion === index
+                        ? "ring-2 ring-blue-500 ring-offset-2 scale-110 shadow-md"
+                        : ""
+                    }
+                    ${
+                      userAnswers[index]
+                        ? "bg-green-500 text-white hover:bg-green-600"
+                        : "bg-red-500 text-white hover:bg-red-600"
+                    }
                   `}
                   aria-label={`الانتقال إلى السؤال ${index + 1}`}
                 >
@@ -168,8 +178,17 @@ const InteractiveQuiz = ({ quiz }) => {
                 }`}
               >
                 <span className="flex items-center justify-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 ml-1 rtl:rotate-180"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
                   </svg>
                   السابق
                 </span>
@@ -187,8 +206,17 @@ const InteractiveQuiz = ({ quiz }) => {
                 >
                   <span className="flex items-center justify-center">
                     إنهاء
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-1"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </span>
                 </button>
@@ -199,18 +227,27 @@ const InteractiveQuiz = ({ quiz }) => {
                 >
                   <span className="flex items-center justify-center">
                     التالي
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1 rtl:rotate-180" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-1 rtl:rotate-180"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                   </span>
                 </button>
               )}
             </div>
-            
+
             <button
               className="w-full sm:w-auto bg-red-500 hover:bg-red-600 text-white px-4 sm:px-6 py-2 rounded-lg font-medium transition-all duration-200 hover:shadow-md"
               onClick={
-                isLastQuestion || !userAnswers.includes("") 
+                isLastQuestion || !userAnswers.includes("")
                   ? finishQuiz
                   : () => {
                       navigate(-1);
@@ -218,10 +255,21 @@ const InteractiveQuiz = ({ quiz }) => {
               }
             >
               <span className="flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5 ml-1"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
                 </svg>
-                {!userAnswers.includes("") ? "إنهاء الاختبار" : "خروج من الاختبار"}
+                {!userAnswers.includes("")
+                  ? "إنهاء الاختبار"
+                  : "خروج من الاختبار"}
               </span>
             </button>
           </div>

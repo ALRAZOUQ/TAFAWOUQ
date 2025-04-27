@@ -59,7 +59,7 @@ export default function MainHeader() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 bg-black bg-opacity-50 z-[90] md:hidden"
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 md:hidden"
             onClick={() => setIsOpen(false)}
           />
         )}
@@ -172,7 +172,7 @@ max-[810px]:min-[770px]:p-2"
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 300, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="flex flex-col gap-4 mb-2 fixed top-[100px] right-0 w-3/4 h-auto bg-TAF-200 p-4 shadow-lg z-[100] border-l border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto"
+              className="flex flex-col gap-4 mb-2 fixed top-[154px] right-0 w-3/4 h-auto z-30 bg-TAF-200 p-4 shadow-lg border-l border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto"
             >
               {/* admin Links */}
               <NavigationLink
