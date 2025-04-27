@@ -64,7 +64,8 @@ export default function MainHeader() {
           />
         )}
       </AnimatePresence>
-      <nav className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px] relative z-50">
+      <nav className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px] relative z-50
+            max-[810px]:min-[770px]:px-2">
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
@@ -77,7 +78,7 @@ export default function MainHeader() {
                   : "/"
               }
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 flex items-center justify-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 max-[810px]:min-[770px]:w-16 max-[810px]:min-[770px]:h-16 flex items-center justify-center">
                 <motion.img
                   src={main_logo}
                   className="object-contain w-full h-full"
@@ -98,7 +99,11 @@ export default function MainHeader() {
         </div>
         {/* Navigation Links */}
         {/* Desktop Navigation - Always visible on desktop */}
-        <div className="hidden md:flex md:items-center md:gap-5 md:mx-5 md:static md:w-auto md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center">
+        <div className="hidden md:flex md:items-center md:gap-5 md:mx-5 md:static md:w-auto md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center
+                    lg:gap-5 lg:mx-5
+                    md:gap-3 md:mx-2
+                    /* Special breakpoint for 770-810px screens */
+                    max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-1 max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
@@ -268,7 +273,8 @@ export default function MainHeader() {
           )}
         </AnimatePresence>
         {/* Action Icons with Tooltips */}
-        <div className="flex items-center justify-end gap-4 ml-auto">
+        <div className="flex items-center justify-end gap-4 ml-auto
+                    max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:ml-1">
           {isAuthorized && (
             <div className="relative group">
               <button
