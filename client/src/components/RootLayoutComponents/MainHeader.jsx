@@ -16,18 +16,18 @@ export default function MainHeader() {
   const route = useLocation();
   const navigate = useNavigate();
   const { logout, isAuthorized, user } = useAuth();
-  
+
   const [isOpen, setIsOpen] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  
+  const isMobile = useMediaQuery("(max-width: 768px)");
+
   // Ensure mobile menu state is properly initialized
   useEffect(() => {
     if (!isMobile && isOpen) {
       setIsOpen(false);
     }
   }, [isMobile]);
-  
+
   // Close mobile menu when route changes
   useEffect(() => {
     setIsOpen(false);
@@ -54,7 +54,7 @@ export default function MainHeader() {
       {/* Backdrop overlay for mobile menu */}
       <AnimatePresence>
         {isOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -64,8 +64,11 @@ export default function MainHeader() {
           />
         )}
       </AnimatePresence>
-      <nav className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-full border-b border-gray-700 lg:max-h-[100px] xl:max-h-[100px] relative z-50
-            max-[810px]:min-[770px]:px-2">
+      <nav
+        className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-full border-b border-gray-700 
+lg:max-h-[100px] xl:max-h-[100px] relative z-50
+max-[810px]:min-[770px]:p-2"
+      >
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto">
           <h1 className="text-white font-bold text-xl md:text-2xl">
@@ -78,7 +81,7 @@ export default function MainHeader() {
                   : "/"
               }
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 max-[810px]:min-[770px]:w-16 max-[810px]:min-[770px]:h-16 flex items-center justify-center">
+              <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 max-[810px]:min-[766px]:w-16 max-[810px]:min-[770px]:h-16 flex items-center justify-center">
                 <motion.img
                   src={main_logo}
                   className="object-contain w-full h-full"
@@ -99,11 +102,7 @@ export default function MainHeader() {
         </div>
         {/* Navigation Links */}
         {/* Desktop Navigation - Always visible on desktop */}
-        <div className="hidden md:flex md:items-center md:gap-5 md:mx-5 md:static md:w-auto md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center
-                    lg:gap-5 lg:mx-5
-                    md:gap-3 md:mx-2
-                    /* Special breakpoint for 770-810px screens */
-                    max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-1 max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
+        <div className="hidden md:flex md:items-center md:gap-5 md:mx-5 md:static md:w-auto md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center lg:gap-5 lg:mx-5 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-1 max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
@@ -164,7 +163,7 @@ export default function MainHeader() {
           )}
           {isAuthorized && <InboxButton />}
         </div>
-        
+
         {/* Mobile Navigation - Only visible when menu is open */}
         <AnimatePresence>
           {isOpen && isMobile && (
@@ -175,106 +174,116 @@ export default function MainHeader() {
               transition={{ duration: 0.3, ease: "easeInOut" }}
               className="flex flex-col gap-4 mb-2 fixed top-[100px] right-0 w-3/4 h-auto bg-TAF-200 p-4 shadow-lg z-[100] border-l border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto"
             >
-          {/* admin Links */}
-          <NavigationLink
-            linkTo={"الصفحة الرئيسية"}
-            route={
-              isAuthorized
-                ? user.isAdmin
-                  ? "/admin/admin-home"
-                  : "/home"
-                : "/"
-            }
-            onClick={() => setIsOpen(false)}
-          />
-
-          <NavigationLink linkTo={"المواد"} route={"/courses"} onClick={() => setIsOpen(false)} />
-          {isAuthorized && !user.isAdmin && (
-            <>
+              {/* admin Links */}
               <NavigationLink
-                linkTo={"إختباراتي القصيرة"}
-                route={"/myquizzes"}
-                onClick={() => setIsOpen(false)}
-              />
-              <NavigationLink
-                linkTo={"جداولي السابقة"}
-                route={"mypreviousschedules"}
-                onClick={() => setIsOpen(false)}
-              />
-            </>
-          )}
-
-          {isAuthorized && user.isAdmin && (
-            <>
-              <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} onClick={() => setIsOpen(false)} />
-              <NavigationLink
-                linkTo={"الحسابات المحظورة"}
-                route={"/admin/bannedaccounts"}
-                onClick={() => setIsOpen(false)}
-              />
-              <NavigationLink
-                linkTo={"العناصر المخفية"}
-                route={"/admin/hiddenItems"}
+                linkTo={"الصفحة الرئيسية"}
+                route={
+                  isAuthorized
+                    ? user.isAdmin
+                      ? "/admin/admin-home"
+                      : "/home"
+                    : "/"
+                }
                 onClick={() => setIsOpen(false)}
               />
 
-              <CreateTermModal>
-                <motion.button
-                  onClick={() => {
-                    navigate("/admin/createTerm");
-                    setIsOpen(false);
-                  }}
-                  whileHover={{
-                    scale: 1.04,
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
-                    route.pathname === "/admin/createTerm"
-                      ? "border-opacity-100"
-                      : "border-opacity-0"
-                  }`}
-                >
-                  إنشاء ترم
-                </motion.button>
-              </CreateTermModal>
-            </>
-          )}
-          {isAuthorized && <InboxButton />}
+              <NavigationLink
+                linkTo={"المواد"}
+                route={"/courses"}
+                onClick={() => setIsOpen(false)}
+              />
+              {isAuthorized && !user.isAdmin && (
+                <>
+                  <NavigationLink
+                    linkTo={"إختباراتي القصيرة"}
+                    route={"/myquizzes"}
+                    onClick={() => setIsOpen(false)}
+                  />
+                  <NavigationLink
+                    linkTo={"جداولي السابقة"}
+                    route={"mypreviousschedules"}
+                    onClick={() => setIsOpen(false)}
+                  />
+                </>
+              )}
+
+              {isAuthorized && user.isAdmin && (
+                <>
+                  <NavigationLink
+                    linkTo={"التقارير"}
+                    route={"/admin/reports"}
+                    onClick={() => setIsOpen(false)}
+                  />
+                  <NavigationLink
+                    linkTo={"الحسابات المحظورة"}
+                    route={"/admin/bannedaccounts"}
+                    onClick={() => setIsOpen(false)}
+                  />
+                  <NavigationLink
+                    linkTo={"العناصر المخفية"}
+                    route={"/admin/hiddenItems"}
+                    onClick={() => setIsOpen(false)}
+                  />
+
+                  <CreateTermModal>
+                    <motion.button
+                      onClick={() => {
+                        navigate("/admin/createTerm");
+                        setIsOpen(false);
+                      }}
+                      whileHover={{
+                        scale: 1.04,
+                      }}
+                      transition={{ duration: 0.2 }}
+                      className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
+                        route.pathname === "/admin/createTerm"
+                          ? "border-opacity-100"
+                          : "border-opacity-0"
+                      }`}
+                    >
+                      إنشاء ترم
+                    </motion.button>
+                  </CreateTermModal>
+                </>
+              )}
+              {isAuthorized && <InboxButton />}
             </motion.div>
           )}
         </AnimatePresence>
         {isAuthorized && <SearchBar isOpen={isOpen} setIsOpen={setIsOpen} />}
         {/* Sign Up Button mobile */}
         <AnimatePresence>
-          {(isOpen && isMobile) && (
+          {isOpen && isMobile && (
             <motion.div
               initial={{ x: 300, opacity: 0 }}
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 300, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 }}
-              className="w-full flex flex-col gap-4 fixed bottom-0 right-0 w-3/4 bg-TAF-200 p-4 shadow-lg z-[100] border-l border-t border-gray-700"
+              className="flex flex-col gap-4 fixed bottom-0 right-0 w-3/4 bg-TAF-200 p-4 shadow-lg z-[100] border-l border-t border-gray-700"
             >
-          {isAuthorized ? (
-            <button
-              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-              onClick={handleLogout}
-            >
-              تسجيل الخروج
-            </button>
-          ) : (
-            <Link
-              to="/login"
-              className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-            >
-              تسجيل الدخول
-            </Link>
-          )}
+              {isAuthorized ? (
+                <button
+                  className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+                  onClick={handleLogout}
+                >
+                  تسجيل الخروج
+                </button>
+              ) : (
+                <Link
+                  to="/login"
+                  className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+                >
+                  تسجيل الدخول
+                </Link>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
         {/* Action Icons with Tooltips */}
-        <div className="flex items-center justify-end gap-4 ml-auto
-                    max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:ml-1">
+        <div
+          className="flex items-center justify-end gap-4 ml-auto
+                    max-[810px]:min-[760px]:gap-2 max-[810px]:min-[770px]:ml-1"
+        >
           {isAuthorized && (
             <div className="relative group">
               <button
