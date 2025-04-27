@@ -147,7 +147,7 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, '../client/dist')));
 
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist', 'index.html'));
+  res.sendFile(path.join(__dirname, `../client/dist`, 'index.html'));
 });
 // Razouq: END OF THE DEPLOYMENT CODE
 
