@@ -54,10 +54,10 @@ export default function HiddenItems() {
         },
       };
     }
-    
+
     try {
       const date = new Date(isoString);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         throw new Error("Invalid date");
@@ -146,14 +146,15 @@ export default function HiddenItems() {
   );
 
   // Filter & pagination calculations for quizzes
-  const filteredQuizzes = hiddenQuizzes?.filter(
-    (quiz) =>
-      quiz?.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      quiz?.adminExecutedHide
-        ?.toLowerCase()
-        .includes(searchQuery.toLowerCase()) ||
-      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
+  const filteredQuizzes =
+    hiddenQuizzes?.filter(
+      (quiz) =>
+        quiz?.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        quiz?.adminExecutedHide
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase()) ||
+        quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
+    ) || [];
 
   const currentItems = toggleHiddenItems
     ? filteredQuizzes?.slice(
@@ -208,24 +209,23 @@ export default function HiddenItems() {
 
   return (
     <Screen title={toggleHiddenItems ? "Hidden Quizzes" : "Hidden Comments"}>
-      <Page className="px-2 sm:px-4 md:px-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
-            {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
-          </h1>
-
-          {/* Toggle Button */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1 shadow-sm">
+      <Page>
+        {/* Toggle Reports Type - Centered */}
+        <div className="flex justify-center mb-4 px-2 sm:px-4">
+          <div
+            className="rounded-b-2xl inline-flex shadow-sm w-full max-w-xs"
+            role="group"
+          >
             <button
               onClick={() => {
                 setToggleHiddenItems(false);
                 setCurrentPage(1);
                 setSearchQuery("");
               }}
-              className={`px-3 py-2 sm:px-5 sm:py-3 rounded-md transition-all duration-200 text-sm sm:text-base font-medium min-w-[80px] sm:min-w-[100px] ${
+              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base font-medium md:rounded-br-3xl rounded-br-3xl flex-1 transition-all duration-200 ${
                 !toggleHiddenItems
-                  ? "bg-TAF-100 text-white shadow-md"
-                  : "text-gray-700 hover:bg-gray-200"
+                  ? "bg-TAF-100 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
             >
               التعليقات
@@ -236,16 +236,19 @@ export default function HiddenItems() {
                 setCurrentPage(1);
                 setSearchQuery("");
               }}
-              className={`px-3 py-2 sm:px-5 sm:py-3 rounded-md transition-all duration-200 text-sm sm:text-base font-medium min-w-[80px] sm:min-w-[100px] ${
+              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base md:rounded-bl-3xl rounded-bl-3xl font-medium flex-1 transition-all duration-200 ${
                 toggleHiddenItems
-                  ? "bg-TAF-100 text-white shadow-md"
-                  : "text-gray-700 hover:bg-gray-200"
+                  ? "bg-TAF-100 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
             >
               الإختبارات
             </button>
           </div>
         </div>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-right">
+          {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
+        </h1>
 
         {/* Search Button */}
         <div className="mb-4 sm:mb-6 w-full max-w-md mx-auto">
@@ -270,7 +273,9 @@ export default function HiddenItems() {
         ) : !currentItems || currentItems.length === 0 ? (
           <div className="flex justify-center items-center py-10">
             <div className="text-red-400 text-lg sm:text-xl md:text-2xl">
-              {toggleHiddenItems ? "لا يوجد اختبارات مخفية" : "لا يوجد تعليقات مخفية"}
+              {toggleHiddenItems
+                ? "لا يوجد اختبارات مخفية"
+                : "لا يوجد تعليقات مخفية"}
             </div>
           </div>
         ) : (
@@ -486,7 +491,13 @@ export default function HiddenItems() {
             {/* Pagination */}
             {currentItems?.length > 0 && totalPages > 1 && (
               <div className="mt-6 sm:mt-8">
-                <Suspense fallback={<div className="text-center py-2">Loading pagination...</div>}>
+                <Suspense
+                  fallback={
+                    <div className="text-center py-2">
+                      Loading pagination...
+                    </div>
+                  }
+                >
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}
