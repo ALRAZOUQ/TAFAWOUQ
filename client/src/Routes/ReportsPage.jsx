@@ -7,7 +7,7 @@ import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthor
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 import { AnimatePresence, motion } from "framer-motion";
-import { Flag, MessageSquareMore, UserPen } from "lucide-react";
+import { Flag, MessageSquareMore, PcCase, UserPen } from "lucide-react";
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
 
@@ -84,7 +84,7 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
           <span className="font-semibold">السبب:</span> {report.content}
         </p>
         <p className="flex  gap-1 mt-2 ">
-          <MessageSquareMore className="size-4  text-gray-500" />
+          <PcCase className="size-4  text-gray-500" />
 
           <span className="font-semibold ">الاختبار: </span>
           {report.quiz.title}
