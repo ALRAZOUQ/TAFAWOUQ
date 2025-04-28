@@ -19,7 +19,7 @@ function InboxButton() {
   return (
     <Dropdown
       arrowIcon={false}
-      className="cursor-pointer"
+      className="cursor-pointer rounded-3xl"
       label={
         <>
           {hasUnreaded && (
@@ -32,14 +32,18 @@ function InboxButton() {
         <span className="block text-xl text-center">التنبيهات</span>
       </DropdownHeader>
 
-      {notificationsList.map((aNotificationData) => (
-        <React.Fragment key={aNotificationData.id}>
-          <hr />
-          <DropdownItem className={`${!aNotificationData.readed && "bg-blue-50"} w-full`}>
-            <NotificatoinElement {...aNotificationData} setNotificationsList={setNotificationsList} />
-          </DropdownItem>
-        </React.Fragment>
-      ))}
+      {notificationsList.length == 0 ? (
+        <DropdownItem className={` w-full`}>لا يوجد لديك إشعارات حاليا </DropdownItem>
+      ) : (
+        notificationsList.map((aNotificationData) => (
+          <React.Fragment key={aNotificationData.id}>
+            <hr />
+            <DropdownItem className={`${!aNotificationData.readed && "bg-blue-50"} cursor-pointer w-full`}>
+              <NotificatoinElement {...aNotificationData} setNotificationsList={setNotificationsList} />
+            </DropdownItem>
+          </React.Fragment>
+        ))
+      )}
     </Dropdown>
   );
   async function fetchNotifications() {
