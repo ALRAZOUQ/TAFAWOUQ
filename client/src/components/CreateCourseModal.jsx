@@ -13,12 +13,12 @@ export default function CreateCourse({ handleAddNewCourse }) {
     const handleKeyDown = (e) => {
       if (e.key === "Escape") closeModal();
     };
-  
+
     document.addEventListener("keydown", handleKeyDown);
-  
+
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
-  
+
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (
@@ -29,17 +29,16 @@ export default function CreateCourse({ handleAddNewCourse }) {
         closeModal();
       }
     };
-  
+
     if (isOpen) {
       //add listener
       document.addEventListener("mousedown", handleClickOutside);
     }
-  
+
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [isOpen]);
-  
 
   const openModal = () => {
     dialogRef.current?.showModal();
@@ -65,7 +64,9 @@ export default function CreateCourse({ handleAddNewCourse }) {
       creditHours: parseInt(formData.get("creditHours"), 10),
     };
 
-    if (["code", "name", "overview"].some((field) => isEmpty(courseData[field]))) {
+    if (
+      ["code", "name", "overview"].some((field) => isEmpty(courseData[field]))
+    ) {
       toast.error("بعض الحقول فارغة، يرجى تعبئتها.");
       setIsLoading(false);
       return;
@@ -93,7 +94,7 @@ export default function CreateCourse({ handleAddNewCourse }) {
         onClick={openModal}
         className="bg-gray-50 border-2 border-TAF-100 border-dotted text-gray-700 shadow-lg rounded-2xl hover:opacity-75 px-4 py-2 w-full max-w-md mx-auto text-center font-bold"
       >
-        إنشاء مادة جديدة
+        إنشاء مقرر جديدة
       </button>
 
       <dialog
@@ -112,31 +113,64 @@ export default function CreateCourse({ handleAddNewCourse }) {
             >
               <div className="flex justify-between items-center pb-3">
                 <h2 className="text-2xl font-semibold">إنشاء مقرر جديد</h2>
-                <button onClick={closeModal} className="text-gray-500 text-xl">&times;</button>
+                <button onClick={closeModal} className="text-gray-500 text-xl">
+                  &times;
+                </button>
               </div>
 
               <form onSubmit={createCourseHandler} className="space-y-4">
                 {[
                   { id: "courseCode", label: "رمز المقرر" },
                   { id: "courseName", label: "إسم المقرر" },
-                  { id: "creditHours", label: "الساعات", type: "number", min: "1" },
+                  {
+                    id: "creditHours",
+                    label: "الساعات",
+                    type: "number",
+                    min: "1",
+                  },
                 ].map(({ id, label, type = "text", min }) => (
                   <div key={id} className="flex flex-col">
-                    <label htmlFor={id} className="text-sm font-medium">{label}</label>
-                    <input id={id} name={id} type={type} min={min} required className="mt-1 p-2 border rounded-lg" />
+                    <label htmlFor={id} className="text-sm font-medium">
+                      {label}
+                    </label>
+                    <input
+                      id={id}
+                      name={id}
+                      type={type}
+                      min={min}
+                      required
+                      className="mt-1 p-2 border rounded-lg"
+                    />
                   </div>
                 ))}
 
                 <div className="flex flex-col">
-                  <label htmlFor="overview" className="text-sm font-medium">وصف المقرر</label>
-                  <textarea id="overview" name="overview" required className="mt-1 p-2 border rounded-lg h-24"></textarea>
+                  <label htmlFor="overview" className="text-sm font-medium">
+                    وصف المقرر
+                  </label>
+                  <textarea
+                    id="overview"
+                    name="overview"
+                    required
+                    className="mt-1 p-2 border rounded-lg h-24"
+                  ></textarea>
                 </div>
 
                 <div className="flex justify-end space-x-3 pt-3 gap-4">
-                  <button type="button" className="px-4 py-2 bg-gray-300 rounded-lg" onClick={closeModal}>إلغاء</button>
+                  <button
+                    type="button"
+                    className="px-4 py-2 bg-gray-300 rounded-lg"
+                    onClick={closeModal}
+                  >
+                    إلغاء
+                  </button>
                   <button
                     type="submit"
-                    className={`px-4 py-2 rounded-lg text-white ${isLoading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"}`}
+                    className={`px-4 py-2 rounded-lg text-white ${
+                      isLoading
+                        ? "bg-gray-400"
+                        : "bg-blue-600 hover:bg-blue-700"
+                    }`}
                     disabled={isLoading}
                   >
                     {isLoading ? "جارٍ الإنشاء..." : "إنشاء"}

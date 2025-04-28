@@ -1,11 +1,15 @@
 import Screen from "../components/Screen";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
+import HiddenQuizCard from "../components/hiddenItemsPageComponents/HiddenQuizCard";
+import HiddenCommentCard from "../components/hiddenItemsPageComponents/HiddenCommentCard";
+import { useDebounce, useMemoizedFilter, usePaginatedItems } from "../util/performanceOptimizations";
+
 // Lazy load Pagination component
 const Pagination = lazy(() =>
   import("../components/coursePageComponents/Pagination")
@@ -20,6 +24,10 @@ export default function HiddenItems() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSetSearchQuery = useDebounce((value) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page on search
+  }, 300);
   const itemsPerPage = 8;
 
   async function fetchHiddenComments() {
@@ -54,10 +62,10 @@ export default function HiddenItems() {
         },
       };
     }
-    
+
     try {
       const date = new Date(isoString);
-      
+
       // Check if date is valid
       if (isNaN(date.getTime())) {
         throw new Error("Invalid date");
@@ -133,8 +141,8 @@ export default function HiddenItems() {
     import("../components/coursePageComponents/Pagination");
   }, []);
 
-  // Filter & pagination calculations for comments
-  const filteredComments = hiddenComments?.filter(
+  // Memoized filter functions
+  const commentFilterFn = useCallback(
     (comment) =>
       comment.commentContent
         ?.toLowerCase()
@@ -142,35 +150,37 @@ export default function HiddenItems() {
       comment.adminExecutedHide
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      comment.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
+      comment.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()),
+    [searchQuery]
   );
 
-  // Filter & pagination calculations for quizzes
-  const filteredQuizzes = hiddenQuizzes?.filter(
+  const quizFilterFn = useCallback(
     (quiz) =>
       quiz?.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       quiz?.adminExecutedHide
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
-  ) || [];
-
-  const currentItems = toggleHiddenItems
-    ? filteredQuizzes?.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      )
-    : filteredComments?.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ) || [];
-
-  const totalPages = Math.ceil(
-    (toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length) /
-      itemsPerPage
+      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()),
+    [searchQuery]
   );
 
-  const handleUnhideComment = async (commentId) => {
+  // Use memoized filters for better performance
+  const filteredComments = useMemoizedFilter(hiddenComments, searchQuery, commentFilterFn);
+  const filteredQuizzes = useMemoizedFilter(hiddenQuizzes, searchQuery, quizFilterFn) || [];
+
+  // Use memoized pagination
+  const currentItems = useMemo(() => {
+    const items = toggleHiddenItems ? filteredQuizzes : filteredComments || [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return items.slice(startIndex, startIndex + itemsPerPage);
+  }, [toggleHiddenItems, filteredQuizzes, filteredComments, currentPage, itemsPerPage]);
+
+  const totalPages = useMemo(() => {
+    const totalItems = toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length;
+    return Math.ceil(totalItems / itemsPerPage);
+  }, [toggleHiddenItems, filteredQuizzes, filteredComments, itemsPerPage]);
+
+  const handleUnhideComment = useCallback(async (commentId) => {
     try {
       const response = await axios.put(`/admin/unhideComment`, { commentId });
       if (response.status === 200) {
@@ -185,9 +195,9 @@ export default function HiddenItems() {
       console.error("Error unhiding comment:", error);
       toast.error("حدث خطأ أثناء إظهار التعليق");
     }
-  };
+  }, []);
 
-  const handleUnhideQuiz = async (quizId) => {
+  const handleUnhideQuiz = useCallback(async (quizId) => {
     try {
       const response = await axios.put(`/admin/unhideQuiz`, { quizId });
       if (response.status === 200) {
@@ -202,30 +212,29 @@ export default function HiddenItems() {
       console.error("Error unhiding quiz:", error);
       toast.error("حدث خطأ أثناء إظهار الإختبار");
     }
-  };
+  }, []);
 
   // Empty state handling is now done in the main render function with conditional rendering
 
   return (
     <Screen title={toggleHiddenItems ? "Hidden Quizzes" : "Hidden Comments"}>
-      <Page className="px-2 sm:px-4 md:px-6">
-        <div className="flex flex-col sm:flex-row justify-between items-center mb-6">
-          <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-0">
-            {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
-          </h1>
-
-          {/* Toggle Button */}
-          <div className="flex items-center bg-gray-100 rounded-lg p-1 shadow-sm">
+      <Page>
+        {/* Toggle Reports Type - Centered */}
+        <div className="flex justify-center mb-4 px-2 sm:px-4">
+          <div
+            className="rounded-b-2xl inline-flex shadow-sm w-full max-w-xs"
+            role="group"
+          >
             <button
               onClick={() => {
                 setToggleHiddenItems(false);
                 setCurrentPage(1);
                 setSearchQuery("");
               }}
-              className={`px-3 py-2 sm:px-5 sm:py-3 rounded-md transition-all duration-200 text-sm sm:text-base font-medium min-w-[80px] sm:min-w-[100px] ${
+              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base font-medium md:rounded-br-3xl rounded-br-3xl flex-1 transition-all duration-200 ${
                 !toggleHiddenItems
-                  ? "bg-TAF-100 text-white shadow-md"
-                  : "text-gray-700 hover:bg-gray-200"
+                  ? "bg-TAF-100 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
             >
               التعليقات
@@ -236,16 +245,19 @@ export default function HiddenItems() {
                 setCurrentPage(1);
                 setSearchQuery("");
               }}
-              className={`px-3 py-2 sm:px-5 sm:py-3 rounded-md transition-all duration-200 text-sm sm:text-base font-medium min-w-[80px] sm:min-w-[100px] ${
+              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base md:rounded-bl-3xl rounded-bl-3xl font-medium flex-1 transition-all duration-200 ${
                 toggleHiddenItems
-                  ? "bg-TAF-100 text-white shadow-md"
-                  : "text-gray-700 hover:bg-gray-200"
+                  ? "bg-TAF-100 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
               }`}
             >
               الإختبارات
             </button>
           </div>
         </div>
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-right">
+          {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
+        </h1>
 
         {/* Search Button */}
         <div className="mb-4 sm:mb-6 w-full max-w-md mx-auto">
@@ -256,10 +268,7 @@ export default function HiddenItems() {
                 : "ابحث في التعليقات المخفية..."
             }
             value={searchQuery}
-            onChange={(value) => {
-              setSearchQuery(value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
+            onChange={debouncedSetSearchQuery}
           />
         </div>
 
@@ -270,7 +279,9 @@ export default function HiddenItems() {
         ) : !currentItems || currentItems.length === 0 ? (
           <div className="flex justify-center items-center py-10">
             <div className="text-red-400 text-lg sm:text-xl md:text-2xl">
-              {toggleHiddenItems ? "لا يوجد اختبارات مخفية" : "لا يوجد تعليقات مخفية"}
+              {toggleHiddenItems
+                ? "لا يوجد اختبارات مخفية"
+                : "لا يوجد تعليقات مخفية"}
             </div>
           </div>
         ) : (
@@ -279,214 +290,36 @@ export default function HiddenItems() {
               {!toggleHiddenItems
                 ? // Comments Display
                   currentItems?.map((x) => (
-                    <div
+                    <HiddenCommentCard
                       key={x.commentId}
-                      className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
-                    transition-shadow duration-300 flex flex-col h-full overflow-hidden"
-                    >
-                      <div className="p-5 space-y-4 flex-grow flex flex-col">
-                        {/* User Info Section */}
-                        <h2>
-                          لقد تم اخفاء هذا التعليق بواسطة المشرف{" "}
-                          {x.adminExecutedHide || "غير محدد"}
-                        </h2>
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                            <span className="text-sm font-semibold text-gray-900">
-                              المستخدم:
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
-                              {x.commentAuthor}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Comment Content Section */}
-                        <div className="bg-gray-50 p-3 rounded-md flex-grow overflow-hidden">
-                          <div className="flex items-start space-x-2 rtl:space-x-reverse">
-                            <span className="text-sm font-semibold text-gray-900 mt-1 flex-shrink-0">
-                              محتوى التعليق:
-                            </span>
-                            <p
-                              className="text-sm text-gray-600 break-words overflow-hidden text-ellipsis 
-                          max-h-[100px] overflow-y-auto"
-                            >
-                              {x.commentContent}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Hide Reason Section */}
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          <span className="text-sm font-semibold text-gray-900">
-                            سبب الإخفاء:
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {x.hideReason || "غير محدد"}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          <span className="text-sm font-semibold text-gray-900">
-                            تاريخ الإخفاء:
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {formatTime(x?.hideDate).date.formatted ||
-                              "غير محدد"}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          <span className="text-sm font-semibold text-gray-900">
-                            وقت الإخفاء:
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {formatTime(x?.hideDate).time.formatted ||
-                              "غير محدد"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          {x.reportId ? (
-                            <>
-                              <span className="text-sm font-semibold text-gray-900">
-                                رقم البلاغ
-                              </span>
-                              <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                                {x.reportId}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-sm font-semibold text-gray-900">
-                              تم اخفاء هذا التعليق من قبل المشرف مباشرة بدون
-                              بلاغ
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Unhide Button */}
-                        {user.id === x.hideCreatorId && (
-                          <div className="mt-auto flex items-center justify-center">
-                            <button
-                              onClick={() => handleUnhideComment(x.commentId)}
-                              className="w-3/4 bg-red-500 text-white py-2 px-4 rounded-md 
-                            hover:bg-red-600 transition-colors duration-200 
-                            focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
-                            active:scale-95"
-                            >
-                              اعادة إظهار التعليق
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                      x={x}
+                      formatTime={formatTime}
+                      user={user}
+                      handleUnhideComment={handleUnhideComment}
+                    />
                   ))
                 : // Quizzes Display
                   currentItems.map((x) => (
-                    <div
+                    <HiddenQuizCard
                       key={x.quizId}
-                      className="bg-white border-y border-y-gray-100 border-x-4 border-x-TAF-300 rounded-lg w-full shadow-md hover:shadow-xl 
-                    transition-shadow duration-300 flex flex-col h-full overflow-hidden"
-                    >
-                      <div className="p-5 space-y-4 flex-grow flex flex-col">
-                        {/* Quiz Info Section */}
-                        <h2>
-                          لقد تم اخفاء هذا الإختبار بواسطة المشرف{" "}
-                          {x.adminExecutedHideName || "غير محدد"}
-                        </h2>
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                            <span className="text-sm font-semibold text-gray-900">
-                              المستخدم:
-                            </span>
-                            <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">
-                              {x.quizAuthor}
-                            </span>
-                          </div>
-                        </div>
-
-                        {/* Quiz Title Section */}
-                        <div className="bg-gray-50 p-3 rounded-md flex-grow overflow-hidden">
-                          <div className="flex items-start space-x-2 rtl:space-x-reverse">
-                            <span className="text-sm font-semibold text-gray-900 mt-1 flex-shrink-0">
-                              عنوان الإختبار:
-                            </span>
-                            <p
-                              className="text-sm text-gray-600 break-words overflow-hidden text-ellipsis 
-                          max-h-[100px] overflow-y-auto"
-                            >
-                              {x.quizTitle}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Hide Reason Section */}
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          <span className="text-sm font-semibold text-gray-900">
-                            سبب الإخفاء:
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {x.hideReason || "غير محدد"}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          <span className="text-sm font-semibold text-gray-900">
-                            تاريخ الإخفاء:
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {formatTime(x.hideDate).date.formatted ||
-                              "غير محدد"}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          <span className="text-sm font-semibold text-gray-900">
-                            وقت الإخفاء:
-                          </span>
-                          <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                            {formatTime(x.hideDate).time.formatted ||
-                              "غير محدد"}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                          {x.reportId ? (
-                            <>
-                              <span className="text-sm font-semibold text-gray-900">
-                                رقم البلاغ
-                              </span>
-                              <span className="text-sm text-gray-600 truncate max-w-[200px]">
-                                {x.reportId}
-                              </span>
-                            </>
-                          ) : (
-                            <span className="text-sm font-semibold text-gray-900">
-                              تم اخفاء هذا الإختبار من قبل المشرف مباشرة بدون
-                              بلاغ
-                            </span>
-                          )}
-                        </div>
-
-                        {/* Unhide Button */}
-                        {user.id === x.adminExecutedHideId && (
-                          <div className="mt-auto flex items-center justify-center">
-                            <button
-                              onClick={() => handleUnhideQuiz(x.quizId)}
-                              className="w-3/4 bg-red-500 text-white py-2 px-4 rounded-md 
-                            hover:bg-red-600 transition-colors duration-200 
-                            focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50
-                            active:scale-95"
-                            >
-                              اعادة إظهار الإختبار
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
+                      handleUnhideQuiz={handleUnhideQuiz}
+                      x={x}
+                      formatTime={formatTime}
+                      user={user}
+                    />
                   ))}
             </div>
 
             {/* Pagination */}
             {currentItems?.length > 0 && totalPages > 1 && (
               <div className="mt-6 sm:mt-8">
-                <Suspense fallback={<div className="text-center py-2">Loading pagination...</div>}>
+                <Suspense
+                  fallback={
+                    <div className="text-center py-2">
+                      Loading pagination...
+                    </div>
+                  }
+                >
                   <Pagination
                     currentPage={currentPage}
                     totalPages={totalPages}

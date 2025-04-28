@@ -20,12 +20,15 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
         reportId: report.reportId,
         quizId: report.quiz.id,
       });
-   
+
       if (response.data.success) {
         updateProperty(report.reportId, "isResolved", true);
         updateProperty(report.reportId, "isElementHidden", true);
-        updateProperty(report.reportId, "adminExecutedHide", response.data.hiddenQuiz
-          .adminExecutedHide);
+        updateProperty(
+          report.reportId,
+          "adminExecutedHide",
+          response.data.hiddenQuiz.adminExecutedHide
+        );
 
         return true;
       }
@@ -176,9 +179,13 @@ export default function AdminHomePage() {
       });
       if (response.data.success) {
         if (toggleReportsType) {
-          setQuizReports(quizReports.filter((report) => report.reportId !== reportId));
+          setQuizReports(
+            quizReports.filter((report) => report.reportId !== reportId)
+          );
         } else {
-          setCommentReports(commentReports.filter((report) => report.reportId !== reportId));
+          setCommentReports(
+            commentReports.filter((report) => report.reportId !== reportId)
+          );
         }
         return true;
       }
@@ -193,13 +200,17 @@ export default function AdminHomePage() {
     if (toggleReportsType) {
       setQuizReports((prevReports) =>
         prevReports.map((report) =>
-          report.reportId === reportId ? { ...report, [property]: value } : report
+          report.reportId === reportId
+            ? { ...report, [property]: value }
+            : report
         )
       );
     } else {
       setCommentReports((prevReports) =>
         prevReports.map((report) =>
-          report.reportId === reportId ? { ...report, [property]: value } : report
+          report.reportId === reportId
+            ? { ...report, [property]: value }
+            : report
         )
       );
     }
@@ -212,7 +223,7 @@ export default function AdminHomePage() {
       toast.error("حدث خطأ أثناء رفض البلاغ");
     }
   }
-  
+
   function handleDeleteReport(reportId) {
     // This function is needed for the ReportCard component
     if (onReject(reportId)) {
@@ -223,12 +234,14 @@ export default function AdminHomePage() {
   }
 
   // Filter & pagination calculations
-  const filteredReports = toggleReportsType 
+  const filteredReports = toggleReportsType
     ? quizReports.filter((report) =>
         report.quiz?.title?.toLowerCase().includes(searchQuery.toLowerCase())
       )
     : commentReports.filter((report) =>
-        report.comment?.content?.toLowerCase().includes(searchQuery.toLowerCase())
+        report.comment?.content
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase())
       );
 
   const indexOfLastReport = currentPage * reportsPerPage;
@@ -249,16 +262,18 @@ export default function AdminHomePage() {
       <Page>
         {/* Toggle Reports Type */}
         <div className="flex justify-center mb-4 px-2 sm:px-4">
-          <div className="inline-flex rounded-md shadow-sm w-full max-w-xs" role="group">
+          <div className="rounded-b-2xl inline-flex shadow-sm w-full max-w-xs" role="group">
             <button
               type="button"
               onClick={() => {
                 setToggleReportsType(false);
                 setCurrentPage(1);
               }}
-              className={`px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm md:text-base font-medium rounded-r-lg flex-1 transition-all duration-200 ${!toggleReportsType 
-                ? "bg-TAF-600 text-white" 
-                : "bg-white text-gray-700 hover:bg-gray-100"}`}
+              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base font-medium md:rounded-br-3xl rounded-br-3xl flex-1 transition-all duration-200 ${
+                !toggleReportsType
+                  ? "bg-TAF-100 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
+              }`}
             >
               التعليقات
             </button>
@@ -268,9 +283,11 @@ export default function AdminHomePage() {
                 setToggleReportsType(true);
                 setCurrentPage(1);
               }}
-              className={`px-2 sm:px-4 py-1 sm:py-2 text-xs sm:text-sm md:text-base font-medium rounded-l-lg flex-1 transition-all duration-200 ${toggleReportsType 
-                ? "bg-TAF-600 text-white" 
-                : "bg-white text-gray-700 hover:bg-gray-100"}`}
+              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base md:rounded-bl-3xl rounded-bl-3xl font-medium flex-1 transition-all duration-200 ${
+                toggleReportsType
+                  ? "bg-TAF-100 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
+              }`}
             >
               الاختبارات
             </button>
@@ -279,7 +296,9 @@ export default function AdminHomePage() {
 
         {/* Search Button */}
         <SearchButton
-          placeholder={`ابحث في بلاغات ${toggleReportsType ? "الاختبارات" : "التعليقات"}...`}
+          placeholder={`ابحث في بلاغات ${
+            toggleReportsType ? "الاختبارات" : "التعليقات"
+          }...`}
           value={searchQuery}
           onChange={(value) => {
             setSearchQuery(value);
@@ -295,7 +314,7 @@ export default function AdminHomePage() {
           }`}
         >
           {filteredReports.length > 0 ? (
-            currentReports.map((report) => (
+            currentReports.map((report) =>
               toggleReportsType ? (
                 <QuizReportCard
                   key={report.reportId}
@@ -314,7 +333,7 @@ export default function AdminHomePage() {
                   updateProperty={updateProperty}
                 />
               )
-            ))
+            )
           ) : (
             <div className="text-red-400 text-2xl">
               لا يوجد بلاغات {toggleReportsType ? "للاختبارات" : "للتعليقات"}
