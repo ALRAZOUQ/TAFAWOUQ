@@ -94,7 +94,7 @@ max-[810px]:min-[770px]:p-2"
           </h1>
 
           <button
-            className="md:hidden text-TAF-100 focus:outline-none "
+            className="md:hidden text-TAF-100 focus:outline-none"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X size={28} /> : <Menu size={28} />}
@@ -102,7 +102,7 @@ max-[810px]:min-[770px]:p-2"
         </div>
         {/* Navigation Links */}
         {/* Desktop Navigation - Always visible on desktop */}
-        <div className="hidden md:flex md:items-center md:gap-5 md:mx-5 md:static md:w-auto md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center lg:gap-5 lg:mx-5 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-1 max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
+        <div className="hidden md:flex md:items-center md:gap-5 md:mx-auto md:static md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center md:order-3 lg:gap-5 lg:mx-auto max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-auto max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
@@ -172,7 +172,7 @@ max-[810px]:min-[770px]:p-2"
               animate={{ x: 0, opacity: 1 }}
               exit={{ x: 300, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="flex flex-col gap-4 mb-2 fixed top-[154px] right-0 w-3/4 h-auto z-30 bg-TAF-200 p-4 shadow-lg border-l border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto"
+              className="flex flex-col gap-4 mb-2 fixed top-[154px] right-0 w-3/4 h-auto z-30 bg-TAF-200 p-4 shadow-lg border-l border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto text-center items-center"
             >
               {/* admin Links */}
               <NavigationLink
@@ -281,8 +281,8 @@ max-[810px]:min-[770px]:p-2"
         </AnimatePresence>
         {/* Action Icons with Tooltips */}
         <div
-          className="flex items-center justify-end gap-4 ml-auto
-                    max-[810px]:min-[760px]:gap-2 max-[810px]:min-[770px]:ml-1"
+          className="flex items-center justify-start gap-4 md:order-last
+                    max-[810px]:min-[760px]:gap-2"
         >
           {isAuthorized && (
             <div className="relative group">
@@ -295,7 +295,7 @@ max-[810px]:min-[770px]:p-2"
               >
                 {isSearching ? "إلغاء" : <Search size={18} />}
               </button>
-              <div className="absolute -bottom-8 right-0 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+              <div className="absolute -bottom-8 left-0 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
                 بحث
               </div>
             </div>
