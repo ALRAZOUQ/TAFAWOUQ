@@ -1,10 +1,11 @@
 import Screen from "../components/Screen";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import { useAuth } from "../context/authContext";
 import SearchButton from "../components/SearchButton";
+import { useDebounce, useMemoizedFilter, usePaginatedItems } from "../util/performanceOptimizations";
 
 // Lazy load Pagination component
 const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
@@ -16,6 +17,10 @@ export default function BannedAccounts() {
   const [isLoading, setIsLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSetSearchQuery = useDebounce((value) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page on search
+  }, 300);
   const accountsPerPage = 10;
 
   useEffect(() => {
@@ -42,18 +47,28 @@ export default function BannedAccounts() {
     import("../components/coursePageComponents/Pagination");
   }, []);
   
-  // Filter & pagination calculations
-  const filteredAccounts = bannedAccounts.filter((account) => 
-    account.result.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    account.result.user.email.toLowerCase().includes(searchQuery.toLowerCase())||
-    account.result.ban.adminExecutedBan.toLowerCase().includes(searchQuery.toLowerCase())
+  // Memoized filter function
+  const accountFilterFn = useCallback(
+    (account) => 
+      account.result.user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      account.result.user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      account.result.ban.adminExecutedBan.toLowerCase().includes(searchQuery.toLowerCase()),
+    [searchQuery]
   );
   
-  const indexOfLastAccount = currentPage * accountsPerPage;
-  const indexOfFirstAccount = indexOfLastAccount - accountsPerPage;
-  const currentAccounts = filteredAccounts.slice(indexOfFirstAccount, indexOfLastAccount);
-  const totalPages = Math.ceil(filteredAccounts.length / accountsPerPage);
-  const handleUnban = async (userId) => {
+  // Use memoized filter for better performance
+  const filteredAccounts = useMemoizedFilter(bannedAccounts, searchQuery, accountFilterFn);
+  
+  // Use memoized pagination
+  const currentAccounts = useMemo(() => {
+    const startIndex = (currentPage - 1) * accountsPerPage;
+    return filteredAccounts.slice(startIndex, startIndex + accountsPerPage);
+  }, [filteredAccounts, currentPage, accountsPerPage]);
+  
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredAccounts.length / accountsPerPage);
+  }, [filteredAccounts, accountsPerPage]);
+  const handleUnban = useCallback(async (userId) => {
     try {
       const response = await axios.put("/admin/unBanUser", {
         studentId: userId,
@@ -68,7 +83,7 @@ export default function BannedAccounts() {
       console.error("Failed to unban account:", error);
       toast.error("حدث خطأ أثناء فك الحظر");
     }
-  };
+  }, []);
   if (bannedAccounts.length === 0) {
     return (
       <Screen
@@ -90,10 +105,7 @@ export default function BannedAccounts() {
         <SearchButton
           placeholder="ابحث في الحسابات المحظورة..."
           value={searchQuery}
-          onChange={(value) => {
-            setSearchQuery(value);
-            setCurrentPage(1); // Reset to first page on search
-          }}
+          onChange={debouncedSetSearchQuery}
         />
         {isLoading ? (
           <div className="flex justify-center items-center h-32 sm:h-64">
