@@ -390,7 +390,7 @@ export default function HiddenItems() {
                         {/* Quiz Info Section */}
                         <h2>
                           لقد تم اخفاء هذا الإختبار بواسطة المشرف{" "}
-                          {x.adminExecutedHide || "غير محدد"}
+                          {x.adminExecutedHideName || "غير محدد"}
                         </h2>
                         <div className="flex items-center justify-between mb-3">
                           <div className="flex items-center space-x-2 rtl:space-x-reverse">
@@ -465,7 +465,7 @@ export default function HiddenItems() {
                         </div>
 
                         {/* Unhide Button */}
-                        {user.id === x.hideCreatorId && (
+                        {user.id === x.adminExecutedHideId && (
                           <div className="mt-auto flex items-center justify-center">
                             <button
                               onClick={() => handleUnhideQuiz(x.quizId)}
