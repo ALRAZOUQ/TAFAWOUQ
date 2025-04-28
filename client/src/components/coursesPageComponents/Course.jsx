@@ -64,7 +64,6 @@ export default function Course({ id, code, name, avgRating, creditHours, overvie
         <motion.div whileTap={{ scale: 0.98 }} className="h-full flex flex-col">
           <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">{code}</h3>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-1 text-center sm:text-left">
-            {" "}
             {name}
           </h2>
           <div className="flex flex-1"> </div>
