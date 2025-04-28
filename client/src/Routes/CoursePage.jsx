@@ -10,7 +10,7 @@ const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
 const CourseCard = lazy(() =>
   import("../components/coursePageComponents/CourseCard")
 );
-const QuizCard = lazy(() => import("../components/quizComponents/QuizCard"));
+const QuizCard = lazy(() => import("../components/QuizComponents/QuizCard"));
 const Comment = lazy(() =>
   import("../components/coursePageComponents/Comment")
 );
