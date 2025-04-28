@@ -63,9 +63,7 @@ export default function Course({ id, code, name, avgRating, creditHours, overvie
       <Link to={`/courses/${id}`} className="h-full">
         <motion.div whileTap={{ scale: 0.98 }} className="h-full flex flex-col">
           <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">{code}</h3>
-          <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-1 text-center sm:text-left">
-            {name}
-          </h2>
+          <h2 className="text-lg sm:text-base  text-gray-900 mt-1 text-center sm:text-left">{name}</h2>
           <div className="flex flex-1"> </div>
           <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mt-2">
             <div className="w-full mt-2 sm:mt-0">
