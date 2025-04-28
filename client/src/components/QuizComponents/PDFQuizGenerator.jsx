@@ -80,7 +80,7 @@ const questionsTypes = {
         setSelectedFile(file);
         setError("");
       } else {
-        setError("Please upload a PDF file");
+        setError("رجاءاً\u00A0 ادخل ملف PDF");
         setSelectedFile(null);
       }
     }
@@ -90,12 +90,13 @@ const questionsTypes = {
     e.preventDefault();
 
     if (!selectedFile) {
-      setError("Please select a PDF file");
+      setError("رجاءاً\u00A0 ادخل ملف PDF");
+
       return;
     }
 
     if (!quizTitle.trim()) {
-      setError("Please enter a quiz title");
+      setError("رجاءاً\u00A0 ادخل عنوان الاختبار");
       return;
     }
 
@@ -128,18 +129,19 @@ const questionsTypes = {
       setSelectedQuestionCount(10);
       setSelectedQuestionType("mixed");
 
-      // You might want to do something with the quiz data here
-      // For example, redirect to the quiz page or show a success message
+      
     } catch (err) {
-      console.error("Error:", err);
-      setError(
-        err.response?.data?.message || err.message || "An error occurred"
-      );
+     
+      if (err.response?.data?.message == "Sorry, the system cannot read scanned documents.") {
+        setError("عذراً, لا يمكن قراءة الملفات الممسوحة ضوئيًا");
+      } else {
+        //console.error("Error:", err);
+        setError("حدث خطأ عند محاولة توليد اختبار قصير");
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md border-x-4 border-x-TAF-300 border-y border-y-gray-100">
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">

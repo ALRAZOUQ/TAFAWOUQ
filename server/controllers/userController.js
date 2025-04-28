@@ -911,11 +911,20 @@ async generateQuiz(req, res){
     const dataBuffer = fs.readFileSync(filePath);
     const pdfData = await pdfParse(dataBuffer);
 
+     // Clean up uploaded file
+    fs.unlinkSync(filePath);
+
+    const extractedText = pdfData.text.replace(/\s+/g, '');
+    if (!extractedText) {
+      return res.status(401).json({
+        success: false,
+        message: "Sorry, the system cannot read scanned documents.",
+      });
+    }
+
     // Generate quiz using extracted text
     const question = await generateQuizFromText(pdfData.text, numOfQuestions ,typeOfQuestions);
 
-    // Clean up uploaded file
-    fs.unlinkSync(filePath);
 
     // Send only one response
     res.status(200).json({

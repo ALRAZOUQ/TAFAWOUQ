@@ -2,6 +2,7 @@ import express from "express";
 import { checkAuth, checkAdmin } from "../middleware/authMiddleware.js";
 import db from "../config/db.js";
 import adminController from "../controllers/adminController.js"
+import dashboardRouter from './dashboardRouter.js'
 const router = express.Router();
 
 // Apply both middlewares to all admin routes like hide cooment or hide quiz
@@ -35,7 +36,7 @@ router.put("/unHideComment", adminController.unHideComment);
 //==================================================
 router.get("/hiddenQuizzes", adminController.hiddenQuizzes);
 
-router.put("/hideQuiz", adminController.hideQuiz );
+router.put("/hideQuiz", adminController.hideQuiz);
 
 router.put("/unHideQuiz", adminController.unHideQuiz);
 
@@ -45,17 +46,17 @@ router.put("/unHideQuiz", adminController.unHideQuiz);
 
 router.get("/reports/comments", adminController.commentsReports);
 
-router.get("/reports/quizzes",adminController.quizzesReports );
+router.get("/reports/quizzes", adminController.quizzesReports);
 
 router.delete("/deleteReport", adminController.deleteReport);
 
 //==================================================
 //==================== ban =========================
 //==================================================
-router.get("/bannendAccounts",adminController.bannendAccounts );
+router.get("/bannendAccounts", adminController.bannendAccounts);
 
 
-router.post("/banUser", adminController.banUser );
+router.post("/banUser", adminController.banUser);
 
 router.put("/unBanUser", adminController.banUser);
 
@@ -65,5 +66,12 @@ router.put("/unBanUser", adminController.banUser);
 
 router.post("/AddTerm", adminController.createTerm);
 
-router.delete("/deleteTerm",adminController.deleteTerm);
+router.delete("/deleteTerm", adminController.deleteTerm);
+
+//==================================================
+//================= Dashbaord ======================
+//==================================================
+router.use("/dashboard", dashboardRouter)
+
+
 export default router;

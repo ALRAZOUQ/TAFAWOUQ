@@ -35,7 +35,7 @@ export default function MyQuizzes() {
     <Screen className={`p-4`} title="MyQuizzes">
       <Page>
         <PDFQuizGenerator />
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
+        <h1 className="text-2xl font-bold text-gray-800 m-8">
           اختباراتي القصيرة
         </h1>
         {MyQuizzes?.length === 0 ? (
