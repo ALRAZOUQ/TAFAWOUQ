@@ -9,14 +9,7 @@ import KababMenu from "../KababMenu";
 import ThreeDotMenuButton from "../ThreeDotMenuButton";
 import { motion } from "framer-motion";
 
-export default function Course({
-  id,
-  code,
-  name,
-  avgRating,
-  creditHours,
-  overview,
-}) {
+export default function Course({ id, code, name, avgRating, creditHours, overview }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const { user, isAuthorized } = useAuth();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -33,19 +26,11 @@ export default function Course({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}
-    >
+      whileHover={{ y: -5, boxShadow: "0 10px 25px rgba(0, 0, 0, 0.1)" }}>
       {isAuthorized && (
-        <KababMenu
-          setMenuOpen={setMenuOpen}
-          position={"absolute top-3 right-3"}
-          menuOpen={menuOpen}
-        >
+        <KababMenu setMenuOpen={setMenuOpen} position={"absolute top-3 right-3"} menuOpen={menuOpen}>
           {!user?.isAdmin && (
-            <ThreeDotMenuButton
-              clickHandler={handleAddCourseToSchedule}
-              purpose={"normal"}
-            >
+            <ThreeDotMenuButton clickHandler={handleAddCourseToSchedule} purpose={"normal"}>
               <SquarePlus size={20} />
               أضف المادة الى الجدول
             </ThreeDotMenuButton>
@@ -56,8 +41,7 @@ export default function Course({
                 setIsEditModalOpen(true);
                 setMenuOpen(false);
               }}
-              purpose={"warning"}
-            >
+              purpose={"warning"}>
               <Pencil size={16} />
               تعديل المادة
             </ThreeDotMenuButton>
@@ -76,16 +60,14 @@ export default function Course({
         />
       )}
 
-      <Link to={`/courses/${id}`}>
-        <motion.div whileTap={{ scale: 0.98 }}>
-          {/* Course Code */}
-          <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">
-            {code}
-          </h3>
-          {/* Course Name */}
+      <Link to={`/courses/${id}`} className="h-full">
+        <motion.div whileTap={{ scale: 0.98 }} className="h-full flex flex-col">
+          <h3 className="text-base sm:text-lg font-bold text-gray-700 text-center sm:text-left">{code}</h3>
           <h2 className="text-lg sm:text-xl font-semibold text-gray-900 mt-1 text-center sm:text-left">
+            {" "}
             {name}
           </h2>
+          <div className="flex flex-1"> </div>
           <div className="flex flex-col sm:flex-row justify-between items-center sm:items-end mt-2">
             <div className="w-full mt-2 sm:mt-0">
               <DifficultyProgressBar value={avgRating} />
