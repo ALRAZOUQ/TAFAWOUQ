@@ -1,5 +1,5 @@
 import Screen from "../components/Screen";
-import { useState, useEffect, lazy, Suspense } from "react";
+import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
@@ -8,6 +8,8 @@ import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 import HiddenQuizCard from "../components/hiddenItemsPageComponents/HiddenQuizCard";
 import HiddenCommentCard from "../components/hiddenItemsPageComponents/HiddenCommentCard";
+import { useDebounce, useMemoizedFilter, usePaginatedItems } from "../util/performanceOptimizations";
+
 // Lazy load Pagination component
 const Pagination = lazy(() =>
   import("../components/coursePageComponents/Pagination")
@@ -22,6 +24,10 @@ export default function HiddenItems() {
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState("");
+  const debouncedSetSearchQuery = useDebounce((value) => {
+    setSearchQuery(value);
+    setCurrentPage(1); // Reset to first page on search
+  }, 300);
   const itemsPerPage = 8;
 
   async function fetchHiddenComments() {
@@ -135,8 +141,8 @@ export default function HiddenItems() {
     import("../components/coursePageComponents/Pagination");
   }, []);
 
-  // Filter & pagination calculations for comments
-  const filteredComments = hiddenComments?.filter(
+  // Memoized filter functions
+  const commentFilterFn = useCallback(
     (comment) =>
       comment.commentContent
         ?.toLowerCase()
@@ -144,36 +150,37 @@ export default function HiddenItems() {
       comment.adminExecutedHide
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      comment.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
+      comment.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()),
+    [searchQuery]
   );
 
-  // Filter & pagination calculations for quizzes
-  const filteredQuizzes =
-    hiddenQuizzes?.filter(
-      (quiz) =>
-        quiz?.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        quiz?.adminExecutedHide
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase()) ||
-        quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase())
-    ) || [];
-
-  const currentItems = toggleHiddenItems
-    ? filteredQuizzes?.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      )
-    : filteredComments?.slice(
-        (currentPage - 1) * itemsPerPage,
-        currentPage * itemsPerPage
-      ) || [];
-
-  const totalPages = Math.ceil(
-    (toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length) /
-      itemsPerPage
+  const quizFilterFn = useCallback(
+    (quiz) =>
+      quiz?.quizTitle?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      quiz?.adminExecutedHide
+        ?.toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()),
+    [searchQuery]
   );
 
-  const handleUnhideComment = async (commentId) => {
+  // Use memoized filters for better performance
+  const filteredComments = useMemoizedFilter(hiddenComments, searchQuery, commentFilterFn);
+  const filteredQuizzes = useMemoizedFilter(hiddenQuizzes, searchQuery, quizFilterFn) || [];
+
+  // Use memoized pagination
+  const currentItems = useMemo(() => {
+    const items = toggleHiddenItems ? filteredQuizzes : filteredComments || [];
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return items.slice(startIndex, startIndex + itemsPerPage);
+  }, [toggleHiddenItems, filteredQuizzes, filteredComments, currentPage, itemsPerPage]);
+
+  const totalPages = useMemo(() => {
+    const totalItems = toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length;
+    return Math.ceil(totalItems / itemsPerPage);
+  }, [toggleHiddenItems, filteredQuizzes, filteredComments, itemsPerPage]);
+
+  const handleUnhideComment = useCallback(async (commentId) => {
     try {
       const response = await axios.put(`/admin/unhideComment`, { commentId });
       if (response.status === 200) {
@@ -188,9 +195,9 @@ export default function HiddenItems() {
       console.error("Error unhiding comment:", error);
       toast.error("حدث خطأ أثناء إظهار التعليق");
     }
-  };
+  }, []);
 
-  const handleUnhideQuiz = async (quizId) => {
+  const handleUnhideQuiz = useCallback(async (quizId) => {
     try {
       const response = await axios.put(`/admin/unhideQuiz`, { quizId });
       if (response.status === 200) {
@@ -205,7 +212,7 @@ export default function HiddenItems() {
       console.error("Error unhiding quiz:", error);
       toast.error("حدث خطأ أثناء إظهار الإختبار");
     }
-  };
+  }, []);
 
   // Empty state handling is now done in the main render function with conditional rendering
 
@@ -261,10 +268,7 @@ export default function HiddenItems() {
                 : "ابحث في التعليقات المخفية..."
             }
             value={searchQuery}
-            onChange={(value) => {
-              setSearchQuery(value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
+            onChange={debouncedSetSearchQuery}
           />
         </div>
 
@@ -287,6 +291,7 @@ export default function HiddenItems() {
                 ? // Comments Display
                   currentItems?.map((x) => (
                     <HiddenCommentCard
+                      key={x.commentId}
                       x={x}
                       formatTime={formatTime}
                       user={user}
@@ -296,6 +301,7 @@ export default function HiddenItems() {
                 : // Quizzes Display
                   currentItems.map((x) => (
                     <HiddenQuizCard
+                      key={x.quizId}
                       handleUnhideQuiz={handleUnhideQuiz}
                       x={x}
                       formatTime={formatTime}
