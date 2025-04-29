@@ -32,7 +32,7 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
     },
   ]);
   const [selectedCourseId, setSelectedCourseId] = useState(coursesList[0].id);
-  const [chartData, setChartData] = useState([]);
+  const [chartData, setChartData] = useState([{ day: 1, desktop: 13, mobile: 9 }]);
 
   const chartConfig = {
     desktop: {

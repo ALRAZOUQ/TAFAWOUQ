@@ -1,12 +1,5 @@
 import { useState, useEffect } from "react";
-import {
-  Trash2,
-  SquarePlus,
-  Pencil,
-  BarChart,
-  ClipboardList,
-  Info,
-} from "lucide-react";
+import { Trash2, SquarePlus, Pencil, BarChart, ClipboardList, Info } from "lucide-react";
 import { useSchedule } from "../../context/ScheduleContext";
 import EditCourseModal from "../../components/EditCourseModal";
 import Rate from "./Rate";
@@ -16,14 +9,7 @@ import { useAuth } from "../../context/authContext";
 import ThreeDotMenuButton from "../ThreeDotMenuButton";
 import { motion } from "framer-motion";
 
-export default function CourseCard({
-  course,
-  isAdmin,
-  onDelete,
-  onCourseUpdate,
-  activeTab,
-  setActiveTab,
-}) {
+export default function CourseCard({ course, isAdmin, onDelete, onCourseUpdate, activeTab, setActiveTab }) {
   const { addCourseToSchedule } = useSchedule();
   const [menuOpen, setMenuOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -45,12 +31,8 @@ export default function CourseCard({
 
     const interval = setInterval(() => {
       step++;
-      setAnimatedGrade((prev) =>
-        Math.min(prev + ((avgGrade / 5) * 360) / steps, (avgGrade / 5) * 360)
-      );
-      setAnimatedRating((prev) =>
-        Math.min(prev + ((avgRating / 5) * 360) / steps, (avgRating / 5) * 360)
-      );
+      setAnimatedGrade((prev) => Math.min(prev + ((avgGrade / 5) * 360) / steps, (avgGrade / 5) * 360));
+      setAnimatedRating((prev) => Math.min(prev + ((avgRating / 5) * 360) / steps, (avgRating / 5) * 360));
       if (step >= steps) clearInterval(interval);
     }, duration / steps);
 
@@ -77,7 +59,7 @@ export default function CourseCard({
   }
   if (!course) return <div className="text-center py-4">Loading...</div>;
   return (
-    <div className="w-full h-auto bg-white shadow-lg rounded-lg p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300 hover:shadow-xl transition-shadow">
+    <div className="w-full h-auto bg-white shadow-lg rounded-3xl p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300 hover:shadow-xl transition-shadow">
       <EditCourseModal
         id={course.id}
         isOpen={isEditModalOpen}
@@ -96,14 +78,10 @@ export default function CourseCard({
                 position={"relative absolute bottom-6 left-6"}
                 menuOpen={menuOpen}
                 setMenuOpen={setMenuOpen}
-                reverse={true}
-              >
+                reverse={true}>
                 {isAdmin ? (
                   <>
-                    <ThreeDotMenuButton
-                      clickHandler={() => onDelete(course.id)}
-                      purpose={"dangerous"}
-                    >
+                    <ThreeDotMenuButton clickHandler={() => onDelete(course.id)} purpose={"dangerous"}>
                       <Trash2 size={20} />
                       حذف المادة
                     </ThreeDotMenuButton>
@@ -112,8 +90,7 @@ export default function CourseCard({
                         setIsEditModalOpen(true);
                         setMenuOpen(false);
                       }}
-                      purpose={"warning"}
-                    >
+                      purpose={"warning"}>
                       <Pencil size={16} />
                       <span>تعديل المادة</span>
                     </ThreeDotMenuButton>
@@ -123,25 +100,16 @@ export default function CourseCard({
                     {!isRating && !isGrading && (
                       <>
                         <ThreeDotMenuButton
-                          clickHandler={() =>
-                            handleAddCourseToSchedule(course.id)
-                          }
-                          purpose={"normal"}
-                        >
+                          clickHandler={() => handleAddCourseToSchedule(course.id)}
+                          purpose={"normal"}>
                           <SquarePlus size={20} />
                           أضف المادة إلى الجدول
                         </ThreeDotMenuButton>
-                        <ThreeDotMenuButton
-                          clickHandler={handleRating}
-                          purpose={"normal"}
-                        >
+                        <ThreeDotMenuButton clickHandler={handleRating} purpose={"normal"}>
                           <BarChart size={20} />
                           قيّم صعوبة المقرر
                         </ThreeDotMenuButton>
-                        <ThreeDotMenuButton
-                          clickHandler={handleGrading}
-                          purpose={"normal"}
-                        >
+                        <ThreeDotMenuButton clickHandler={handleGrading} purpose={"normal"}>
                           <ClipboardList size={20} />
                           أضف درجتك
                         </ThreeDotMenuButton>
@@ -189,12 +157,9 @@ export default function CourseCard({
             animate={{
               background: `conic-gradient(#3b82f6 ${animatedGrade}deg, #e5e7eb 0deg)`,
             }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-          >
+            transition={{ duration: 1.5, ease: "easeInOut" }}>
             <div className="absolute inset-0 bg-white rounded-full m-2"></div>
-            <p className="absolute text-lg font-semibold text-gray-800">
-              {course.avgGrade}/5
-            </p>
+            <p className="absolute text-lg font-semibold text-gray-800">{course.avgGrade}/5</p>
           </motion.div>
         </div>
 
@@ -205,14 +170,11 @@ export default function CourseCard({
             <button
               onMouseEnter={() => setShowTooltip(true)}
               onClick={() => setShowTooltip(!showTooltip)}
-              className="relative"
-            >
+              className="relative">
               <Info className="mx-1" size={20} />
               {showTooltip && (
                 <div className="absolute z-10 w-fit p-2 bg-white border border-gray-200 rounded-md shadow-lg -left-10 top-6 text-right">
-                  <p className="text-sm text-gray-500">
-                    عدد التقييمات: {course.numOfRaters}
-                  </p>
+                  <p className="text-sm text-gray-500">عدد التقييمات: {course.numOfRaters}</p>
                 </div>
               )}
             </button>
@@ -224,12 +186,9 @@ export default function CourseCard({
                 course.avgRating
               )} ${animatedRating}deg, #e5e7eb 0deg)`,
             }}
-            transition={{ duration: 1.5, ease: "easeInOut" }}
-          >
+            transition={{ duration: 1.5, ease: "easeInOut" }}>
             <div className="absolute inset-0 bg-white rounded-full m-2"></div>
-            <p className="absolute text-lg font-semibold text-gray-800">
-              {course.avgRating}/5
-            </p>
+            <p className="absolute text-lg font-semibold text-gray-800">{course.avgRating}/5</p>
           </motion.div>
         </div>
       </div>

@@ -17,10 +17,11 @@ const app = initializeApp(firebaseConfig);
 const messaging = getMessaging(app);
 
 // Function to request permission for notifications
-export const requestNotificationPermissionAndGetTheFCMToken = async () => {
+export async function requestNotificationPermissionAndGetTheFCMToken() {
     const deviceType = detectDeviceType()
     try {
         const token = await getToken(messaging, { vapidKey: "BKktssn_60oOY41f9ymja2yiTQzHFdm7iEpFxKlodbwDPeN4_IBma0tmC5rsw3Qw-7veT5pr6p-t8CYEJDcaCis" });
+        console.log('token :>> ', token);
         if (token) {
             const storedFCMToken = localStorage.getItem("FCMToken")
 

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useMemo } from "react";
 
 /**
  * Pagination component that handles page navigation
@@ -7,29 +7,29 @@ import React from "react";
  * @param  setCurrentPage Function to update the current page
  */
 
-export default function Pagination({
-  currentPage,
-  totalPages,
-  setCurrentPage,
-}) {
+function Pagination({ currentPage, totalPages, setCurrentPage }) {
   // Don't render anything if there are no pages
   if (totalPages <= 0) return null;
-  // Helper function to render individual page number buttons
-  const renderPageButton = (pageNum) => (
-    <button
-      key={pageNum}
-      onClick={() => setCurrentPage(pageNum)}
-      className={`px-3 py-1 rounded-md transition-colors ${
-        currentPage === pageNum
-          ? "bg-blue-600 text-white" // Style for active page
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200" // Style for inactive pages
-      }`}>
-      {pageNum}
-    </button>
+
+  // Helper function to render individual page number buttons - memoized
+  const renderPageButton = useCallback(
+    (pageNum) => (
+      <button
+        key={pageNum}
+        onClick={() => setCurrentPage(pageNum)}
+        className={`px-3 py-1 rounded-md transition-colors ${
+          currentPage === pageNum
+            ? "bg-blue-500 text-white" // Style for active page
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200" // Style for inactive pages
+        }`}>
+        {pageNum}
+      </button>
+    ),
+    [currentPage, setCurrentPage]
   );
 
-  // Function to generate and render all pagination elements
-  const renderPageNumbers = () => {
+  // Function to generate and render all pagination elements - memoized
+  const paginationElements = useMemo(() => {
     const pageNumbers = [];
 
     // Add "Previous" button with disabled state when on first page
@@ -38,7 +38,7 @@ export default function Pagination({
         key="prev"
         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
+        className="px-3 py-1 rounded-s-xl transition-colors bg-gray-200 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
         السابق
       </button>
     );
@@ -48,9 +48,42 @@ export default function Pagination({
     let startPage = Math.max(1, currentPage - 2);
     let endPage = Math.min(totalPages, currentPage + 2);
 
-    // Generate and add page number buttons
+    // Ensure we always show 5 page numbers if possible
+    if (endPage - startPage < 4 && totalPages > 4) {
+      if (startPage === 1) {
+        endPage = Math.min(5, totalPages);
+      } else if (endPage === totalPages) {
+        startPage = Math.max(1, totalPages - 4);
+      }
+    }
+
+    // Add first page and ellipsis if needed
+    if (startPage > 1) {
+      pageNumbers.push(renderPageButton(1));
+      if (startPage > 2) {
+        pageNumbers.push(
+          <span key="ellipsis1" className="px-2">
+            ...
+          </span>
+        );
+      }
+    }
+
+    // Add page numbers
     for (let i = startPage; i <= endPage; i++) {
       pageNumbers.push(renderPageButton(i));
+    }
+
+    // Add last page and ellipsis if needed
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pageNumbers.push(
+          <span key="ellipsis2" className="px-2">
+            ...
+          </span>
+        );
+      }
+      pageNumbers.push(renderPageButton(totalPages));
     }
 
     // Add "Next" button with disabled state when on last page
@@ -59,18 +92,20 @@ export default function Pagination({
         key="next"
         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
+        className="px-3 py-1 rounded-e-xl transition-colors bg-gray-200 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
         التالي
       </button>
     );
 
     return pageNumbers;
-  };
+  }, [currentPage, totalPages, setCurrentPage, renderPageButton]);
 
-  // Render the pagination container with all elements
   return (
-    <div className="flex flex-row justify-center items-center gap-2 mt-6">
-      {renderPageNumbers()}
+    <div className="flex justify-center items-center space-x-2 rtl:space-x-reverse mt-4">
+      {paginationElements}
     </div>
   );
 }
+
+// Export memoized component to prevent unnecessary re-renders
+export default React.memo(Pagination);

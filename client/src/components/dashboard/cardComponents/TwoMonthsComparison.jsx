@@ -16,7 +16,10 @@ import { formatDateTo_YYYY_MM_01, randomDataMaker } from "../../../util/dashboar
 import axios from "../../../api/axios";
 
 export default function TwoMonthsComparison({ className }) {
-  const [chartData, setChartData] = useState([{ date: "2024-04-01", desktop: 0, mobile: 0 }]);
+  const [chartData, setChartData] = useState([
+    { date: "2024-04-01", desktop: 5, mobile: 5 },
+    { date: "2024-04-01", desktop: 5, mobile: 5 },
+  ]);
   const [currentMonth, setCurrentMonth] = useState({
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),

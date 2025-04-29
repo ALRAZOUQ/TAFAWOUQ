@@ -138,7 +138,7 @@ const CoursePage = () => {
           {["comments", "quizzes"].map((tab) => (
             <button
               key={tab}
-              className={`py-2 px-4 w-32 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
+              className={`mt-7 py-2 px-4 w-32 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
         ${
           activeTab === tab
             ? "text-black font-extrabold border-b-4 border-b-TAF-600"

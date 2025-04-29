@@ -31,7 +31,7 @@ function NotificatoinElement({
       }}
       to={`/courses/${courseid}#${parentcommentid}`}
       smooth
-      className="flex w-full \ hover:bg-gray-100 dark:hover:bg-gray-700">
+      className="flex w-full !cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700">
       <div className="shrink-0">
         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
           <span className="text-blue-600 font-semibold">{replyauthor.charAt(0)}</span>
