@@ -12,7 +12,7 @@ export default function Top20Commenters({ className }) {
   return (
     <TopperCard
       className={className}
-      icon={<MessagesSquare className="size-10 " strokeWidth={1.5} />}
+      icon={<MessagesSquare className="size-4 " strokeWidth={1.5} />}
       title={" المستخدمون الأكثر تعليقا"}
       // ? Razouq: counts will be removed if we decided to show the first 1 count only
       counts={[top20Commenters[0]?.comment_count]}

@@ -23,7 +23,7 @@ function InboxButton() {
     if (showDialog == true) {
       setTimeout(() => {
         setShowDialog(false);
-      }, 3000);
+      }, 10000);
     }
   }, [showDialog]);
 
