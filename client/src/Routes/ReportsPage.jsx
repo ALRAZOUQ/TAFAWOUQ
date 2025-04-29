@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import axios from "../api/axios";
-import ReportCard from "../components/CommentReportCard";
+import ReportCard from "../components/ReportCard";
 import { toast } from "react-toastify";
 import Screen from "../components/Screen";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
