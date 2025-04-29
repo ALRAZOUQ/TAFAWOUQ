@@ -39,7 +39,7 @@ export default function SearchBar({ isOpen }) {
           <input
             type="text"
             placeholder="إبحث عن المواد"
-            className="w-full p-2 pl-10 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+            className="w-full px-10 py-3 pl-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
             value={searchInput}
             onChange={onSearch}
             onFocus={() => setShowResults(searchInput.length > 0)}
@@ -49,8 +49,8 @@ export default function SearchBar({ isOpen }) {
 
         {/* Search Results */}
         {showResults && (
-          <div className="absolute z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
-            <div className="max-h-60 overflow-y-auto">
+          <div className="z-50 w-full mt-1 bg-white rounded-md border border-gray-300 shadow-lg">
+            <div className="max-h-60 z-[100] overflow-y-auto">
               {filterdCourses?.length === 0 ? (
                 <div className="p-3 text-gray-500">لا توجد نتائج</div>
               ) : (
