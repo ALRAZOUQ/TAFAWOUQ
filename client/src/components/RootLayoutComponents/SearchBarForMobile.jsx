@@ -30,7 +30,7 @@ export default function SearchBar({ isOpen }) {
   return (
     <div
       className={`w-full md:hidden ${
-        isOpen ? "flex flex-col gap-4 mb-4" : "hidden"
+        isOpen ? "flex flex-col gap-4 mb-1" : "hidden"
       }`}
     >
       <div className="w-full relative">
