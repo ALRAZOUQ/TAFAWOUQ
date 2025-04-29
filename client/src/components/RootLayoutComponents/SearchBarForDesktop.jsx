@@ -8,16 +8,8 @@ export default function SearchBarForDesktop({handleSearching}) {
   const [showResults, setShowResults] = useState(false);
   const [searchInput, setSearchInput] = useState("");
 
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 0) {
-        handleSearching();
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [handleSearching]);
+  // Removed scroll event listener to prevent search bar from closing when scrolling
+  // This improves user experience by keeping the search bar open regardless of scroll position
   const { coursesData, fetchCoursesContext } = useCourseData();
   const onSearch = (e) => {
     const { value } = e.target;
@@ -46,7 +38,7 @@ export default function SearchBarForDesktop({handleSearching}) {
       exit={{ opacity: 0, y: -100 }} // Slide back up when exiting
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="hidden md:flex md:justify-center md:items-center p-2 border-b border-b-TAF-100 bg-TAF-200 z-50 
-               fixed top-[100px] left-0 w-full shadow-md transition-all duration-300" // Position below the navigation bar
+               fixed top-[100px] left-0 w-screen shadow-md transition-all duration-300" // Position below the navigation bar
     >
       <div className="w-3/5 relative">
         <div className="relative flex items-center">

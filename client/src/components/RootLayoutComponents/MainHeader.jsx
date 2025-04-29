@@ -33,6 +33,18 @@ export default function MainHeader() {
     setIsOpen(false);
   }, [route.pathname]);
 
+  // Close mobile menu when user scrolls
+  useEffect(() => {
+    const handleScroll = () => {
+      if (isOpen && window.scrollY > 5) {
+        setIsOpen(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [isOpen]);
+
   function handleSearching() {
     setIsSearching(!isSearching);
   }
@@ -50,7 +62,7 @@ export default function MainHeader() {
   };
 
   return (
-    <div className="w-full shadow-md z-50 bg-transparent mb-0 relative">
+    <div className="w-screen overflow-x-hidden shadow-md z-50 bg-transparent mb-0 relative">
       {/* Backdrop overlay for mobile menu */}
       <AnimatePresence>
         {isOpen && (
@@ -65,12 +77,12 @@ export default function MainHeader() {
         )}
       </AnimatePresence>
       <nav
-        className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-full border-b border-gray-700 
-lg:max-h-[100px] xl:max-h-[100px] relative z-50
+        className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-screen border-b border-gray-700 
+lg:min-h-[100px] xl:min-h-[100px] relative z-50
 max-[810px]:min-[770px]:p-2"
       >
         {/* Logo and Toggle Button */}
-        <div className="flex items-center justify-between w-full md:w-auto">
+        <div className="flex items-center justify-between w-full md:w-auto px-2">
           <h1 className="text-white font-bold text-xl md:text-2xl">
             <Link
               to={
@@ -93,16 +105,16 @@ max-[810px]:min-[770px]:p-2"
             </Link>
           </h1>
 
-          <button
-            className="md:hidden text-TAF-100 focus:outline-none"
-            onClick={() => setIsOpen(!isOpen)}
-          >
-            {isOpen ? <X size={28} /> : <Menu size={28} />}
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              className="text-TAF-100 focus:outline-none"
+              onClick={() => setIsOpen(!isOpen)}
+            >
+              {isOpen ? <X size={28} /> : <Menu size={28} />}
+            </button>
+          </div>
         </div>
-        {/* Navigation Links */}
-        {/* Desktop Navigation - Always visible on desktop */}
-        <div className="hidden md:flex md:items-center md:gap-5 md:mx-auto md:static md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center md:order-3 lg:gap-5 lg:mx-auto max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-auto max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
+        <div className="hidden md:flex md:items-center md:gap-5 md:mx-auto md:static md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center md:order-3 lg:gap-8 xl:gap-10 md:flex-1 max-w-full w-full px-4 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-auto max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
@@ -163,123 +175,118 @@ max-[810px]:min-[770px]:p-2"
           )}
           {isAuthorized && <InboxButton />}
         </div>
-
-        {/* Mobile Navigation - Only visible when menu is open */}
         <AnimatePresence>
           {isOpen && isMobile && (
             <motion.div
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 300, opacity: 0 }}
+              initial={{ y: -300, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -300, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="flex flex-col gap-4 mb-2 fixed top-[154px] right-0 w-3/4 h-auto z-30 bg-TAF-200 p-4 shadow-lg border-l border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto text-center items-center"
+              className="flex flex-col gap-4 fixed top-24 left-0 right-0 w-screen h-auto bg-TAF-200 p-6 shadow-lg border-t border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto text-center items-center"
             >
-              {/* admin Links */}
-              <NavigationLink
-                linkTo={"الصفحة الرئيسية"}
-                route={
-                  isAuthorized
-                    ? user.isAdmin
-                      ? "/admin/admin-home"
-                      : "/home"
-                    : "/"
-                }
-                onClick={() => setIsOpen(false)}
-              />
+              {/* Navigation Links */}
+              <div className="flex flex-col w-full gap-4 mb-4">
+                <NavigationLink
+                  linkTo={"الصفحة الرئيسية"}
+                  route={
+                    isAuthorized
+                      ? user.isAdmin
+                        ? "/admin/admin-home"
+                        : "/home"
+                      : "/"
+                  }
+                  onClick={() => setIsOpen(false)}
+                />
 
-              <NavigationLink
-                linkTo={"المواد"}
-                route={"/courses"}
-                onClick={() => setIsOpen(false)}
-              />
-              {isAuthorized && !user.isAdmin && (
-                <>
-                  <NavigationLink
-                    linkTo={"إختباراتي القصيرة"}
-                    route={"/myquizzes"}
-                    onClick={() => setIsOpen(false)}
-                  />
-                  <NavigationLink
-                    linkTo={"جداولي السابقة"}
-                    route={"mypreviousschedules"}
-                    onClick={() => setIsOpen(false)}
-                  />
-                </>
+                <NavigationLink
+                  linkTo={"المواد"}
+                  route={"/courses"}
+                  onClick={() => setIsOpen(false)}
+                />
+                {isAuthorized && !user.isAdmin && (
+                  <>
+                    <NavigationLink
+                      linkTo={"إختباراتي القصيرة"}
+                      route={"/myquizzes"}
+                      onClick={() => setIsOpen(false)}
+                    />
+                    <NavigationLink
+                      linkTo={"جداولي السابقة"}
+                      route={"mypreviousschedules"}
+                      onClick={() => setIsOpen(false)}
+                    />
+                  </>
+                )}
+
+                {isAuthorized && user.isAdmin && (
+                  <>
+                    <NavigationLink
+                      linkTo={"التقارير"}
+                      route={"/admin/reports"}
+                      onClick={() => setIsOpen(false)}
+                    />
+                    <NavigationLink
+                      linkTo={"الحسابات المحظورة"}
+                      route={"/admin/bannedaccounts"}
+                      onClick={() => setIsOpen(false)}
+                    />
+                    <NavigationLink
+                      linkTo={"العناصر المخفية"}
+                      route={"/admin/hiddenItems"}
+                      onClick={() => setIsOpen(false)}
+                    />
+
+                    <CreateTermModal>
+                      <motion.button
+                        onClick={() => {
+                          navigate("/admin/createTerm");
+                          setIsOpen(false);
+                        }}
+                        whileHover={{
+                          scale: 1.04,
+                        }}
+                        transition={{ duration: 0.2 }}
+                        className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
+                          route.pathname === "/admin/createTerm"
+                            ? "border-opacity-100"
+                            : "border-opacity-0"
+                        }`}
+                      >
+                        إنشاء ترم
+                      </motion.button>
+                    </CreateTermModal>
+                  </>
+                )}
+                {isAuthorized && <InboxButton />}
+              </div>
+
+              {/* Search Bar */}
+              {isAuthorized && (
+                <SearchBar isOpen={isOpen} setIsOpen={setIsOpen} />
               )}
 
-              {isAuthorized && user.isAdmin && (
-                <>
-                  <NavigationLink
-                    linkTo={"التقارير"}
-                    route={"/admin/reports"}
+              {/* Login/Logout Button */}
+              <div className="w-full mt-1 pt-4 border-t border-gray-600">
+                {isAuthorized ? (
+                  <button
+                    className="w-full bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
+                    onClick={handleLogout}
+                  >
+                    تسجيل الخروج
+                  </button>
+                ) : (
+                  <Link
+                    to="/login"
+                    className="w-full block text-center bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
                     onClick={() => setIsOpen(false)}
-                  />
-                  <NavigationLink
-                    linkTo={"الحسابات المحظورة"}
-                    route={"/admin/bannedaccounts"}
-                    onClick={() => setIsOpen(false)}
-                  />
-                  <NavigationLink
-                    linkTo={"العناصر المخفية"}
-                    route={"/admin/hiddenItems"}
-                    onClick={() => setIsOpen(false)}
-                  />
-
-                  <CreateTermModal>
-                    <motion.button
-                      onClick={() => {
-                        navigate("/admin/createTerm");
-                        setIsOpen(false);
-                      }}
-                      whileHover={{
-                        scale: 1.04,
-                      }}
-                      transition={{ duration: 0.2 }}
-                      className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
-                        route.pathname === "/admin/createTerm"
-                          ? "border-opacity-100"
-                          : "border-opacity-0"
-                      }`}
-                    >
-                      إنشاء ترم
-                    </motion.button>
-                  </CreateTermModal>
-                </>
-              )}
-              {isAuthorized && <InboxButton />}
+                  >
+                    تسجيل الدخول
+                  </Link>
+                )}
+              </div>
             </motion.div>
           )}
         </AnimatePresence>
-        {isAuthorized && <SearchBar isOpen={isOpen} setIsOpen={setIsOpen} />}
-        {/* Sign Up Button mobile */}
-        <AnimatePresence>
-          {isOpen && isMobile && (
-            <motion.div
-              initial={{ x: 300, opacity: 0 }}
-              animate={{ x: 0, opacity: 1 }}
-              exit={{ x: 300, opacity: 0 }}
-              transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 }}
-              className="flex flex-col gap-4 fixed bottom-0 right-0 w-3/4 bg-TAF-200 p-4 shadow-lg z-[100] border-l border-t border-gray-700"
-            >
-              {isAuthorized ? (
-                <button
-                  className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-                  onClick={handleLogout}
-                >
-                  تسجيل الخروج
-                </button>
-              ) : (
-                <Link
-                  to="/login"
-                  className="md:hidden bg-TAF-100 text-white px-4 py-2 rounded-md hover:opacity-75 active:opacity-50 transition-colors"
-                >
-                  تسجيل الدخول
-                </Link>
-              )}
-            </motion.div>
-          )}
-        </AnimatePresence>
-        {/* Action Icons with Tooltips */}
         <div
           className="flex items-center justify-start gap-4 md:order-last
                     max-[810px]:min-[760px]:gap-2"
