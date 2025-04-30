@@ -25,7 +25,15 @@ export default function DifficultyProgressBar({ value }) {
         animate={{ width: `${(value / 5) * 100}%` }}
         transition={{ duration: 0.5 }}
       />
-      <span className="absolute inset-0 flex justify-center items-center text-white font-bold text-sm">
+      <span
+        className={`absolute inset-0 flex justify-center items-center ${
+          value > 0
+            ? value <= 2.5 && value > 1.5
+              ? "text-green-800"
+              : "text-white"
+            : "text-gray-950"
+        } font-bold text-sm`}
+      >
         {value > 0 ? getDifficultyLabel() : "لا يوجد تقييمات بعد"}
       </span>
     </div>
