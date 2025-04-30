@@ -62,7 +62,7 @@ export default function MainHeader() {
   };
 
   return (
-    <div className="w-screen overflow-x-hidden shadow-md z-50 bg-transparent mb-0 relative">
+    <div className="w-screen overflow-visible shadow-md z-50 bg-transparent relative">
       {/* Backdrop overlay for mobile menu */}
       <AnimatePresence>
         {isOpen && (
@@ -77,9 +77,8 @@ export default function MainHeader() {
         )}
       </AnimatePresence>
       <nav
-        className="p-4 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-screen border-b border-gray-700 
-lg:min-h-[100px] xl:min-h-[100px] relative z-50
-max-[810px]:min-[770px]:p-2"
+        className="p-1 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-screen border-b border-gray-700  
+        lg:min-h-[100px] xl:min-h-[100px] relative z-50 max-[810px]:min-[770px]:p-2 overflow-visible"
       >
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto px-2">
@@ -87,7 +86,7 @@ max-[810px]:min-[770px]:p-2"
             <Link
               to={
                 isAuthorized
-                  ? user.isAdmin
+                  ? user?.isAdmin
                     ? "/admin/admin-home"
                     : "/home"
                   : "/"
@@ -114,13 +113,20 @@ max-[810px]:min-[770px]:p-2"
             </button>
           </div>
         </div>
-        <div className="hidden md:flex md:items-center md:gap-5 md:mx-auto md:static md:shadow-none md:border-none md:p-0 md:flex-row md:justify-center md:order-3 lg:gap-8 xl:gap-10 md:flex-1 max-w-full w-full px-4 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mx-auto max-[810px]:min-[770px]:flex-grow max-[810px]:min-[770px]:justify-center">
+
+        {/* Navigation Links - Moved to right side with 3rem spacing from logo */}
+        <div
+          className="hidden md:flex md:items-center md:gap-5 md:ml-0 md:mr-4 md:static
+         md:shadow-none md:border-none md:p-0 md:flex-row md:justify-start lg:gap-8 xl:gap-10 md:flex-1 max-w-[50%]
+         w-full px-4 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mr-12 max-[810px]:min-[770px]:flex-grow-0 
+         max-[810px]:min-[770px]:justify-start mr-12"
+        >
           {/* admin Links */}
           <NavigationLink
             linkTo={"الصفحة الرئيسية"}
             route={
               isAuthorized
-                ? user.isAdmin
+                ? user?.isAdmin
                   ? "/admin/admin-home"
                   : "/home"
                 : "/"
@@ -128,7 +134,7 @@ max-[810px]:min-[770px]:p-2"
           />
 
           <NavigationLink linkTo={"المواد"} route={"/courses"} />
-          {isAuthorized && !user.isAdmin && (
+          {isAuthorized && !user?.isAdmin && (
             <>
               <NavigationLink
                 linkTo={"إختباراتي القصيرة"}
@@ -141,7 +147,7 @@ max-[810px]:min-[770px]:p-2"
             </>
           )}
 
-          {isAuthorized && user.isAdmin && (
+          {isAuthorized && user?.isAdmin && (
             <>
               <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
               <NavigationLink
@@ -175,6 +181,8 @@ max-[810px]:min-[770px]:p-2"
           )}
           {isAuthorized && <InboxButton />}
         </div>
+
+        {/* Mobile Menu - AnimatePresence for slide effect */}
         <AnimatePresence>
           {isOpen && isMobile && (
             <motion.div
@@ -190,7 +198,7 @@ max-[810px]:min-[770px]:p-2"
                   linkTo={"الصفحة الرئيسية"}
                   route={
                     isAuthorized
-                      ? user.isAdmin
+                      ? user?.isAdmin
                         ? "/admin/admin-home"
                         : "/home"
                       : "/"
@@ -203,7 +211,7 @@ max-[810px]:min-[770px]:p-2"
                   route={"/courses"}
                   onClick={() => setIsOpen(false)}
                 />
-                {isAuthorized && !user.isAdmin && (
+                {isAuthorized && !user?.isAdmin && (
                   <>
                     <NavigationLink
                       linkTo={"إختباراتي القصيرة"}
@@ -218,7 +226,7 @@ max-[810px]:min-[770px]:p-2"
                   </>
                 )}
 
-                {isAuthorized && user.isAdmin && (
+                {isAuthorized && user?.isAdmin && (
                   <>
                     <NavigationLink
                       linkTo={"التقارير"}
@@ -287,49 +295,63 @@ max-[810px]:min-[770px]:p-2"
             </motion.div>
           )}
         </AnimatePresence>
-        <div
-          className="flex items-center justify-start gap-4 md:order-last
-                    max-[810px]:min-[760px]:gap-2"
-        >
-          {isAuthorized && (
-            <div className="relative group">
-              <button
-                onClick={handleSearching}
-                className={`hidden md:flex md:items-center md:justify-center rounded-full w-9 h-9 hover:bg-gray-200 transition-colors ${
-                  isSearching ? "bg-gray-100 hover:bg-gray-200" : ""
-                }`}
-                aria-label="بحث"
+
+        {/* Action buttons and search area */}
+        <div className="flex ml-8 items-center justify-center relative md:flex-1 z-30 overflow-visible">
+          {/* Search Bar that appears inline */}
+          <AnimatePresence>
+            {isSearching && (
+              <motion.div
+                initial={{ opacity: 0, width: 0 }}
+                animate={{ opacity: 1, width: "100%" }}
+                exit={{ opacity: 0, width: 0 }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 w-full px-4 z-50 overflow-visible"
               >
-                {isSearching ? "إلغاء" : <Search size={18} />}
-              </button>
-              <div className="absolute -bottom-8 left-0 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-                بحث
+                <SearchBarForDesktop handleSearching={handleSearching} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <div className="flex items-center justify-end gap-6 w-full max-[810px]:min-[760px]:gap-4">
+            {isAuthorized && (
+              <div className="relative group z-20">
+                <button
+                  onClick={handleSearching}
+                  className={`hidden md:flex md:items-center md:justify-center rounded-full w-10 h-10 md:ml-8 hover:bg-gray-200 transition-colors ${
+                    isSearching ? "bg-gray-100 hover:bg-gray-200" : ""
+                  }`}
+                  aria-label="بحث"
+                >
+                  <Search size={20} />
+                </button>
+                <div className="absolute -bottom-8 left-0 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  {isSearching ? "إلغاء البحث" : "بحث"}
+                </div>
               </div>
-            </div>
-          )}
-          <div className="relative group">
-            <button
-              onClick={
-                isAuthorized
-                  ? handleLogout
-                  : () => {
-                      navigate("/login");
-                      setIsOpen(false);
-                    }
-              }
-              className="hidden md:flex md:items-center md:justify-center rounded-full w-9 h-9 hover:bg-gray-200 transition-colors"
-              aria-label={isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
-            >
-              {isAuthorized ? <LogOut size={18} /> : <LogIn size={18} />}
-            </button>
-            <div className="absolute -bottom-8 left-1 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-              {isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+            )}
+            <div className="relative group z-20">
+              <button
+                onClick={
+                  isAuthorized
+                    ? handleLogout
+                    : () => {
+                        navigate("/login");
+                        setIsOpen(false);
+                      }
+                }
+                className="hidden md:flex md:items-center md:justify-center rounded-full w-9 h-9 hover:bg-gray-200 transition-colors"
+                aria-label={isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+              >
+                {isAuthorized ? <LogOut size={18} /> : <LogIn size={18} />}
+              </button>
+              <div className="absolute -bottom-8 left-1 w-max bg-gray-800 text-white text-xs rounded py-1 px-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                {isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
+              </div>
             </div>
           </div>
         </div>
       </nav>
-
-      {isSearching && <SearchBarForDesktop handleSearching={handleSearching} />}
     </div>
   );
 }
