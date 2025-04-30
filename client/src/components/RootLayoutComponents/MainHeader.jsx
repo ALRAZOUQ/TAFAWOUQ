@@ -4,13 +4,14 @@ import main_logo from "../../assets/mainLogo.svg";
 import { useAuth } from "../../context/authContext";
 import { toast } from "react-toastify";
 import { motion, AnimatePresence } from "framer-motion";
-import NavigationLink from "./NavigationLink";
 import SearchBar from "./SearchBarForMobile";
 import SearchBarForDesktop from "./SearchBarForDesktop";
-import CreateTermModal from "../CreateTermModal";
 import { useLocation, useNavigate, Link } from "react-router-dom";
 import InboxButton from "./InboxComponents/InboxButton";
 import { useMediaQuery } from "../../helperHocks/useMediaQuery";
+import AdminLinks from "./AdminLinks";
+import UserLinks from "./UserLinks";
+import GeneralNavigationLinks from "./GeneralNavigationLinks";
 
 export default function MainHeader() {
   const route = useLocation();
@@ -114,71 +115,17 @@ export default function MainHeader() {
           </div>
         </div>
 
-        {/* Navigation Links - Moved to right side with 3rem spacing from logo */}
         <div
           className="hidden md:flex md:items-center md:gap-5 md:ml-0 md:mr-4 md:static
          md:shadow-none md:border-none md:p-0 md:flex-row md:justify-start lg:gap-8 xl:gap-10 md:flex-1 max-w-[50%]
          w-full px-4 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mr-12 max-[810px]:min-[770px]:flex-grow-0 
          max-[810px]:min-[770px]:justify-start mr-12"
         >
+          {/* General Navigation Links */}
+          <GeneralNavigationLinks />
+          {isAuthorized && !user?.isAdmin && <UserLinks />}
           {/* admin Links */}
-          <NavigationLink
-            linkTo={"الصفحة الرئيسية"}
-            route={
-              isAuthorized
-                ? user?.isAdmin
-                  ? "/admin/admin-home"
-                  : "/home"
-                : "/"
-            }
-          />
-
-          <NavigationLink linkTo={"المواد"} route={"/courses"} />
-          {isAuthorized && !user?.isAdmin && (
-            <>
-              <NavigationLink
-                linkTo={"إختباراتي القصيرة"}
-                route={"/myquizzes"}
-              />
-              <NavigationLink
-                linkTo={"جداولي السابقة"}
-                route={"mypreviousschedules"}
-              />
-            </>
-          )}
-
-          {isAuthorized && user?.isAdmin && (
-            <>
-              <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
-              <NavigationLink
-                linkTo={"الحسابات المحظورة"}
-                route={"/admin/bannedaccounts"}
-              />
-              <NavigationLink
-                linkTo={"العناصر المخفية"}
-                route={"/admin/hiddenItems"}
-              />
-
-              <CreateTermModal>
-                <motion.button
-                  onClick={() => {
-                    navigate("/admin/createTerm");
-                  }}
-                  whileHover={{
-                    scale: 1.04,
-                  }}
-                  transition={{ duration: 0.2 }}
-                  className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
-                    route.pathname === "/admin/createTerm"
-                      ? "border-opacity-100"
-                      : "border-opacity-0"
-                  }`}
-                >
-                  إنشاء ترم
-                </motion.button>
-              </CreateTermModal>
-            </>
-          )}
+          {isAuthorized && user?.isAdmin && <AdminLinks />}
           {isAuthorized && <InboxButton />}
         </div>
 
@@ -194,77 +141,12 @@ export default function MainHeader() {
             >
               {/* Navigation Links */}
               <div className="flex flex-col w-full gap-4 mb-4">
-                <NavigationLink
-                  linkTo={"الصفحة الرئيسية"}
-                  route={
-                    isAuthorized
-                      ? user?.isAdmin
-                        ? "/admin/admin-home"
-                        : "/home"
-                      : "/"
-                  }
-                  onClick={() => setIsOpen(false)}
-                />
-
-                <NavigationLink
-                  linkTo={"المواد"}
-                  route={"/courses"}
-                  onClick={() => setIsOpen(false)}
-                />
-                {isAuthorized && !user?.isAdmin && (
-                  <>
-                    <NavigationLink
-                      linkTo={"إختباراتي القصيرة"}
-                      route={"/myquizzes"}
-                      onClick={() => setIsOpen(false)}
-                    />
-                    <NavigationLink
-                      linkTo={"جداولي السابقة"}
-                      route={"mypreviousschedules"}
-                      onClick={() => setIsOpen(false)}
-                    />
-                  </>
-                )}
-
-                {isAuthorized && user?.isAdmin && (
-                  <>
-                    <NavigationLink
-                      linkTo={"التقارير"}
-                      route={"/admin/reports"}
-                      onClick={() => setIsOpen(false)}
-                    />
-                    <NavigationLink
-                      linkTo={"الحسابات المحظورة"}
-                      route={"/admin/bannedaccounts"}
-                      onClick={() => setIsOpen(false)}
-                    />
-                    <NavigationLink
-                      linkTo={"العناصر المخفية"}
-                      route={"/admin/hiddenItems"}
-                      onClick={() => setIsOpen(false)}
-                    />
-
-                    <CreateTermModal>
-                      <motion.button
-                        onClick={() => {
-                          navigate("/admin/createTerm");
-                          setIsOpen(false);
-                        }}
-                        whileHover={{
-                          scale: 1.04,
-                        }}
-                        transition={{ duration: 0.2 }}
-                        className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
-                          route.pathname === "/admin/createTerm"
-                            ? "border-opacity-100"
-                            : "border-opacity-0"
-                        }`}
-                      >
-                        إنشاء ترم
-                      </motion.button>
-                    </CreateTermModal>
-                  </>
-                )}
+                {/* General Navigation Links */}
+                <GeneralNavigationLinks />
+                {/*User links */}
+                {isAuthorized && !user?.isAdmin && <UserLinks />}
+                {/* admin Links */}
+                {isAuthorized && user?.isAdmin && <AdminLinks />}
                 {isAuthorized && <InboxButton />}
               </div>
 
