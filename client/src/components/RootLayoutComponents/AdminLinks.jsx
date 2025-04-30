@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import NavigationLink from "./NavigationLink";
-import CreateTermModal from "../CreateTermModal";
+import CreateTermModal from "./CreateTermModal";
 
 export default function AdminLinks() {
   const navigate = useNavigate();
