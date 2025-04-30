@@ -30,6 +30,8 @@ export default function DifficultyProgressBar({ value }) {
           value > 0
             ? value <= 2.5 && value > 1.5
               ? "text-green-800"
+              : value <= 1.5 && value >= 1
+              ? "text-green-400"
               : "text-white"
             : "text-gray-950"
         } font-bold text-sm`}
