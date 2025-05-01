@@ -90,7 +90,6 @@ export default function Landing() {
           }}
         />
       </div>
-      <TafawouqMainCanvas />
       <p className="text-center mb-10 text-2xl font-alm z-[2]">
         بيئة تفاعلية تجمع طلاب الجامعة لتبادل الخبرات والمعارف ومشاركة الآراء
         حول المسارات الدراسية والمقررات الأكاديمية.
