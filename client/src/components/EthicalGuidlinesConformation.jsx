@@ -137,7 +137,7 @@ export function TermsAgreement({ agreed, setAgreed }) {
               <div className="border rounded-lg overflow-hidden h-[450px] mb-5 shadow-inner bg-gray-50">
                 <iframe
                   src={`${pdfPath}#toolbar=0&navpanes=0&scrollbar=1`}
-                  className="w-full h-[600px]"
+                  className="w-full h-full"
                   title="Terms PDF"
                 />
               </div>
