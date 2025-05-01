@@ -6,11 +6,9 @@ export function TermsAgreement({ agreed, setAgreed }) {
   const [modalOpen, setModalOpen] = useState(false);
   const dialogRef = useRef(null);
   const dialogContentRef = useRef(null);
-  
+
   const pdfPath =
-    language === "en"
-      ? "/TAFAWOUQ-GEV_ENG.pdf"
-      : "/TAFAWOUQ-GEV-Ar.pdf";
+    language === "en" ? "/TAFAWOUQ-GEV_ENG.pdf" : "/TAFAWOUQ-GEV-Ar.pdf";
 
   // Handle escape key press to close modal
   useEffect(() => {
@@ -65,7 +63,10 @@ export function TermsAgreement({ agreed, setAgreed }) {
             onChange={(e) => setAgreed(e.target.checked)}
             className="w-5 h-5 accent-TAF-300 cursor-pointer"
           />
-          <label htmlFor="agree" className="text-sm font-medium cursor-pointer select-none">
+          <label
+            htmlFor="agree"
+            className="text-sm font-medium cursor-pointer select-none"
+          >
             {language === "ar"
               ? "أوافق على جميع الشروط والأحكام"
               : "I agree to the terms and conditions"}
@@ -75,7 +76,9 @@ export function TermsAgreement({ agreed, setAgreed }) {
             onClick={openModal}
             className="mr-auto text-TAF-100 hover:text-TAF-400 text-sm font-medium underline transition-colors"
           >
-            {language === "ar" ? "عرض الشروط والأحكام" : "View Terms & Conditions"}
+            {language === "ar"
+              ? "عرض الشروط والأحكام"
+              : "View Terms & Conditions"}
           </button>
         </div>
       </div>
@@ -97,7 +100,9 @@ export function TermsAgreement({ agreed, setAgreed }) {
             >
               <div className="flex justify-between items-center pb-3">
                 <h2 className="text-xl font-semibold text-TAF-100">
-                  {language === "en" ? "Terms and Conditions" : "الشروط والأحكام"}
+                  {language === "en"
+                    ? "Terms and Conditions"
+                    : "الشروط والأحكام"}
                 </h2>
                 <button onClick={closeModal} className="text-gray-500 text-xl">
                   &times;
@@ -108,7 +113,9 @@ export function TermsAgreement({ agreed, setAgreed }) {
                 <button
                   type="button"
                   className={`px-5 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    language === "ar" ? "bg-TAF-100 text-white shadow-md" : "bg-gray-100 hover:bg-gray-200"
+                    language === "ar"
+                      ? "bg-TAF-100 text-white shadow-md"
+                      : "bg-gray-100 hover:bg-gray-200"
                   }`}
                   onClick={() => setLanguage("ar")}
                 >
@@ -117,7 +124,9 @@ export function TermsAgreement({ agreed, setAgreed }) {
                 <button
                   type="button"
                   className={`px-5 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                    language === "en" ? "bg-TAF-100 text-white shadow-md" : "bg-gray-100 hover:bg-gray-200"
+                    language === "en"
+                      ? "bg-TAF-100 text-white shadow-md"
+                      : "bg-gray-100 hover:bg-gray-200"
                   }`}
                   onClick={() => setLanguage("en")}
                 >
@@ -126,7 +135,11 @@ export function TermsAgreement({ agreed, setAgreed }) {
               </div>
 
               <div className="border rounded-lg overflow-hidden h-[450px] mb-5 shadow-inner bg-gray-50">
-                <iframe src={pdfPath} className="w-full h-full" title="Terms PDF" />
+                <iframe
+                  src={`${pdfPath}#toolbar=0&navpanes=0&scrollbar=1`}
+                  className="w-full h-[600px]"
+                  title="Terms PDF"
+                />
               </div>
 
               <div className="flex justify-end">
