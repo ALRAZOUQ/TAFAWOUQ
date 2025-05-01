@@ -74,7 +74,7 @@
   </style>
 </head>
 
-<body class="font-alm scroll-bar-TAF">
+<body class="font-alm scroll-bar-TAF relative">
   <div id="loading-screen">
     <div class="loading-container">
       <div class="loader">
@@ -88,11 +88,19 @@
 
   </div>
   <div id="root"></div>
+  <!-- particles.js container -->
+  <!-- particles.js container -->
+  <div id="particles-js" class=" bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200">
+
+  </div>
   <script>
     window.addEventListener("DOMContentLoaded", () => {
       document.getElementById("loading-screen").remove();
     });
   </script>
+  <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+
+  <script src="./src/util/bgParticlesJS.js"></script>
   <script type="module" src="/src/main.jsx"></script>
 </body>
 

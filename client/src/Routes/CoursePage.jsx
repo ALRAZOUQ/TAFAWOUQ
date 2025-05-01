@@ -109,9 +109,9 @@ const CoursePage = () => {
   const handleDeleteQuiz = (quizId) => {
     setComments((prev) => prev.filter((q) => q.id !== quizId));
   };
-
+  // bg-gradient-to-b from-TAF-200 via-white to-TAF-200
   return (
-    <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
+    <div className=" min-h-screen">
       <div className="container mx-auto p-4">
         <Suspense fallback={<div>Loading Course...</div>}>
           <CourseCard

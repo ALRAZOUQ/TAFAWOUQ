@@ -10,10 +10,7 @@ export default function Screen({ children, className, applyAnimation = true }) {
       }
     : {};
   return (
-    <motion.div
-      {...motionConfig}
-      className={`min-h-screen max-h-max w-full overflow-x-hidden bg-gradient-to-b from-TAF-200 via-white to-TAF-200 ${className}`}
-    >
+    <motion.div {...motionConfig} className={`min-h-screen max-h-max w-full overflow-x-hidden  ${className}`}>
       {children}
     </motion.div>
   );

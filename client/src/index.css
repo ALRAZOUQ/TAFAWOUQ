@@ -205,3 +205,16 @@
   height: var(--bg-icons);
   width: var(--bg-icons);
 }
+
+#particles-js {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+}
+
+test {
+  color: #23b7fc;
+}
