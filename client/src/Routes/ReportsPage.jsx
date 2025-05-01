@@ -253,19 +253,34 @@ export default function AdminHomePage() {
   return (
     <Screen>
       <Page>
-        {/* Toggle Reports Type */}
-        <div className="flex justify-center mb-4 px-2 sm:px-4">
-          <div className="rounded-b-2xl inline-flex shadow-sm w-full max-w-xs" role="group">
+        {/* Animated Toggle Reports Type */}
+        <div className="flex justify-center mb-6 px-2 sm:px-4">
+          <div className="relative flex bg-white rounded-full shadow-md p-1 w-full max-w-xs" role="group">
+            {/* Animated background for active button */}
+            <div 
+              className={`absolute top-1 bottom-1 ${toggleReportsType ? 'right-1' : 'left-1'} w-[calc(50%-4px)] bg-TAF-100 rounded-full transition-all duration-300 ease-in-out`}
+              style={{
+                boxShadow: '0 0 10px 2px rgba(59, 130, 246, 0.3)',
+              }}
+            >
+              {/* Animated ring */}
+              <div className="absolute inset-0 rounded-full animate-pulse" 
+                style={{
+                  background: 'radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(59, 130, 246, 0) 70%)',
+                  animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+                }}>
+              </div>
+            </div>
+            
+            {/* Buttons */}
             <button
               type="button"
               onClick={() => {
                 setToggleReportsType(false);
                 setCurrentPage(1);
               }}
-              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base font-medium md:rounded-br-3xl rounded-br-3xl flex-1 transition-all duration-200 ${
-                !toggleReportsType ? "bg-TAF-100 text-white" : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}>
-              التعليقات
+              className={`z-10 px-4 py-2 text-sm md:text-base font-medium rounded-full flex-1 transition-all duration-300 ${!toggleReportsType ? 'text-white' : 'text-gray-700'}`}>
+              بلاغات التعليقات
             </button>
             <button
               type="button"
@@ -273,13 +288,15 @@ export default function AdminHomePage() {
                 setToggleReportsType(true);
                 setCurrentPage(1);
               }}
-              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base md:rounded-bl-3xl rounded-bl-3xl font-medium flex-1 transition-all duration-200 ${
-                toggleReportsType ? "bg-TAF-100 text-white" : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}>
-              الاختبارات
+              className={`z-10 px-4 py-2 text-sm md:text-base font-medium rounded-full flex-1 transition-all duration-300 ${toggleReportsType ? 'text-white' : 'text-gray-700'}`}>
+              بلاغات الاختبارات
             </button>
           </div>
         </div>
+        
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
+          {toggleReportsType ? "بلاغات الاختبارات" : "بلاغات التعليقات"}
+        </h1>
 
         {/* Search Button */}
         <SearchButton
