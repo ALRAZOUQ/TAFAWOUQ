@@ -19,14 +19,59 @@ export default function Landing() {
     return () => clearInterval(textInterval);
   }, [textIndex]);
 
-  // Effect for the dot animation
+  // Effect for the dot animation around button perimeter
   useEffect(() => {
     const dotInterval = setInterval(() => {
-      setDotPosition((prevPos) => (prevPos + 1) % 360);
+      setDotPosition((prevPos) => (prevPos + 1) % 400); // Using 400 steps for smoother animation
     }, 30);
 
     return () => clearInterval(dotInterval);
   }, []);
+
+  // Function to calculate dot position along button perimeter
+  const calculateDotPosition = (position) => {
+    // Button dimensions (approximated)
+    const buttonWidth = 180;
+    const buttonHeight = 60;
+    const borderRadius = 30; // For rounded corners
+    
+    // Adjusted dimensions for the path
+    const pathWidth = buttonWidth + 20; // Slightly larger than button
+    const pathHeight = buttonHeight + 20;
+    
+    // Calculate position based on which side of the rectangle
+    const totalPerimeter = 2 * (pathWidth + pathHeight);
+    const normalizedPos = (position / 400) * totalPerimeter;
+    
+    // Top side
+    if (normalizedPos < pathWidth) {
+      return {
+        x: normalizedPos - pathWidth/2,
+        y: -pathHeight/2
+      };
+    }
+    // Right side
+    else if (normalizedPos < pathWidth + pathHeight) {
+      return {
+        x: pathWidth/2,
+        y: normalizedPos - pathWidth - pathHeight/2
+      };
+    }
+    // Bottom side
+    else if (normalizedPos < 2 * pathWidth + pathHeight) {
+      return {
+        x: pathWidth/2 - (normalizedPos - pathWidth - pathHeight),
+        y: pathHeight/2
+      };
+    }
+    // Left side
+    else {
+      return {
+        x: -pathWidth/2,
+        y: pathHeight/2 - (normalizedPos - 2 * pathWidth - pathHeight)
+      };
+    }
+  };
 
   return (
     <div className="bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200 text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm">
@@ -75,10 +120,10 @@ export default function Landing() {
           transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
         >
           <div 
-            className="absolute w-4 h-4 rounded-full bg-purple-500 shadow-lg shadow-TAF-100"
+            className="absolute w-4 h-4 rounded-full bg-TAF-100 shadow-lg shadow-TAF-100"
             style={{ 
-              left: `calc(50% + ${Math.cos(dotPosition * (Math.PI / 180)) * 40}px)`,
-              top: `calc(50% + ${Math.sin(dotPosition * (Math.PI / 180)) * 40}px)`,
+              left: `calc(50% + ${calculateDotPosition(dotPosition).x}px)`,
+              top: `calc(50% + ${calculateDotPosition(dotPosition).y}px)`,
               transform: 'translate(-50%, -50%)'
             }}
           />
@@ -95,14 +140,14 @@ export default function Landing() {
             <span className="relative z-10">{buttonText}</span>
             
             <motion.div 
-              className="absolute inset-0 bg-purple-600 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
+              className="absolute inset-0 bg-gray-600 opacity-0 group-hover:opacity-30 transition-opacity duration-300"
               initial={{ x: "-100%" }}
               whileHover={{ x: 0 }}
               transition={{ duration: 0.4 }}
             />
           </Link>
           <motion.div 
-            className="absolute -inset-1 rounded-full blur-sm bg-gradient-to-r from-TAF-100 via-purple-400 to-TAF-300 opacity-70"
+            className="absolute -inset-1 rounded-full blur-sm bg-gradient-to-l from-TAF-100 via-gray-400 to-TAF-100 opacity-70"
             animate={{ rotate: [0, 360] }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
           />
