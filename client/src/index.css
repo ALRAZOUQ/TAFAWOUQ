@@ -175,3 +175,46 @@
     color: #31b9f7;
   }
 }
+
+.bg-icons-container {
+  position: relative;
+  background-color: #fff;
+}
+:root {
+  --bg-icons: 15px;
+}
+.bg-icons-container::before {
+  content: "";
+  position: absolute;
+  top: 300px;
+  left: 100px;
+  background: url("https://www.svgrepo.com/show/535115/alien.svg") center/cover no-repeat;
+  opacity: 0.95; /* very light */
+  pointer-events: none; /* so it doesn’t block clicks */
+  height: var(--bg-icons);
+  width: var(--bg-icons);
+}
+.bg-icons-container::before {
+  content: "";
+  position: absolute;
+  top: 400px;
+  left: 100px;
+  background: url("https://www.svgrepo.com/show/535115/alien.svg") center/cover no-repeat;
+  opacity: 0.95; /* very light */
+  pointer-events: none; /* so it doesn’t block clicks */
+  height: var(--bg-icons);
+  width: var(--bg-icons);
+}
+
+#particles-js {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+}
+
+test {
+  color: #23b7fc;
+}
