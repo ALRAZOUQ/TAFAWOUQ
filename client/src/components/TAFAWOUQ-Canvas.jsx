@@ -1,14 +1,42 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback, useMemo } from "react";
 import { FaUserGraduate, FaUsers, FaBook, FaLightbulb, FaAward, FaHandshake } from "react-icons/fa";
 
 export default function TafawouqMainCanvas() {
   const canvasRef = useRef(null);
+  const animationRef = useRef(null);
+  const particlesRef = useRef([]);
   const [mousePosition, setMousePosition] = useState({ x: null, y: null });
   const [isInteracting, setIsInteracting] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+
+  // Setup visibility detection to pause animations when component is not visible
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsVisible(entry.isIntersecting);
+      },
+      { threshold: 0.1 } // Trigger when at least 10% is visible
+    );
+    
+    if (canvasRef.current) {
+      observer.observe(canvasRef.current);
+    }
+    
+    return () => {
+      if (canvasRef.current) {
+        observer.unobserve(canvasRef.current);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
+    
+    // Cancel any existing animation frame when component re-renders
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+    }
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
@@ -18,15 +46,15 @@ export default function TafawouqMainCanvas() {
     canvas.width = width;
     canvas.height = height;
 
-    // Enhanced color palette that aligns with TAFAWOUQ theme
-    const colors = [
-      "#08beca", // Primary blue
-      "#0a9eb8", // Darker blue
-      "#ff6b5d", // Accent orange/red
-      "#ff8a7f", // Lighter orange
-      "#ffffff", // White
-      "#e6f7fa", // Very light blue
-    ];
+    // Optimized color palette using only cyan shades as requested
+    const colors = useMemo(() => [
+      "#08beca", // Primary cyan
+      "#06a6b4", // Darker cyan
+      "#09d2e4", // Lighter cyan
+      "#05879c", // Deep cyan
+      "#0acfe1", // Bright cyan
+      "#e6f7fa", // Very light cyan
+    ], []);
 
     // Define icons that represent TAFAWOUQ values
     const icons = [
@@ -38,10 +66,15 @@ export default function TafawouqMainCanvas() {
       { component: FaHandshake, meaning: "Cooperation" },
     ];
 
-    // Create more particles for a richer visual
-    const particles = [];
-    const particleCount = Math.min(Math.floor(width * height / 10000), 150); // Responsive count based on screen size
-    const iconParticleCount = Math.min(Math.floor(particleCount * 0.2), 15); // 20% of particles will be icons
+    // Reduced particle count for better performance
+    particlesRef.current = [];
+    const particles = particlesRef.current;
+    
+    // Further reduce particles on mobile devices
+    const isMobile = window.innerWidth < 768;
+    const baseCount = isMobile ? 40 : 80;
+    const particleCount = Math.min(Math.floor(width * height / 25000), baseCount);
+    const iconParticleCount = Math.min(Math.floor(particleCount * 0.1), isMobile ? 4 : 8);
 
     // First create regular particles
     for (let i = 0; i < particleCount - iconParticleCount; i++) {
@@ -100,8 +133,8 @@ export default function TafawouqMainCanvas() {
       });
     }
 
-    // Function to draw connections between particles
-    const drawConnections = () => {
+    // Memoized function to draw connections between particles
+    const drawConnections = useCallback(() => {
       for (let i = 0; i < particles.length; i++) {
         particles[i].connections = [];
         for (let j = i + 1; j < particles.length; j++) {
@@ -140,10 +173,10 @@ export default function TafawouqMainCanvas() {
           ctx.stroke();
         }
       }
-    };
+    }, []);
 
-    // Function to handle mouse interaction
-    const handleMouseInteraction = () => {
+    // Optimized function to handle mouse interaction
+    const handleMouseInteraction = useCallback(() => {
       if (!isInteracting || !mousePosition.x || !mousePosition.y) return;
       
       const interactionRadius = 150;
@@ -164,14 +197,40 @@ export default function TafawouqMainCanvas() {
           particle.connectionStrength = force;
         }
       });
-    };
+    }, []);
 
-    // Animation loop
-    const animate = () => {
+    // Animation frame tracking for throttling
+    let lastFrameTime = 0;
+    const targetFPS = isMobile ? 24 : 30; // Lower FPS on mobile
+    const frameInterval = 1000 / targetFPS;
+    
+    // Optimized animation loop with frame throttling
+    const animate = (timestamp) => {
+      // Skip animation completely if not visible
+      if (!isVisible) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      
+      // Skip frames to maintain target FPS
+      const elapsed = timestamp - lastFrameTime;
+      if (elapsed < frameInterval) {
+        animationRef.current = requestAnimationFrame(animate);
+        return;
+      }
+      lastFrameTime = timestamp - (elapsed % frameInterval);
+      
       ctx.clearRect(0, 0, width, height);
       
-      // Update and draw particles
-      particles.forEach(particle => {
+      // Batch update particles for better performance
+      // Only update a subset of particles each frame on mobile
+      const updateCount = isMobile ? Math.ceil(particles.length / 2) : particles.length;
+      const startIdx = isMobile ? Math.floor(Math.random() * (particles.length - updateCount)) : 0;
+      
+      for (let i = 0; i < updateCount; i++) {
+        const idx = (startIdx + i) % particles.length;
+        const particle = particles[idx];
+        
         // Update position
         particle.x += particle.speedX;
         particle.y += particle.speedY;
@@ -180,37 +239,49 @@ export default function TafawouqMainCanvas() {
         if (particle.x < 0 || particle.x > width) particle.speedX *= -1;
         if (particle.y < 0 || particle.y > height) particle.speedY *= -1;
         
-        // Pulse effect for size
-        particle.size += particle.pulseDirection * particle.pulseSpeed * particle.pulseAmount;
-        if (particle.size > particle.originalSize * 1.5 || particle.size < particle.originalSize * 0.5) {
-          particle.pulseDirection *= -1;
+        // Pulse effect for size - only update every other frame
+        if (timestamp % 2 === 0) {
+          particle.size += particle.pulseDirection * particle.pulseSpeed * particle.pulseAmount;
+          if (particle.size > particle.originalSize * 1.5 || particle.size < particle.originalSize * 0.5) {
+            particle.pulseDirection *= -1;
+          }
         }
         
-        // Draw particle based on type (regular or icon)
+        // Draw particle based on type (regular or icon) - optimized rendering
         if (particle.isIcon) {
+          // Skip complex rendering on mobile devices to improve performance
+          const simplifiedRendering = isMobile && !isInteracting;
+          
           // Save current context state
           ctx.save();
           
-          // Set fill style for icon
+          // Set fill style for icon - using only cyan shades
           ctx.fillStyle = particle.color.replace(')', `, ${particle.opacity})`).replace('rgb', 'rgba');
           
-          // Draw icon background glow
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size * 1.5, 0, Math.PI * 2);
-          ctx.fillStyle = particle.color.replace(')', `, ${particle.opacity * 0.4})`).replace('rgb', 'rgba');
-          ctx.fill();
-          
-          // Draw a glowing circle background for the icon
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size / 1.2, 0, Math.PI * 2);
-          ctx.fillStyle = particle.color.replace(')', `, 0.7)`).replace('rgb', 'rgba');
-          ctx.fill();
-          
-          // Add outer glow
-          ctx.beginPath();
-          ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
-          ctx.fillStyle = particle.color.replace(')', `, 0.3)`).replace('rgb', 'rgba');
-          ctx.fill();
+          if (!simplifiedRendering) {
+            // Draw icon background glow
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size * 1.5, 0, Math.PI * 2);
+            ctx.fillStyle = particle.color.replace(')', `, ${particle.opacity * 0.4})`).replace('rgb', 'rgba');
+            ctx.fill();
+            
+            // Draw a glowing circle background for the icon
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size / 1.2, 0, Math.PI * 2);
+            ctx.fillStyle = particle.color.replace(')', `, 0.7)`).replace('rgb', 'rgba');
+            ctx.fill();
+            
+            // Add outer glow
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            ctx.fillStyle = particle.color.replace(')', `, 0.3)`).replace('rgb', 'rgba');
+            ctx.fill();
+          } else {
+            // Simplified rendering for mobile
+            ctx.beginPath();
+            ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
+            ctx.fill();
+          }
           
           // Draw the emoji icon
           ctx.font = `${particle.size}px Arial`;
@@ -226,20 +297,22 @@ export default function TafawouqMainCanvas() {
           if (particle.meaning === 'Achievement') iconChar = '🏆';
           if (particle.meaning === 'Cooperation') iconChar = '🤝';
           
-          ctx.fillStyle = '#ffffff';
+          ctx.fillStyle = '#e6f7fa'; // Light cyan instead of white
           ctx.fillText(iconChar, particle.x, particle.y);
           
-          // Draw meaning text with shadow for better visibility
-          if (particle.size > 15) {
+          // Draw meaning text with shadow for better visibility - only on desktop or when interacting
+          if (particle.size > 15 && (!isMobile || isInteracting)) {
             ctx.font = 'bold 12px Arial';
-            ctx.fillStyle = '#ffffff';
+            ctx.fillStyle = '#e6f7fa'; // Light cyan instead of white
             ctx.textAlign = 'center';
             
-            // Add text shadow for better visibility
-            ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
-            ctx.shadowBlur = 4;
-            ctx.shadowOffsetX = 1;
-            ctx.shadowOffsetY = 1;
+            // Add text shadow for better visibility - simplified for performance
+            if (!simplifiedRendering) {
+              ctx.shadowColor = 'rgba(0, 0, 0, 0.7)';
+              ctx.shadowBlur = 4;
+              ctx.shadowOffsetX = 1;
+              ctx.shadowOffsetY = 1;
+            }
             
             ctx.fillText(particle.meaning, particle.x, particle.y + particle.size + 10);
             
@@ -253,16 +326,16 @@ export default function TafawouqMainCanvas() {
           // Restore context state
           ctx.restore();
         } else {
-          // Draw regular particle
+          // Draw regular particle - optimized
           ctx.beginPath();
           ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2);
           ctx.fillStyle = particle.color.replace(')', `, ${particle.opacity})`).replace('rgb', 'rgba');
           ctx.fill();
           
-          // Add glow effect for some particles
-          if (Math.random() < 0.3 || particle.connectionStrength > 0) {
+          // Add glow effect for some particles - only when needed
+          if ((Math.random() < 0.2 || particle.connectionStrength > 0) && (!isMobile || isInteracting)) {
             ctx.beginPath();
-            ctx.arc(particle.x, particle.y, particle.size * 2, 0, Math.PI * 2);
+            ctx.arc(particle.x, particle.y, particle.size * 1.5, 0, Math.PI * 2);
             ctx.fillStyle = particle.color.replace(')', `, ${particle.opacity * 0.3})`).replace('rgb', 'rgba');
             ctx.fill();
           }
@@ -270,22 +343,33 @@ export default function TafawouqMainCanvas() {
         
         // Reset connection strength
         particle.connectionStrength = 0;
-      });
+      }
       
-      // Draw connections between particles
-      drawConnections();
+      // Only draw connections if not on mobile or if specifically interacting
+      if (!isMobile || isInteracting) {
+        drawConnections();
+      }
       
-      // Handle mouse interaction
-      handleMouseInteraction();
+      // Handle mouse interaction only when actually interacting
+      if (isInteracting) {
+        handleMouseInteraction();
+      }
       
-      requestAnimationFrame(animate);
+      animationRef.current = requestAnimationFrame(animate);
     };
 
-    animate();
+    // Start animation with timestamp
+    animationRef.current = requestAnimationFrame(animate);
 
-    // Event listeners for mouse interaction
+    // Throttled event handlers for mouse interaction
+    let mouseMoveThrottleTimer;
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      if (!mouseMoveThrottleTimer) {
+        mouseMoveThrottleTimer = setTimeout(() => {
+          setMousePosition({ x: e.clientX, y: e.clientY });
+          mouseMoveThrottleTimer = null;
+        }, 16); // ~60fps throttle
+      }
     };
     
     const handleMouseDown = () => {
@@ -303,9 +387,13 @@ export default function TafawouqMainCanvas() {
       }
     };
     
+    let touchMoveThrottleTimer;
     const handleTouchMove = (e) => {
-      if (e.touches.length > 0) {
-        setMousePosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+      if (e.touches.length > 0 && !touchMoveThrottleTimer) {
+        touchMoveThrottleTimer = setTimeout(() => {
+          setMousePosition({ x: e.touches[0].clientX, y: e.touches[0].clientY });
+          touchMoveThrottleTimer = null;
+        }, 16);
       }
     };
     
@@ -330,7 +418,7 @@ export default function TafawouqMainCanvas() {
     window.addEventListener("touchmove", handleTouchMove);
     window.addEventListener("touchend", handleTouchEnd);
 
-    // Cleanup event listeners
+    // Cleanup event listeners, timers, and animation frames
     return () => {
       window.removeEventListener("resize", handleResize);
       window.removeEventListener("mousemove", handleMouseMove);
@@ -339,15 +427,28 @@ export default function TafawouqMainCanvas() {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
       window.removeEventListener("touchend", handleTouchEnd);
+      
+      // Clear any pending timers
+      if (mouseMoveThrottleTimer) clearTimeout(mouseMoveThrottleTimer);
+      if (touchMoveThrottleTimer) clearTimeout(touchMoveThrottleTimer);
+      
+      // Cancel animation frame
+      if (animationRef.current) {
+        cancelAnimationFrame(animationRef.current);
+        animationRef.current = null;
+      }
+      
+      // Clear particles
+      particlesRef.current = [];
     };
-  }, [mousePosition, isInteracting]);
+  }, [mousePosition, isInteracting, isVisible]); // Added isVisible dependency
 
   return (
     <canvas
       ref={canvasRef}
       className="fixed top-0 left-0 w-full h-full z-[1]"
       style={{
-        background: "linear-gradient(135deg, rgba(8,190,202,0.8), rgba(255,107,93,0.8))",
+        background: "linear-gradient(135deg, rgba(8,190,202,0.8), rgba(5,135,156,0.8))", // Changed to cyan gradient
       }}
     />
   );

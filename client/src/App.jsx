@@ -38,8 +38,10 @@ const router = createBrowserRouter([
       { path: "quiz/:quizId", element: <QuizPage /> },
       {
         path: "admin",
+
+        element: <AdminHomePage />,
         children: [
-          { index: true, path: "admin-home", element: <AdminHomePage /> },
+          {},
           { path: "reports", element: <ReportsPage /> },
           { path: "hiddenItems", element: <HiddenItems /> },
           { path: "bannedaccounts", element: <BannedAccounts /> },

@@ -19,22 +19,22 @@ export function useRouteIfAuthorizedAndHeIsAdmin() {
       return;
     }
     if (isAuthorized && user.isAdmin) {
-      navigate("/admin/admin-home");
+      navigate("/admin");
       return;
     }
   }, [isAuthorized, user?.isAdmin, navigate]);
 }
 export function useRouteIfAuthorizedAndHeIsNotAdmin() {
-    const navigate = useNavigate();
-    const { isAuthorized, user } = useAuth();
-    useEffect(() => {
-      if (!isAuthorized) {
-        navigate("/");
-        return;
-      }
-      if (isAuthorized && !user.isAdmin) {
-        navigate("/home");
-        return;
-      }
-    }, [isAuthorized, user?.isAdmin, navigate]);
-  }
+  const navigate = useNavigate();
+  const { isAuthorized, user } = useAuth();
+  useEffect(() => {
+    if (!isAuthorized) {
+      navigate("/");
+      return;
+    }
+    if (isAuthorized && !user.isAdmin) {
+      navigate("/home");
+      return;
+    }
+  }, [isAuthorized, user?.isAdmin, navigate]);
+}

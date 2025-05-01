@@ -9,7 +9,7 @@ export default function Error404Page() {
   const [countdown, setCountdown] = useState(10);
 
   // Determine the correct home page based on user role
-  const homePath = user ? (user.isAdmin ? "/admin/admin-home" : "/home") : "/";
+  const homePath = user ? (user.isAdmin ? "/admin" : "/home") : "/";
 
   // Auto-redirect after countdown
   useEffect(() => {

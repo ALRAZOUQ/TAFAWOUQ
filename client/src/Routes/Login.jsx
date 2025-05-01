@@ -39,7 +39,7 @@ export default function Login() {
         setUserStateLogin(response.data.user);
 
         toast.success("تم تسجيل الدخول بنجاح!");
-        navigate(response.data.user.isAdmin ? "admin/admin-home" : "/home");
+        navigate(response.data.user.isAdmin ? "admin" : "/home");
         return { success: true, message: response.data.message };
       }
     } catch (error) {
