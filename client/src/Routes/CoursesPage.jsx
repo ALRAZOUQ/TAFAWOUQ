@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useAuth } from "../context/authContext";
-import Course from "../components/coursesPageComponents/Course";
-import CreateCourse from "../components/CreateCourseModal";
+import Course from "../components/coursesPageComponents/Course.jsx";
+import CreateCourse from "../components/CreateCourseModal.jsx";
 import { useCourseData } from "../context/CourseContext";
 
 export default function CoursesPage() {

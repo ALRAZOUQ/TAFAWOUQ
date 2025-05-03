@@ -7,9 +7,10 @@ import RootLayout from "./Routes/RootLayout";
 import { ToastContainer } from "react-toastify";
 import LoadingScreen from "./components/LoadingScreen";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
+import CoursesPage from "./Routes/CoursesPage";
 
 // HASSAN: lazy to optimize the performance for the app and load the page in the background
-const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
+// const CoursesPage = lazy(() => import("./Routes/CoursesPage"));
 const CoursePage = lazy(() => import("./Routes/CoursePage"));
 const Error404Page = lazy(() => import("./Routes/Error"));
 const Home_page = lazy(() => import("./Routes/Home_page"));
