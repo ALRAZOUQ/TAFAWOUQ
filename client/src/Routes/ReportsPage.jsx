@@ -293,8 +293,8 @@ export default function AdminHomePage() {
               className={`mt-7 py-2 px-4 w-40 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
               ${
                 toggleReportsType === isQuizzes
-                  ? "text-black font-extrabold border-2 border-TAF-100 bg-TAF-300"
-                  : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
+                  ? "text-black font-extrabold border-2 border-TAF-100"
+                  : "text-gray-500 hover:text-TAF-100 border-b-2 border-transparent"
               }`}
               onClick={() => {
                 setToggleReportsType(isQuizzes);
