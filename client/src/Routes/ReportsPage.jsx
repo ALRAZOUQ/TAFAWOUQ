@@ -9,7 +9,9 @@ import Page from "../components/Page";
 import { AnimatePresence, motion } from "framer-motion";
 import { Flag, MessageSquareMore, PcCase, UserPen } from "lucide-react";
 // Lazy load Pagination component
-const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
+const Pagination = lazy(() =>
+  import("../components/coursePageComponents/Pagination")
+);
 
 // QuizReportCard component for displaying quiz reports
 const QuizReportCard = ({ report, onReject, updateProperty }) => {
@@ -24,7 +26,11 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
       if (response.data.success) {
         updateProperty(report.reportId, "isResolved", true);
         updateProperty(report.reportId, "isElementHidden", true);
-        updateProperty(report.reportId, "adminExecutedHide", response.data.hiddenQuiz.adminExecutedHide);
+        updateProperty(
+          report.reportId,
+          "adminExecutedHide",
+          response.data.hiddenQuiz.adminExecutedHide
+        );
 
         return true;
       }
@@ -52,7 +58,11 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
       });
       if (response.data.success) {
         await onDeleteQuiz();
-        updateProperty(report.reportId, "adminExecutedBan", response.data.bannedUser.adminExecutedban);
+        updateProperty(
+          report.reportId,
+          "adminExecutedBan",
+          response.data.bannedUser.adminExecutedban
+        );
         updateProperty(report.reportId, "isAuthorBanned", true);
         return true;
       }
@@ -77,7 +87,8 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.8 }}
         transition={{ duration: 0.3 }}
-        className="  bg-white p-4  rounded-2xl shadow-md  text-right  h-full flex flex-col   border-y border-y-gray-200 border-x- border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto ">
+        className="  bg-white p-4  rounded-2xl shadow-md  text-right  h-full flex flex-col   border-y border-y-gray-200 border-x- border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto "
+      >
         {/* <h2 className="text-lg font-bold mb-2">بلاغ</h2> */}
         <p className="flex items-center gap-1">
           <Flag className="size-4  text-gray-500" />
@@ -104,15 +115,18 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
           <div className="mt-2 font-semibold whitespace-normal break-words spc">
             <ul
               className="text-center bg-gray-300 rounded-xl text-xs font-semibold px-3 py-2 "
-              style={{ wordSpacing: "0.3rem" }}>
+              style={{ wordSpacing: "0.3rem" }}
+            >
               {report.isElementHidden && !report.isAuthorBanned && (
                 <li>
-                  تم اخفاء الاختبار بواسطة: <span>{report.adminExecutedHide || "المشرف"}</span>
+                  تم اخفاء الاختبار بواسطة:{" "}
+                  <span>{report.adminExecutedHide || "المشرف"}</span>
                 </li>
               )}
               {report.isAuthorBanned && (
                 <li>
-                  تم حظره وإخفاؤه بواسطة: <span>{report.adminExecutedBan || "المشرف"}</span>
+                  تم حظره وإخفاؤه بواسطة:{" "}
+                  <span>{report.adminExecutedBan || "المشرف"}</span>
                 </li>
               )}
             </ul>
@@ -123,18 +137,21 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
           <div className="mt-4 flex justify-between space-x-1 rtl:space-x-reverse">
             <button
               className="bg-green-500 w-1/4 rounded-xl text-xs font-semibold text-white px-3 py-2 hover:bg-green-700"
-              onClick={() => onReject(report.reportId)}>
+              onClick={() => onReject(report.reportId)}
+            >
               رفض
             </button>
             <button
               className="bg-red-500 w-1/4 rounded-xl text-xs font-semibold text-white px-3 py-2 hover:bg-red-700"
-              onClick={handleDelete}>
+              onClick={handleDelete}
+            >
               اخفاء
             </button>
             <button
               className="bg-red-700 w-2/4 rounded-xl text-xs font-semibold text-white px-3 py-2 hover:bg-red-900"
               onClick={handleBan}
-              title="اخفاء التعليق و حظر المستخدم">
+              title="اخفاء التعليق و حظر المستخدم"
+            >
               اخفاء و حظر المستخدم
             </button>
           </div>
@@ -186,9 +203,13 @@ export default function AdminHomePage() {
       });
       if (response.data.success) {
         if (toggleReportsType) {
-          setQuizReports(quizReports.filter((report) => report.reportId !== reportId));
+          setQuizReports(
+            quizReports.filter((report) => report.reportId !== reportId)
+          );
         } else {
-          setCommentReports(commentReports.filter((report) => report.reportId !== reportId));
+          setCommentReports(
+            commentReports.filter((report) => report.reportId !== reportId)
+          );
         }
         toast.success("تم رفض البلاغ بنجاح");
         return true;
@@ -204,13 +225,17 @@ export default function AdminHomePage() {
     if (toggleReportsType) {
       setQuizReports((prevReports) =>
         prevReports.map((report) =>
-          report.reportId === reportId ? { ...report, [property]: value } : report
+          report.reportId === reportId
+            ? { ...report, [property]: value }
+            : report
         )
       );
     } else {
       setCommentReports((prevReports) =>
         prevReports.map((report) =>
-          report.reportId === reportId ? { ...report, [property]: value } : report
+          report.reportId === reportId
+            ? { ...report, [property]: value }
+            : report
         )
       );
     }
@@ -235,14 +260,21 @@ export default function AdminHomePage() {
 
   // Filter & pagination calculations
   const filteredReports = toggleReportsType
-    ? quizReports.filter((report) => report.quiz?.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+    ? quizReports.filter((report) =>
+        report.quiz?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
     : commentReports.filter((report) =>
-        report.comment?.content?.toLowerCase().includes(searchQuery.toLowerCase())
+        report.comment?.content
+          ?.toLowerCase()
+          .includes(searchQuery.toLowerCase())
       );
 
   const indexOfLastReport = currentPage * reportsPerPage;
   const indexOfFirstReport = indexOfLastReport - reportsPerPage;
-  const currentReports = filteredReports.slice(indexOfFirstReport, indexOfLastReport);
+  const currentReports = filteredReports.slice(
+    indexOfFirstReport,
+    indexOfLastReport
+  );
   const totalPages = Math.ceil(filteredReports.length / reportsPerPage);
 
   // Preload Pagination component
@@ -259,25 +291,30 @@ export default function AdminHomePage() {
             <button
               key={isQuizzes ? "quizzes" : "comments"}
               className={`mt-7 py-2 px-4 w-40 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
-              ${toggleReportsType === isQuizzes
-                ? "text-black font-extrabold border-b-4 border-b-TAF-600"
-                : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"}`}
+              ${
+                toggleReportsType === isQuizzes
+                  ? "text-black font-extrabold border-2 border-TAF-100 bg-TAF-300"
+                  : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
+              }`}
               onClick={() => {
                 setToggleReportsType(isQuizzes);
                 setCurrentPage(1);
-              }}>
+              }}
+            >
               {isQuizzes ? "بلاغات الاختبارات" : "بلاغات التعليقات"}
             </button>
           ))}
         </div>
-        
+
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
           {toggleReportsType ? "بلاغات الاختبارات" : "بلاغات التعليقات"}
         </h1>
 
         {/* Search Button */}
         <SearchButton
-          placeholder={`ابحث في بلاغات ${toggleReportsType ? "الاختبارات" : "التعليقات"}...`}
+          placeholder={`ابحث في بلاغات ${
+            toggleReportsType ? "الاختبارات" : "التعليقات"
+          }...`}
           value={searchQuery}
           onChange={(value) => {
             setSearchQuery(value);
@@ -290,7 +327,8 @@ export default function AdminHomePage() {
             filteredReports.length > 0
               ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mx-1 sm:mx-2 md:mx-4 p-2 sm:p-3 md:p-4"
               : "flex items-center justify-center h-screen"
-          }`}>
+          }`}
+        >
           {filteredReports.length > 0 ? (
             currentReports.map((report) =>
               toggleReportsType ? (
@@ -322,7 +360,11 @@ export default function AdminHomePage() {
         {/* Pagination */}
         {filteredReports.length > 0 && (
           <Suspense fallback={<div>Loading pagination...</div>}>
-            <Pagination currentPage={currentPage} totalPages={totalPages} setCurrentPage={setCurrentPage} />
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              setCurrentPage={setCurrentPage}
+            />
           </Suspense>
         )}
       </Page>

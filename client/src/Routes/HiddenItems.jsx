@@ -1,5 +1,12 @@
 import Screen from "../components/Screen";
-import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  lazy,
+  Suspense,
+  useMemo,
+  useCallback,
+} from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
@@ -8,7 +15,11 @@ import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 import HiddenQuizCard from "../components/hiddenItemsPageComponents/HiddenQuizCard";
 import HiddenCommentCard from "../components/hiddenItemsPageComponents/HiddenCommentCard";
-import { useDebounce, useMemoizedFilter, usePaginatedItems } from "../util/performanceOptimizations";
+import {
+  useDebounce,
+  useMemoizedFilter,
+  usePaginatedItems,
+} from "../util/performanceOptimizations";
 
 // Lazy load Pagination component
 const Pagination = lazy(() =>
@@ -165,18 +176,31 @@ export default function HiddenItems() {
   );
 
   // Use memoized filters for better performance
-  const filteredComments = useMemoizedFilter(hiddenComments, searchQuery, commentFilterFn);
-  const filteredQuizzes = useMemoizedFilter(hiddenQuizzes, searchQuery, quizFilterFn) || [];
+  const filteredComments = useMemoizedFilter(
+    hiddenComments,
+    searchQuery,
+    commentFilterFn
+  );
+  const filteredQuizzes =
+    useMemoizedFilter(hiddenQuizzes, searchQuery, quizFilterFn) || [];
 
   // Use memoized pagination
   const currentItems = useMemo(() => {
     const items = toggleHiddenItems ? filteredQuizzes : filteredComments || [];
     const startIndex = (currentPage - 1) * itemsPerPage;
     return items.slice(startIndex, startIndex + itemsPerPage);
-  }, [toggleHiddenItems, filteredQuizzes, filteredComments, currentPage, itemsPerPage]);
+  }, [
+    toggleHiddenItems,
+    filteredQuizzes,
+    filteredComments,
+    currentPage,
+    itemsPerPage,
+  ]);
 
   const totalPages = useMemo(() => {
-    const totalItems = toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length;
+    const totalItems = toggleHiddenItems
+      ? filteredQuizzes?.length
+      : filteredComments?.length;
     return Math.ceil(totalItems / itemsPerPage);
   }, [toggleHiddenItems, filteredQuizzes, filteredComments, itemsPerPage]);
 
@@ -229,15 +253,18 @@ export default function HiddenItems() {
             <button
               key={isQuizzes ? "quizzes" : "comments"}
               className={`mt-7 py-2 px-4 w-40 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
-              ${toggleHiddenItems === isQuizzes
-                ? "text-black font-extrabold border-b-4 border-b-TAF-600"
-                : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"}`}
-              onClick={() => setToggleHiddenItems(isQuizzes)}>
+              ${
+                toggleHiddenItems === isQuizzes
+                  ? "text-black font-extrabold border-2 border-TAF-100"
+                  : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
+              }`}
+              onClick={() => setToggleHiddenItems(isQuizzes)}
+            >
               {isQuizzes ? "الاختبارات المخفية" : "التعليقات المخفية"}
             </button>
           ))}
         </div>
-        
+
         <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
           {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
         </h1>
