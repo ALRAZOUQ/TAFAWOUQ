@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import TopperCard from "../cardComponents/TopperCard";
-import { Trophy } from "lucide-react";
+import { Activity, Trophy } from "lucide-react";
 import axios from "@/api/axios";
 
 export default function Top20Courses({ className }) {
@@ -11,7 +11,7 @@ export default function Top20Courses({ className }) {
   return (
     <TopperCard
       className={className}
-      icon={<Trophy strokeWidth={1.5} className="size-10 0text-blue-600  " />}
+      icon={<Activity strokeWidth={1.5} className="size-4 " />}
       title={"المقررات الأكثر تفاعلا"}
       counts={[top20Courses[0]?.comment_count]}
       toppersList={top20Courses.slice(0, 2)}

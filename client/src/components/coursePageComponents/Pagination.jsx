@@ -7,27 +7,26 @@ import React, { useCallback, useMemo } from "react";
  * @param  setCurrentPage Function to update the current page
  */
 
-function Pagination({
-  currentPage,
-  totalPages,
-  setCurrentPage,
-}) {
+function Pagination({ currentPage, totalPages, setCurrentPage }) {
   // Don't render anything if there are no pages
   if (totalPages <= 0) return null;
-  
+
   // Helper function to render individual page number buttons - memoized
-  const renderPageButton = useCallback((pageNum) => (
-    <button
-      key={pageNum}
-      onClick={() => setCurrentPage(pageNum)}
-      className={`px-3 py-1 rounded-md transition-colors ${
-        currentPage === pageNum
-          ? "bg-blue-600 text-white" // Style for active page
-          : "bg-gray-100 text-gray-600 hover:bg-gray-200" // Style for inactive pages
-      }`}>
-      {pageNum}
-    </button>
-  ), [currentPage, setCurrentPage]);
+  const renderPageButton = useCallback(
+    (pageNum) => (
+      <button
+        key={pageNum}
+        onClick={() => setCurrentPage(pageNum)}
+        className={`px-3 py-1 rounded-md transition-colors ${
+          currentPage === pageNum
+            ? "bg-blue-500 text-white" // Style for active page
+            : "bg-gray-100 text-gray-600 hover:bg-gray-200" // Style for inactive pages
+        }`}>
+        {pageNum}
+      </button>
+    ),
+    [currentPage, setCurrentPage]
+  );
 
   // Function to generate and render all pagination elements - memoized
   const paginationElements = useMemo(() => {
@@ -39,7 +38,7 @@ function Pagination({
         key="prev"
         onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
         disabled={currentPage === 1}
-        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
+        className="px-3 py-1 rounded-s-xl transition-colors bg-gray-200 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
         السابق
       </button>
     );
@@ -93,7 +92,7 @@ function Pagination({
         key="next"
         onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
         disabled={currentPage === totalPages}
-        className="px-3 py-1 rounded-md transition-colors bg-gray-100 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
+        className="px-3 py-1 rounded-e-xl transition-colors bg-gray-200 text-gray-600 hover:bg-gray-200 disabled:opacity-50">
         التالي
       </button>
     );

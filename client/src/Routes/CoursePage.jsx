@@ -7,12 +7,22 @@ import { useCourseData } from "../context/CourseContext";
 //
 // Lazy-loaded components
 const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
-const CourseCard = lazy(() => import("../components/coursePageComponents/CourseCard"));
+const CourseCard = lazy(() =>
+  import("../components/coursePageComponents/CourseCard")
+);
 const QuizCard = lazy(() => import("../components/QuizComponents/QuizCard"));
-const Comment = lazy(() => import("../components/coursePageComponents/Comment"));
-const FilterControls = lazy(() => import("../components/coursePageComponents/FilterControls"));
-const Pagination = lazy(() => import("../components/coursePageComponents/Pagination"));
-const WriteComment = lazy(() => import("../components/coursePageComponents/WriteComment"));
+const Comment = lazy(() =>
+  import("../components/coursePageComponents/Comment")
+);
+const FilterControls = lazy(() =>
+  import("../components/coursePageComponents/FilterControls")
+);
+const Pagination = lazy(() =>
+  import("../components/coursePageComponents/Pagination")
+);
+const WriteComment = lazy(() =>
+  import("../components/coursePageComponents/WriteComment")
+);
 
 const CoursePage = () => {
   const { courseId } = useParams();
@@ -77,10 +87,13 @@ const CoursePage = () => {
 
   const filteredComments = useMemo(() => {
     return comments
-      .filter((c) => c.content.toLowerCase().includes(searchQuery.toLowerCase()))
+      .filter((c) =>
+        c.content.toLowerCase().includes(searchQuery.toLowerCase())
+      )
       .filter((c) => (filterTag ? c.tag === filterTag : true))
       .sort((a, b) => {
-        if (sortBy === "recent") return new Date(b.creationDate) - new Date(a.creationDate);
+        if (sortBy === "recent")
+          return new Date(b.creationDate) - new Date(a.creationDate);
         if (sortBy === "mostLikes") return b.numOfLikes - a.numOfLikes;
         if (sortBy === "mostReplies") return b.numOfReplies - a.numOfReplies;
         return 0;
@@ -109,9 +122,9 @@ const CoursePage = () => {
   const handleDeleteQuiz = (quizId) => {
     setComments((prev) => prev.filter((q) => q.id !== quizId));
   };
-
+  // bg-gradient-to-b from-TAF-200 via-white to-TAF-200
   return (
-    <div className="bg-gradient-to-b from-TAF-200 via-white to-TAF-200 min-h-screen">
+    <div className=" min-h-screen">
       <div className="container mx-auto p-4">
         <Suspense fallback={<div>Loading Course...</div>}>
           <CourseCard
@@ -138,13 +151,14 @@ const CoursePage = () => {
           {["comments", "quizzes"].map((tab) => (
             <button
               key={tab}
-              className={`py-2 px-4 w-32 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
+              className={`mt-7 py-2 px-4 w-32 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
         ${
           activeTab === tab
-            ? "text-black font-extrabold border-b-4 border-b-TAF-600"
-            : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
+            ? "text-black font-extrabold border-2 border-TAF-100"
+            : "text-gray-500 hover:text-TAF-100 border-b-2 border-b-transparent"
         }`}
-              onClick={() => setActiveTab(tab)}>
+              onClick={() => setActiveTab(tab)}
+            >
               {tab === "comments" ? "التعليقات" : "الاختبارات"}
             </button>
           ))}
@@ -165,7 +179,10 @@ const CoursePage = () => {
 
             {isAuthorized && (
               <Suspense fallback={<div>Loading comment box...</div>}>
-                <WriteComment courseId={courseId} onCommentAdded={handleNewComment} />
+                <WriteComment
+                  courseId={courseId}
+                  onCommentAdded={handleNewComment}
+                />
               </Suspense>
             )}
 
@@ -173,7 +190,10 @@ const CoursePage = () => {
               <>
                 <div className="space-y-4">
                   {paginatedComments.map((comment) => (
-                    <Suspense key={comment.id} fallback={<div>Loading comment...</div>}>
+                    <Suspense
+                      key={comment.id}
+                      fallback={<div>Loading comment...</div>}
+                    >
                       <Comment
                         comment={comment}
                         courseCode={course?.code}
@@ -187,13 +207,17 @@ const CoursePage = () => {
                 <Suspense fallback={<div>Loading pagination...</div>}>
                   <Pagination
                     currentPage={currentPage}
-                    totalPages={Math.ceil(filteredComments.length / commentsPerPage)}
+                    totalPages={Math.ceil(
+                      filteredComments.length / commentsPerPage
+                    )}
                     setCurrentPage={setCurrentPage}
                   />
                 </Suspense>
               </>
             ) : (
-              <div className="text-center text-gray-700 mt-4 p-8">لا يوجد تعليقات بعد</div>
+              <div className="text-center text-gray-700 mt-4 p-8">
+                لا يوجد تعليقات بعد
+              </div>
             )}
           </>
         )}
@@ -204,7 +228,12 @@ const CoursePage = () => {
               {paginatedQuizzes.map((quiz) => (
                 <Suspense
                   key={quiz.id}
-                  fallback={<div className="animate-pulse bg-gray-200 h-32 rounded-lg">Loading quiz...</div>}>
+                  fallback={
+                    <div className="animate-pulse bg-gray-200 h-32 rounded-lg">
+                      Loading quiz...
+                    </div>
+                  }
+                >
                   <QuizCard quiz={quiz} onDelete={handleDeleteQuiz} />
                 </Suspense>
               ))}
@@ -212,8 +241,11 @@ const CoursePage = () => {
               <div className="mt-6">
                 <Suspense
                   fallback={
-                    <div className="animate-pulse bg-gray-200 h-10 rounded-lg">Loading pagination...</div>
-                  }>
+                    <div className="animate-pulse bg-gray-200 h-10 rounded-lg">
+                      Loading pagination...
+                    </div>
+                  }
+                >
                   <Pagination
                     currentPage={quizPage}
                     totalPages={Math.ceil(quizzes.length / quizzesPerPage)}
@@ -223,7 +255,9 @@ const CoursePage = () => {
               </div>
             </>
           ) : (
-            <div className="text-center text-gray-700 mt-4 p-8">لا يوجد اختبارات بعد</div>
+            <div className="text-center text-gray-700 mt-4 p-8">
+              لا يوجد اختبارات بعد
+            </div>
           ))}
       </div>
     </div>

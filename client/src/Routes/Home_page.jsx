@@ -5,10 +5,11 @@ import { Eye, EyeOff } from "lucide-react";
 import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
 import GPA from "../components/HomePageComponents/GPA";
 import { requestNotificationPermissionAndGetTheFCMToken } from "../config/firebase";
+import PushNotificationDialog from "@/components/RootLayoutComponents/InboxComponents/PushNotificationDialog";
 export default function HomePage() {
   useRouteIfAuthorizedAndHeIsAdmin();
   useEffect(() => {
-    requestNotificationPermissionAndGetTheFCMToken(); // Ask for notification permission
+    // requestNotificationPermissionAndGetTheFCMToken(); // Ask for notification permission
   }, []);
 
   const {
@@ -22,9 +23,10 @@ export default function HomePage() {
   } = useSchedule();
 
   const [showGPA, setShowGPA] = useState(true);
-
+  // bg-gradient-to-b from-TAF-200 via-white to-TAF-200
   return (
-    <div className="min-h-screen w-full bg-gradient-to-b from-TAF-200 via-white to-TAF-200 flex flex-col justify-center items-center">
+    <div className="min-h-screen w-full  flex flex-col justify-center items-center">
+      <PushNotificationDialog />
       {scheduleName && <h2 className="text-2xl font-bold text-gray-800 mb-2 mt-2">{scheduleName}</h2>}
       <Schedule
         scheduleCourses={scheduleCourses}
@@ -33,7 +35,6 @@ export default function HomePage() {
         Id={scheduleId}
         scheduleName={scheduleName}
       />
-
       <div className="w-full max-w-screen-xl mb-6 flex flex-col items-center">
         <div className="w-full flex justify-start pr-2 mb-3">
           <button

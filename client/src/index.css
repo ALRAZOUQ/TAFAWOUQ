@@ -31,7 +31,6 @@
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
   } */
   :root {
     --background: 0 0% 100%;
@@ -58,6 +57,7 @@
     --chart-3: 216 92% 60%;
     --chart-4: 210 98% 78%;
     --chart-5: 212 97% 87%;
+    --radius: 0.5rem;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -122,7 +122,7 @@
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground overflow-x-hidden;
   }
 }
 
@@ -174,4 +174,47 @@
     top: 0;
     color: #31b9f7;
   }
+}
+
+.bg-icons-container {
+  position: relative;
+  background-color: #fff;
+}
+:root {
+  --bg-icons: 15px;
+}
+.bg-icons-container::before {
+  content: "";
+  position: absolute;
+  top: 300px;
+  left: 100px;
+  background: url("https://www.svgrepo.com/show/535115/alien.svg") center/cover no-repeat;
+  opacity: 0.95; /* very light */
+  pointer-events: none; /* so it doesn’t block clicks */
+  height: var(--bg-icons);
+  width: var(--bg-icons);
+}
+.bg-icons-container::before {
+  content: "";
+  position: absolute;
+  top: 400px;
+  left: 100px;
+  background: url("https://www.svgrepo.com/show/535115/alien.svg") center/cover no-repeat;
+  opacity: 0.95; /* very light */
+  pointer-events: none; /* so it doesn’t block clicks */
+  height: var(--bg-icons);
+  width: var(--bg-icons);
+}
+
+#particles-js {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  z-index: -1;
+}
+
+test {
+  color: #23b7fc;
 }

@@ -106,7 +106,7 @@ router.delete("/deleteCourseFromSchedule", userController.deleteCourseFromSchedu
 //=================== grade ========================
 //==================================================
 
-router.post("/gradeCourse",userController.gradeCourse);
+router.post("/gradeCourse", userController.gradeCourse);
 
 //==================================================
 //=================== rate =========================
@@ -125,13 +125,13 @@ router.post("/toggleLikeComment", userController.toggleLikeComment);
 //==================================================
 
 router.get("/viewGpa", userController.viewAvgGpa);
-router.get("/viewGpa/:scheduleId",userController.viewGpaOfSchedule);
+router.get("/viewGpa/:scheduleId", userController.viewGpaOfSchedule);
 
 //==================================================
 //=================== comment ======================
 //==================================================
 
-router.post("/postComment",userController.postComment);
+router.post("/postComment", userController.postComment);
 
 //==================================================
 //================= Notifications ==================
@@ -205,7 +205,8 @@ router.get("/myNotifications", async (req, res) => {
                             CONCAT(EXTRACT(DAY FROM NOW() - timestamp)::int, ' يوم')
                     END AS time_ago
                 FROM notifications
-                Where parentcommentauthorid=$1;`,
+                Where parentcommentauthorid=$1
+                ORDER BY timestamp DESC;`,
       [req.user.id]
     );
     res.status(200).json(notifications.rows);
@@ -239,18 +240,18 @@ router.put("/readANotification", async (req, res) => {
 
 
 // Endpoint to handle PDF upload and quiz generation
-router.post("/generateQuiz", upload.single("pdf"),userController.generateQuiz);
+router.post("/generateQuiz", upload.single("pdf"), userController.generateQuiz);
 router.get("/myQuizList", userController.myQuizList);
 
 router.post("/storeQuiz", userController.storeQuiz);
 
 router.post("/addQuizToMyQuizList", userController.addQuizToMyQuizList);
 
-router.delete("/removeQuizFromMyQuizList",userController.removeQuizFromMyQuizList );
+router.delete("/removeQuizFromMyQuizList", userController.removeQuizFromMyQuizList);
 
-router.post("/shareQuiz",userController.shareQuiz);
+router.post("/shareQuiz", userController.shareQuiz);
 
-router.get("/getQuiz/:quizId",userController.getQuiz );
+router.get("/getQuiz/:quizId", userController.getQuiz);
 
 //==================================================
 //=================== report ======================
@@ -258,6 +259,6 @@ router.get("/getQuiz/:quizId",userController.getQuiz );
 
 router.post("/reportComment", userController.reportComment);
 
-router.post("/reportQuiz",userController.reportQuiz);
+router.post("/reportQuiz", userController.reportQuiz);
 
 export default router;

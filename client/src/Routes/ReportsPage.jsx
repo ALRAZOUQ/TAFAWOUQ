@@ -1,11 +1,13 @@
 import { useEffect, useState, lazy, Suspense } from "react";
 import axios from "../api/axios";
-import ReportCard from "../components/CommentReportCard";
+import ReportCard from "../components/ReportCard";
 import { toast } from "react-toastify";
 import Screen from "../components/Screen";
 import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthorized";
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
+import { AnimatePresence, motion } from "framer-motion";
+import { Flag, MessageSquareMore, PcCase, UserPen } from "lucide-react";
 // Lazy load Pagination component
 const Pagination = lazy(() =>
   import("../components/coursePageComponents/Pagination")
@@ -79,61 +81,83 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
   }
 
   return (
-    <div className="bg-white p-2 sm:p-3 md:p-4 border rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-right w-full">
-      <h2 className="text-base sm:text-lg font-bold mb-1 sm:mb-2">بلاغ</h2>
-      <p className="text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
-        السبب: {report.content}
-      </p>
-      <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base whitespace-normal break-words">
-        الاختبار: {report.quiz.title}
-      </p>
-      <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
-        منشئ الاختبار: {report.quiz.authorName}
-      </p>
-      <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
-        الحالة: {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
-      </p>
-      {report.isResolved && (
-        <div className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
-          الاجراءات:
-          <ul className="pr-2 sm:pr-4">
-            {report.isElementHidden && (
-              <li>
-                تم اخفاء الاختبار بواسطة:{" "}
-                <span>{report.adminExecutedHide || "المشرف"}</span>
-              </li>
-            )}
-            {report.isAuthorBanned && (
-              <li>
-                تم حظر المستخدم بواسطة:{" "}
-                <span>{report.adminExecutedBan || "المشرف"}</span>
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.8 }}
+        transition={{ duration: 0.3 }}
+        className="  bg-white p-4  rounded-2xl shadow-md  text-right  h-full flex flex-col   border-y border-y-gray-200 border-x- border-x-TAF-300 w-full max-w-sm sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl 2xl:max-w-4xl mx-auto "
+      >
+        {/* <h2 className="text-lg font-bold mb-2">بلاغ</h2> */}
+        <p className="flex items-center gap-1">
+          <Flag className="size-4  text-gray-500" />
+          <span className="font-semibold">السبب:</span> {report.content}
+        </p>
+        <p className="flex  gap-1 mt-2 ">
+          <PcCase className="size-4  text-gray-500" />
 
-      <div className="mt-2 sm:mt-4 flex flex-wrap sm:flex-nowrap justify-start gap-1 sm:gap-2 rtl:space-x-reverse">
-        <button
-          className="bg-green-500 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-green-700 transition-colors duration-200 flex-1 sm:flex-none"
-          onClick={() => onReject(report.reportId)}
-        >
-          رفض
-        </button>
-        <button
-          className="bg-red-500 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-red-700 transition-colors duration-200 flex-1 sm:flex-none"
-          onClick={handleDelete}
-        >
-          اخفاء الاختبار
-        </button>
-        <button
-          className="bg-red-700 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-red-900 transition-colors duration-200 w-full sm:w-auto mt-1 sm:mt-0"
-          onClick={handleBan}
-        >
-          اخفاء الاختبار و حظر المستخدم
-        </button>
-      </div>
-    </div>
+          <span className="font-semibold ">الاختبار: </span>
+          {report.quiz.title}
+        </p>
+        <p className="flex items-center gap-1 mt-2 ">
+          <UserPen className="size-4  text-gray-500" />
+
+          <span className="font-semibold">المنشئ: </span>
+          {report.quiz.authorName}
+        </p>
+        {/* <p className="mt-2  whitespace-normal break-words">
+        <span className="font-semibold">الحالة: </span>
+        {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
+      </p> */}
+        <div className="flex flex-1"> </div>
+        {report.isResolved && (
+          <div className="mt-2 font-semibold whitespace-normal break-words spc">
+            <ul
+              className="text-center bg-gray-300 rounded-xl text-xs font-semibold px-3 py-2 "
+              style={{ wordSpacing: "0.3rem" }}
+            >
+              {report.isElementHidden && !report.isAuthorBanned && (
+                <li>
+                  تم اخفاء الاختبار بواسطة:{" "}
+                  <span>{report.adminExecutedHide || "المشرف"}</span>
+                </li>
+              )}
+              {report.isAuthorBanned && (
+                <li>
+                  تم حظره وإخفاؤه بواسطة:{" "}
+                  <span>{report.adminExecutedBan || "المشرف"}</span>
+                </li>
+              )}
+            </ul>
+          </div>
+        )}
+        {/*  */}
+        {!report.isResolved && (
+          <div className="mt-4 flex justify-between space-x-1 rtl:space-x-reverse">
+            <button
+              className="bg-green-500 w-1/4 rounded-xl text-xs font-semibold text-white px-3 py-2 hover:bg-green-700"
+              onClick={() => onReject(report.reportId)}
+            >
+              رفض
+            </button>
+            <button
+              className="bg-red-500 w-1/4 rounded-xl text-xs font-semibold text-white px-3 py-2 hover:bg-red-700"
+              onClick={handleDelete}
+            >
+              اخفاء
+            </button>
+            <button
+              className="bg-red-700 w-2/4 rounded-xl text-xs font-semibold text-white px-3 py-2 hover:bg-red-900"
+              onClick={handleBan}
+              title="اخفاء التعليق و حظر المستخدم"
+            >
+              اخفاء و حظر المستخدم
+            </button>
+          </div>
+        )}
+      </motion.div>
+    </AnimatePresence>
   );
 };
 
@@ -187,6 +211,7 @@ export default function AdminHomePage() {
             commentReports.filter((report) => report.reportId !== reportId)
           );
         }
+        toast.success("تم رفض البلاغ بنجاح");
         return true;
       }
     } catch (error) {
@@ -260,39 +285,30 @@ export default function AdminHomePage() {
   return (
     <Screen>
       <Page>
-        {/* Toggle Reports Type */}
-        <div className="flex justify-center mb-4 px-2 sm:px-4">
-          <div className="rounded-b-2xl inline-flex shadow-sm w-full max-w-xs" role="group">
+        {/* Toggle between comment reports and quiz reports */}
+        <div className="mb-4">
+          {[false, true].map((isQuizzes) => (
             <button
-              type="button"
+              key={isQuizzes ? "quizzes" : "comments"}
+              className={`mt-7 py-2 px-4 w-40 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
+              ${
+                toggleReportsType === isQuizzes
+                  ? "text-black font-extrabold border-2 border-TAF-100"
+                  : "text-gray-500 hover:text-TAF-100 border-b-2 border-transparent"
+              }`}
               onClick={() => {
-                setToggleReportsType(false);
+                setToggleReportsType(isQuizzes);
                 setCurrentPage(1);
               }}
-              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base font-medium md:rounded-br-3xl rounded-br-3xl flex-1 transition-all duration-200 ${
-                !toggleReportsType
-                  ? "bg-TAF-100 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
             >
-              التعليقات
+              {isQuizzes ? "بلاغات الاختبارات" : "بلاغات التعليقات"}
             </button>
-            <button
-              type="button"
-              onClick={() => {
-                setToggleReportsType(true);
-                setCurrentPage(1);
-              }}
-              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base md:rounded-bl-3xl rounded-bl-3xl font-medium flex-1 transition-all duration-200 ${
-                toggleReportsType
-                  ? "bg-TAF-100 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              الاختبارات
-            </button>
-          </div>
+          ))}
         </div>
+
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
+          {toggleReportsType ? "بلاغات الاختبارات" : "بلاغات التعليقات"}
+        </h1>
 
         {/* Search Button */}
         <SearchButton
@@ -355,3 +371,54 @@ export default function AdminHomePage() {
     </Screen>
   );
 }
+
+//     <div className="bg-white p-2 sm:p-3 md:p-4 border rounded-lg shadow-md hover:shadow-lg transition-all duration-200 text-right w-full">
+//       <h2 className="text-base sm:text-lg font-bold mb-1 sm:mb-2">بلاغ</h2>
+//       <p className="text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
+//         السبب: {report.content}
+//       </p>
+//       <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base whitespace-normal break-words">
+//         الاختبار: {report.quiz.title}
+//       </p>
+//       <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
+//         منشئ الاختبار: {report.quiz.authorName}
+//       </p>
+//       <p className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
+//         الحالة: {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
+//       </p>
+//       {report.isResolved && (
+//         <div className="mt-1 sm:mt-2 text-xs sm:text-sm md:text-base font-semibold whitespace-normal break-words">
+//           الاجراءات:
+//           <ul className="pr-2 sm:pr-4">
+//             {report.isElementHidden && (
+//               <li>
+//                 تم اخفاء الاختبار بواسطة: <span>{report.adminExecutedHide || "المشرف"}</span>
+//               </li>
+//             )}
+//             {report.isAuthorBanned && (
+//               <li>
+//                 تم حظر المستخدم بواسطة: <span>{report.adminExecutedBan || "المشرف"}</span>
+//               </li>
+//             )}
+//           </ul>
+//         </div>
+//       )}
+
+//       <div className="mt-2 sm:mt-4 flex flex-wrap sm:flex-nowrap justify-start gap-1 sm:gap-2 rtl:space-x-reverse">
+//         <button
+//           className="bg-green-500 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-green-700 transition-colors duration-200 flex-1 sm:flex-none"
+//           onClick={() => onReject(report.reportId)}>
+//           رفض
+//         </button>
+//         <button
+//           className="bg-red-500 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-red-700 transition-colors duration-200 flex-1 sm:flex-none"
+//           onClick={handleDelete}>
+//           اخفاء الاختبار
+//         </button>
+//         <button
+//           className="bg-red-700 text-white text-xs sm:text-sm px-2 sm:px-4 py-1 sm:py-2 rounded hover:bg-red-900 transition-colors duration-200 w-full sm:w-auto mt-1 sm:mt-0"
+//           onClick={handleBan}>
+//           اخفاء الاختبار و حظر المستخدم
+//         </button>
+//       </div>
+//     </div>

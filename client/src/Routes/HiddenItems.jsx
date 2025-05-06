@@ -1,5 +1,12 @@
 import Screen from "../components/Screen";
-import { useState, useEffect, lazy, Suspense, useMemo, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  lazy,
+  Suspense,
+  useMemo,
+  useCallback,
+} from "react";
 import { toast } from "react-toastify";
 import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
@@ -8,7 +15,11 @@ import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 import HiddenQuizCard from "../components/hiddenItemsPageComponents/HiddenQuizCard";
 import HiddenCommentCard from "../components/hiddenItemsPageComponents/HiddenCommentCard";
-import { useDebounce, useMemoizedFilter, usePaginatedItems } from "../util/performanceOptimizations";
+import {
+  useDebounce,
+  useMemoizedFilter,
+  usePaginatedItems,
+} from "../util/performanceOptimizations";
 
 // Lazy load Pagination component
 const Pagination = lazy(() =>
@@ -165,18 +176,31 @@ export default function HiddenItems() {
   );
 
   // Use memoized filters for better performance
-  const filteredComments = useMemoizedFilter(hiddenComments, searchQuery, commentFilterFn);
-  const filteredQuizzes = useMemoizedFilter(hiddenQuizzes, searchQuery, quizFilterFn) || [];
+  const filteredComments = useMemoizedFilter(
+    hiddenComments,
+    searchQuery,
+    commentFilterFn
+  );
+  const filteredQuizzes =
+    useMemoizedFilter(hiddenQuizzes, searchQuery, quizFilterFn) || [];
 
   // Use memoized pagination
   const currentItems = useMemo(() => {
     const items = toggleHiddenItems ? filteredQuizzes : filteredComments || [];
     const startIndex = (currentPage - 1) * itemsPerPage;
     return items.slice(startIndex, startIndex + itemsPerPage);
-  }, [toggleHiddenItems, filteredQuizzes, filteredComments, currentPage, itemsPerPage]);
+  }, [
+    toggleHiddenItems,
+    filteredQuizzes,
+    filteredComments,
+    currentPage,
+    itemsPerPage,
+  ]);
 
   const totalPages = useMemo(() => {
-    const totalItems = toggleHiddenItems ? filteredQuizzes?.length : filteredComments?.length;
+    const totalItems = toggleHiddenItems
+      ? filteredQuizzes?.length
+      : filteredComments?.length;
     return Math.ceil(totalItems / itemsPerPage);
   }, [toggleHiddenItems, filteredQuizzes, filteredComments, itemsPerPage]);
 
@@ -217,45 +241,31 @@ export default function HiddenItems() {
   // Empty state handling is now done in the main render function with conditional rendering
 
   return (
-    <Screen title={toggleHiddenItems ? "Hidden Quizzes" : "Hidden Comments"}>
-      <Page>
-        {/* Toggle Reports Type - Centered */}
-        <div className="flex justify-center mb-4 px-2 sm:px-4">
-          <div
-            className="rounded-b-2xl inline-flex shadow-sm w-full max-w-xs"
-            role="group"
-          >
+    <Screen title="Hidden Items" className="p-2 sm:p-4 md:p-6">
+      <Page className="w-full max-w-7xl mx-auto">
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 sm:mb-6 text-center sm:text-right">
+          العناصر المخفية
+        </h1>
+
+        {/* Toggle between comments and quizzes */}
+        <div className="mb-4">
+          {[false, true].map((isQuizzes) => (
             <button
-              onClick={() => {
-                setToggleHiddenItems(false);
-                setCurrentPage(1);
-                setSearchQuery("");
-              }}
-              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base font-medium md:rounded-br-3xl rounded-br-3xl flex-1 transition-all duration-200 ${
-                !toggleHiddenItems
-                  ? "bg-TAF-100 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
+              key={isQuizzes ? "quizzes" : "comments"}
+              className={`mt-7 py-2 px-4 w-40 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
+              ${
+                toggleHiddenItems === isQuizzes
+                  ? "text-black font-extrabold border-2 border-TAF-100"
+                  : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
               }`}
+              onClick={() => setToggleHiddenItems(isQuizzes)}
             >
-              التعليقات
+              {isQuizzes ? "الاختبارات المخفية" : "التعليقات المخفية"}
             </button>
-            <button
-              onClick={() => {
-                setToggleHiddenItems(true);
-                setCurrentPage(1);
-                setSearchQuery("");
-              }}
-              className={`px-1 sm:px-4 py-2 sm:py-3 text-xs sm:text-sm md:text-base md:rounded-bl-3xl rounded-bl-3xl font-medium flex-1 transition-all duration-200 ${
-                toggleHiddenItems
-                  ? "bg-TAF-100 text-white"
-                  : "bg-white text-gray-700 hover:bg-gray-100"
-              }`}
-            >
-              الإختبارات
-            </button>
-          </div>
+          ))}
         </div>
-        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-right">
+
+        <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-800 mb-4 text-center">
           {toggleHiddenItems ? "الإختبارات المخفية" : "التعليقات المخفية"}
         </h1>
 
