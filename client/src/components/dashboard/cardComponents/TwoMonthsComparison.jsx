@@ -136,7 +136,7 @@ export default function TwoMonthsComparison({ className }) {
     </div>
   );
   async function getTwoMonthsComparison(currentMonth, secondMonth) {
-    const makeItRandom = true;
+    const makeItRandom = false;
     // I put them currentMonth, secondMonth as params to make any next change easier
     try {
       const twoMonthsData = await axios.get("admin/dashboard/getTwoMonthsComparison", {

@@ -102,7 +102,7 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
     }
   }
   async function getTheCommentsCountForTheMonthDays(selectedCourseId, selectedMonth, setChartData) {
-    const makeItRandom = true;
+    const makeItRandom = false;
     // I put them currentMonth, secondMonth as params to make any next change easier
     try {
       const twoMonthsData = await axios.get("admin/dashboard/getCourseCommentsPerDay", {
