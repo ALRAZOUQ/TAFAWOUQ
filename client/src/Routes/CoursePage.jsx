@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth } from "../context/authContext";
 import { useCourseData } from "../context/CourseContext";
+import Screen from "../components/Screen";
 //
 // Lazy-loaded components
 const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
@@ -124,7 +125,7 @@ const CoursePage = () => {
   };
   // bg-gradient-to-b from-TAF-200 via-white to-TAF-200
   return (
-    <div className=" min-h-screen">
+    <Screen>
       <div className="container mx-auto p-4">
         <Suspense fallback={<div>Loading Course...</div>}>
           <CourseCard
@@ -260,7 +261,7 @@ const CoursePage = () => {
             </div>
           ))}
       </div>
-    </div>
+    </Screen>
   );
 };
 
