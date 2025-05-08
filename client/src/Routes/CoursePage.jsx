@@ -5,7 +5,11 @@ import { toast } from "react-toastify";
 import { useAuth } from "../context/authContext";
 import { useCourseData } from "../context/CourseContext";
 import Screen from "../components/Screen";
-//
+import { CommentSkeleton } from "../components/skeleton/CommentSkeleton";
+import { QuizSkeleton } from "../components/skeleton/QuizSkeleton";
+import { CourseSkeleton } from "../components/skeleton/CourseSkeleton";
+import { FilterControlsSkeleton } from "../components/skeleton/FilterControlsSkeleton";
+import{EnterCommentSkeleton} from "../components/skeleton/EnterCommentSkeleton"
 // Lazy-loaded components
 const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
 const CourseCard = lazy(() =>
@@ -34,7 +38,11 @@ const CoursePage = () => {
   const [course, setCourse] = useState(null);
   const [comments, setComments] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
-
+  
+  // Add loading states for each data type we need to restrucer the code to cheek if the data stil lodindng show skeleton or useing react query to fetch data then we will all binefit of suspanse fallback 
+  const [isLoadingCourse, setIsLoadingCourse] = useState(true);
+  const [isLoadingComments, setIsLoadingComments] = useState(true);
+  const [isLoadingQuizzes, setIsLoadingQuizzes] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterTag, setFilterTag] = useState("");
   const [sortBy, setSortBy] = useState("recent");
@@ -59,16 +67,32 @@ const CoursePage = () => {
 
   useEffect(() => {
     const loadData = async () => {
+      // Set all loading states to true at the start
+      setIsLoadingCourse(true);
+      setIsLoadingComments(true);
+      setIsLoadingQuizzes(true);
+      
       try {
+        // Load course data
         const courseRes = await axios.get(`auth/course/${courseId}`);
         setCourse(courseRes.data.course[0]);
+        setIsLoadingCourse(false);
 
+        // Load comments data
         const commentsRes = await axios.get(`auth/comments/${courseId}`);
         setComments(commentsRes.data.comments);
+        setIsLoadingComments(false);
 
+        // Load quizzes data
         const quizRes = await axios.get(`auth/course/quizzes/${courseId}`);
         setQuizzes(quizRes.data.quiz);
-      } catch (error) {}
+        setIsLoadingQuizzes(false);
+      } catch (error) {
+        // Set loading states to false even if there's an error
+        setIsLoadingCourse(false);
+        setIsLoadingComments(false);
+        setIsLoadingQuizzes(false);
+      }
     };
     loadData();
   }, [courseId]);
@@ -127,17 +151,21 @@ const CoursePage = () => {
   return (
     <Screen>
       <div className="container mx-auto p-4">
-        <Suspense fallback={<div>Loading Course...</div>}>
-          <CourseCard
-            course={course}
-            isAdmin={user?.isAdmin}
-            activeTab={activeTab}
-            setActiveTab={setActiveTab}
-            onDelete={() => setIsConfirmOpen(true)}
-          />
-        </Suspense>
-
-        <Suspense fallback={<div>Loading...</div>}>
+     
+        {isLoadingCourse ? (
+          <CourseSkeleton />
+        ) : (
+          <Suspense fallback={<CourseSkeleton />}>
+            <CourseCard
+              course={course}
+              isAdmin={user?.isAdmin}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              onDelete={() => setIsConfirmOpen(true)}
+            />
+          </Suspense>
+        )}
+        <Suspense fallback={""}>
           <ConfirmDialog
             isOpen={isConfirmOpen}
             title="حذف المقرر"
@@ -148,6 +176,7 @@ const CoursePage = () => {
           />
         </Suspense>
 
+        {!isLoadingCourse ? (
         <div className="mb-4">
           {["comments", "quizzes"].map((tab) => (
             <button
@@ -163,11 +192,11 @@ const CoursePage = () => {
               {tab === "comments" ? "التعليقات" : "الاختبارات"}
             </button>
           ))}
-        </div>
+        </div>):("")}
 
         {activeTab === "comments" && (
           <>
-            <Suspense fallback={<div>Loading...</div>}>
+            <Suspense fallback={<FilterControlsSkeleton />}>
               <FilterControls
                 searchQuery={searchQuery}
                 setSearchQuery={setSearchQuery}
@@ -179,7 +208,7 @@ const CoursePage = () => {
             </Suspense>
 
             {isAuthorized && (
-              <Suspense fallback={<div>Loading comment box...</div>}>
+              <Suspense fallback={<EnterCommentSkeleton />}>
                 <WriteComment
                   courseId={courseId}
                   onCommentAdded={handleNewComment}
@@ -187,13 +216,20 @@ const CoursePage = () => {
               </Suspense>
             )}
 
-            {comments && comments.length > 0 ? (
+            {isLoadingComments ? (
+              // Show skeletons while loading
+              <div className="space-y-4">
+                {[...Array(3)].map((_, index) => (
+                  <CommentSkeleton key={index} />
+                ))}
+              </div>
+            ) : comments && comments.length > 0 ? (
               <>
                 <div className="space-y-4">
                   {paginatedComments.map((comment) => (
                     <Suspense
                       key={comment.id}
-                      fallback={<div>Loading comment...</div>}
+                      fallback={<CommentSkeleton />}
                     >
                       <Comment
                         comment={comment}
@@ -205,7 +241,7 @@ const CoursePage = () => {
                   ))}
                 </div>
 
-                <Suspense fallback={<div>Loading pagination...</div>}>
+                <Suspense fallback={<div className="mt-4"><CommentSkeleton /></div>}>
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(
@@ -230,9 +266,7 @@ const CoursePage = () => {
                 <Suspense
                   key={quiz.id}
                   fallback={
-                    <div className="animate-pulse bg-gray-200 h-32 rounded-lg">
-                      Loading quiz...
-                    </div>
+                    <QuizSkeleton />
                   }
                 >
                   <QuizCard quiz={quiz} onDelete={handleDeleteQuiz} />

@@ -192,22 +192,7 @@ export default function CourseCard({ course, isAdmin, onDelete, onCourseUpdate, 
           </motion.div>
         </div>
       </div>
-      {/*<div className="absolute top---4">
-      {["comments", "quizzes"].map((tab) => (
-            <button
-              key={tab}
-              className={`py-2 px-4 h-16 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
-        ${
-          activeTab === tab
-            ? "text-black font-extrabold border-b-4 border-b-TAF-600"
-            : "text-gray-500 hover:text-TAF-500 border-b-2 border-b-transparent"
-        }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === "comments" ? "التعليقات" : "الاختبارات"}
-            </button>
-          ))}
-          </div>*/}
+     
     </div>
   );
 }
