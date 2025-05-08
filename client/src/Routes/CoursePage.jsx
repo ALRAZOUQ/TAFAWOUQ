@@ -9,7 +9,7 @@ import { CommentSkeleton } from "../components/skeleton/CommentSkeleton";
 import { QuizSkeleton } from "../components/skeleton/QuizSkeleton";
 import { CourseSkeleton } from "../components/skeleton/CourseSkeleton";
 import { FilterControlsSkeleton } from "../components/skeleton/FilterControlsSkeleton";
-import{EnterCommentSkeleton} from "../components/skeleton/EnterCommentSkeleton"
+import { EnterCommentSkeleton } from "../components/skeleton/EnterCommentSkeleton";
 // Lazy-loaded components
 const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
 const CourseCard = lazy(() =>
@@ -38,8 +38,8 @@ const CoursePage = () => {
   const [course, setCourse] = useState(null);
   const [comments, setComments] = useState([]);
   const [quizzes, setQuizzes] = useState([]);
-  
-  // Add loading states for each data type we need to restrucer the code to cheek if the data stil lodindng show skeleton or useing react query to fetch data then we will all binefit of suspanse fallback 
+
+  // Add loading states for each data type we need to restrucer the code to cheek if the data stil lodindng show skeleton or useing react query to fetch data then we will all binefit of suspanse fallback
   const [isLoadingCourse, setIsLoadingCourse] = useState(true);
   const [isLoadingComments, setIsLoadingComments] = useState(true);
   const [isLoadingQuizzes, setIsLoadingQuizzes] = useState(true);
@@ -71,7 +71,7 @@ const CoursePage = () => {
       setIsLoadingCourse(true);
       setIsLoadingComments(true);
       setIsLoadingQuizzes(true);
-      
+
       try {
         // Load course data
         const courseRes = await axios.get(`auth/course/${courseId}`);
@@ -151,7 +151,6 @@ const CoursePage = () => {
   return (
     <Screen>
       <div className="container mx-auto p-4">
-     
         {isLoadingCourse ? (
           <CourseSkeleton />
         ) : (
@@ -177,22 +176,25 @@ const CoursePage = () => {
         </Suspense>
 
         {!isLoadingCourse ? (
-        <div className="mb-4">
-          {["comments", "quizzes"].map((tab) => (
-            <button
-              key={tab}
-              className={`mt-7 py-2 px-4 w-32 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
+          <div className="mb-4">
+            {["comments", "quizzes"].map((tab) => (
+              <button
+                key={tab}
+                className={`mt-7 py-2 px-4 w-32 ml-2 font-medium text-base relative transition-all duration-200 rounded-lg bg-white shadow-sm hover:shadow-md
         ${
           activeTab === tab
             ? "text-black font-extrabold border-2 border-TAF-100"
             : "text-gray-500 hover:text-TAF-100 border-b-2 border-b-transparent"
         }`}
-              onClick={() => setActiveTab(tab)}
-            >
-              {tab === "comments" ? "التعليقات" : "الاختبارات"}
-            </button>
-          ))}
-        </div>):("")}
+                onClick={() => setActiveTab(tab)}
+              >
+                {tab === "comments" ? "التعليقات" : "الاختبارات"}
+              </button>
+            ))}
+          </div>
+        ) : (
+          ""
+        )}
 
         {activeTab === "comments" && (
           <>
@@ -227,10 +229,7 @@ const CoursePage = () => {
               <>
                 <div className="space-y-4">
                   {paginatedComments.map((comment) => (
-                    <Suspense
-                      key={comment.id}
-                      fallback={<CommentSkeleton />}
-                    >
+                    <Suspense key={comment.id} fallback={<CommentSkeleton />}>
                       <Comment
                         comment={comment}
                         courseCode={course?.code}
@@ -241,7 +240,13 @@ const CoursePage = () => {
                   ))}
                 </div>
 
-                <Suspense fallback={<div className="mt-4"><CommentSkeleton /></div>}>
+                <Suspense
+                  fallback={
+                    <div className="mt-4">
+                      <CommentSkeleton />
+                    </div>
+                  }
+                >
                   <Pagination
                     currentPage={currentPage}
                     totalPages={Math.ceil(
@@ -263,12 +268,7 @@ const CoursePage = () => {
           (quizzes && quizzes.length > 0 ? (
             <>
               {paginatedQuizzes.map((quiz) => (
-                <Suspense
-                  key={quiz.id}
-                  fallback={
-                    <QuizSkeleton />
-                  }
-                >
+                <Suspense key={quiz.id} fallback={<QuizSkeleton />}>
                   <QuizCard quiz={quiz} onDelete={handleDeleteQuiz} />
                 </Suspense>
               ))}
