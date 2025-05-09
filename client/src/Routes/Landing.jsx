@@ -130,7 +130,7 @@ export default function Landing() {
           </motion.div>
 
           <motion.button
-            className="relative px-8 py-4 rounded-full bg-gradient-to-r z-[2] from-TAF-300 to-TAF-100 text-white font-bold text-xl shadow-lg overflow-hidden group"
+            className="relative px-8 py-4 rounded-full bg-gradient-to-r z-[2] from-[#0a98db] to-[#0e9fe3] text-white font-bold text-xl shadow-lg overflow-hidden group"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}>
@@ -146,7 +146,7 @@ export default function Landing() {
               />
             </Link>
             <motion.div
-              className="absolute -inset-1 rounded-full blur-sm z-[2] bg-gradient-to-l from-TAF-100 via-gray-400 to-TAF-100 opacity-70"
+              className="absolute -inset-1 rounded-full blur-sm z-[2] bg-gradient-to-l from-TAF-100 via-[#0b8eca] to-TAF-100 opacity-70"
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />
