@@ -24,14 +24,14 @@ export default function TwoMonthsComparison({ className }) {
     { date: "2020-05-01", desktop: 5, mobile: 5 },
   ]);
   const [currentMonth, setCurrentMonth] = useState({
-    month: new Date().getMonth() + 1,
+    month: new Date().getMonth() ,
     year: new Date().getFullYear(),
   });
 
   const [currentAlreadySet, setCurrentAlreadySet] = useState(false);
 
   const [secondMonth, setSecondMonth] = useState({
-    month: new Date().getMonth(),
+    month: new Date().getMonth()-1,
     year: new Date().getFullYear(),
   });
   const chartConfig = {
@@ -39,7 +39,7 @@ export default function TwoMonthsComparison({ className }) {
       label: "Visitors",
     },
     desktop: {
-      label: "الشهر الحالي",
+      label: "الشهر الماضي",
       color: "hsl(var(--chart-1))",
     },
     mobile: {
@@ -54,13 +54,15 @@ export default function TwoMonthsComparison({ className }) {
       new Date(formatDateTo_YYYY_MM_01(secondMonth)) <
       new Date(formatDateTo_YYYY_MM_01(currentMonth))
     ) {
-      console.log("secondMonth :>> ", formatDateTo_YYYY_MM_01(secondMonth));
+      // console.log("secondMonth :>> ", formatDateTo_YYYY_MM_01(secondMonth));
       getTwoMonthsComparison(
         formatDateTo_YYYY_MM_01(currentMonth),
         formatDateTo_YYYY_MM_01(secondMonth),
         currentAlreadySet,
         setCurrentAlreadySet
       );
+    }else{
+      setChartData([])
     }
   }, [secondMonth]);
 
@@ -70,7 +72,7 @@ export default function TwoMonthsComparison({ className }) {
         <CardHeader className="flex items-stretch gap-2 space-y-0 border-b py-5 sm:flex-row">
           <div className=" flex justify-between items-center w-full text-center sm:text-right">
             <CardTitle className="text-blue-900" align={"start"}>
-              عدد التعليقات للشهر الحالي وشهر{" "}
+              عدد التعليقات للشهر الماضي وشهر{" "}
               {monthMapper[secondMonth.month - 1]}
             </CardTitle>
             <MonthPicker {...{ secondMonth, setSecondMonth }} />
