@@ -12,8 +12,9 @@ import { useMediaQuery } from "../../helperHocks/useMediaQuery";
 import AdminLinks from "./AdminLinks";
 import UserLinks from "./UserLinks";
 import GeneralNavigationLinks from "./GeneralNavigationLinks";
-
+import { useSchedule } from "../../context/ScheduleContext";
 export default function MainHeader() {
+  const { resetSchedule } = useSchedule();
   const route = useLocation();
   const navigate = useNavigate();
   const { logout, isAuthorized, user } = useAuth();
@@ -55,6 +56,7 @@ export default function MainHeader() {
       const flag = await logout();
       if (flag) {
         toast.success("تم تسجيل الخروج بنجاح");
+        resetSchedule();
       }
       navigate("/");
     } catch (error) {
@@ -104,7 +106,11 @@ export default function MainHeader() {
               className="text-TAF-100 focus:outline-none"
               onClick={() => setIsOpen(!isOpen)}
             >
-              {isOpen ? <X size={28} /> : <Menu size={28} className="me-0 sm:me-3" />}
+              {isOpen ? (
+                <X size={28} />
+              ) : (
+                <Menu size={28} className="me-0 sm:me-3" />
+              )}
             </button>
           </div>
         </div>
