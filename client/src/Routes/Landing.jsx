@@ -3,7 +3,7 @@ import main_logo from "../assets/mainLogo.svg";
 import { motion } from "framer-motion";
 import { features } from "../non-changeable-data/features.jsx";
 import { useState, useEffect } from "react";
-import TafawouqMainCanvas from "../components/TAFAWOUQ-Canvas";
+// import TafawouqMainCanvas from "../components/TAFAWOUQ-Canvas";
 import Screen from "@/components/Screen";
 const Texts = ["شارك", "تعلم", " انطلق نحو النجاح", "تعاون"];
 export default function Landing() {

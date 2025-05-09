@@ -1,10 +1,10 @@
 const bgConfig = {
     "particles": {
         "number": {
-            "value": 120,
+            "value": 220,
             "density": {
                 "enable": true,
-                "value_area": 1000
+                "value_area": 700
             }
         },
         "color": {
@@ -25,7 +25,7 @@ const bgConfig = {
                 "height": 100
             }
         },
-        "opacity": {
+        "opacity": { // dots
             "value": 0.1,
             "random": false,
             "anim": {
@@ -35,7 +35,7 @@ const bgConfig = {
                 "sync": false
             }
         },
-        "size": {
+        "size": { // dots
             "value": 1,
             "random": false,
             "anim": {
@@ -49,12 +49,12 @@ const bgConfig = {
             "enable": true,
             "distance": 150,
             "color": "#0b8eca",
-            "opacity": 0.2,
+            "opacity": 0.4,
             "width": 0.8
         },
         "move": {
             "enable": true,
-            "speed": 4,
+            "speed": 3,
             "direction": "none",
             "random": false,
             "straight": false,
@@ -114,7 +114,7 @@ var count_particles, stats, update
 stats = new Stats
 stats.setMode(0)
 
-stats.domElement.style.position = 'absolute'
+stats.domElement.style.position = 'fixed'
 stats.domElement.style.left = '0px'
 stats.domElement.style.top = '0px'
 document.body.appendChild(stats.domElement)
