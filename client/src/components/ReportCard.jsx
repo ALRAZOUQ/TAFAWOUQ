@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import axios from "../api/axios";
-import { CodeSquare, Flag, MessageSquareMore, UserPen } from "lucide-react";
+import { CodeSquare, Flag, MessageSquareMore, UserPen,Hash } from "lucide-react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/authContext";
 
@@ -27,6 +27,11 @@ export default function ReportCard({ report, onReject, updateProperty }) {
         <span className="font-semibold">الكاتـب: </span>
         {report.comment.authorName}
       </p>
+      <p className="flex items-center gap-1 mt-2 mb-2">
+          <Hash  className="size-4  text-gray-500" />
+          <span className="font-semibold">رقم البلاغ: </span>
+          {report.reportId}
+        </p>
       {/* <p className="mt-2  whitespace-normal break-words">
         <span className="font-semibold">الحالة: </span>
         {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
