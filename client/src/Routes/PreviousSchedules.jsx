@@ -43,7 +43,7 @@ export default function PreviousSchedules() {
           </Fragment>
         ))
       ) : (
-        <div className="text-2xl text-red-500">ليس لديك جدول سابق</div>
+        <div className="text-2xl text-gray-700">ليس لديك جدول سابق</div>
       )}
     </Screen>
   );
