@@ -192,7 +192,7 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
       <p className="text-gray-700 py-2 text-right break-words whitespace-normal">{comment.content}</p>
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
-        <div className="flex gap-6">
+        <div className="flex gap-4">
           {isAuthorized && (
             <button
               className={`flex items-center gap-2 ${
@@ -200,7 +200,7 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
               } hover:text-blue-600 transition-colors`}
               onClick={handleLikeToggle}
               disabled={isLikeLoading}>
-              <ThumbsUp size={18} />
+              <ThumbsUp size={16} />
               <span className="text-sm">{likesCount} اعجبني</span>
             </button>
           )}
@@ -208,13 +208,13 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
             <button
               className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
               onClick={() => setShowReplyForm(!showReplyForm)}>
-              <MessageCircle size={18} />
+              <MessageCircle size={16} />
               <span className="text-sm">{comment.numOfReplies} رد</span>
             </button>
           )}
           {!isReply && (
             <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-              <Tag size={18} />
+              <Tag size={16} />
               <span className="text-sm">{comment.tag}</span>
             </button>
           )}
@@ -228,7 +228,7 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
                 handleReportComment(formData);
               }}>
               <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                <MessageSquareWarning size={18} />
+                <MessageSquareWarning size={16} />
                 <span className="text-sm">ابلاغ</span>
               </button>
             </GenericForm>
@@ -246,7 +246,7 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
               <button
                 className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
                 type="button">
-                <Trash2 size={18} />
+                <Trash2 size={16} />
                 <span className="text-sm">اخفاء</span>
               </button>
             </GenericForm>
@@ -289,19 +289,19 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
 const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
   <button
     onClick={onClick}
-    className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors"
+    className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors mr-4"
     disabled={isLoading}>
     {isLoading ? (
       "جاري التحميل..."
     ) : showReplies ? (
       <>
         إخفاء الردود
-        <ChevronUp size={18} />
+        <ChevronUp size={16} />
       </>
     ) : (
       <>
         عرض الردود
-        <ChevronDown size={18} />
+        <ChevronDown size={16} />
       </>
     )}
   </button>
