@@ -76,7 +76,7 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
       toast.error(error.response?.data?.message || "حدث خطأاثناء حذف الكومنت.");
       console.error("Error hiding comment:", error);
     }
-  }, []);
+  }, [onDelete]); 
 
   const handleReportComment = useCallback(async (formData) => {
     try {
