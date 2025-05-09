@@ -7,7 +7,8 @@ import axios from "../../api/axios";
 
 export default function ShareQuizModal({ isOpen, onClose, quizData ,updateQuizDataAttribute}) {
   const { coursesData } = useCourseData();
-  const courses = coursesData;
+
+  const courses = coursesData || [];
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCourse, setSelectedCourse] = useState(null);
 
