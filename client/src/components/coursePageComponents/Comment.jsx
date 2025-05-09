@@ -22,7 +22,13 @@ const UserAvatar = memo(({ name }) => (
   </div>
 ));
 
-export default function Comment({ comment, isReply = false, courseId, onDelete, courseCode }) {
+export default function Comment({
+  comment,
+  isReply = false,
+  courseId,
+  onDelete,
+  courseCode,
+}) {
   const [replies, setReplies] = useState([]);
   const [showReplies, setShowReplies] = useState(false);
   const [isLoadingReplies, setIsLoadingReplies] = useState(false);
@@ -55,28 +61,33 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
     ],
     []
   );
-  const handleHideComment = useCallback(async (formData) => {
-    try {
-      const response = await axios.put("/admin/hideComment", {
-        commentId: formData.id,
-        reason: formData.reason,
-        reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
-      });
+  const handleHideComment = useCallback(
+    async (formData) => {
+      try {
+        const response = await axios.put("/admin/hideComment", {
+          commentId: formData.id,
+          reason: formData.reason,
+          reportId: formData.reportId, // formData has 'reportId', it can be null or undefined (optional)
+        });
 
-      if (response.data.success) {
-        onDelete(formData.id); //to delete the comment from the comments list
-        toast.success("تم إخفاء التعليق بنجاح");
+        if (response.data.success) {
+          onDelete(formData.id); //to delete the comment from the comments list
+          toast.success("تم إخفاء التعليق بنجاح");
+        }
+      } catch (error) {
+        if (error?.response?.status === 409) {
+          toast.error("تم حذف هذا المقرر بالفعل");
+          return;
+        }
+        console.error("Error submitting rating:", error);
+        toast.error(
+          error.response?.data?.message || "حدث خطأاثناء حذف الكومنت."
+        );
+        console.error("Error hiding comment:", error);
       }
-    } catch (error) {
-      if (error?.response?.status === 409) {
-        toast.error("تم حذف هذا المقرر بالفعل");
-        return;
-      }
-      console.error("Error submitting rating:", error);
-      toast.error(error.response?.data?.message || "حدث خطأاثناء حذف الكومنت.");
-      console.error("Error hiding comment:", error);
-    }
-  }, [onDelete]); 
+    },
+    [onDelete]
+  );
 
   const handleReportComment = useCallback(async (formData) => {
     try {
@@ -172,24 +183,31 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
       className={`border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow space-y-3 mb-4 ${
         isReply ? "ml-8" : ""
       }`}
-      id={comment.id}>
+      id={comment.id}
+    >
       {/* avatar & data */}
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
           <UserAvatar name={comment.authorName} />
           <div>
-            <h3 className="font-semibold text-gray-800">{comment.authorName}</h3>
+            <h3 className="font-semibold text-gray-800">
+              {comment.authorName}
+            </h3>
             <small className="text-gray-500 text-sm">
               {new Date(comment.creationDate).toLocaleDateString("ar-SA")}
             </small>
           </div>
         </div>
         {!isReply && (
-          <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">{comment.tag}</span>
+          <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+            {comment.tag}
+          </span>
         )}
       </div>
 
-      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">{comment.content}</p>
+      <p className="text-gray-700 py-2 text-right break-words whitespace-normal">
+        {comment.content}
+      </p>
 
       <div className="flex justify-between items-center border-t border-gray-100 pt-2">
         <div className="flex gap-4">
@@ -199,7 +217,8 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
                 isLiked ? "text-blue-600" : "text-gray-600"
               } hover:text-blue-600 transition-colors`}
               onClick={handleLikeToggle}
-              disabled={isLikeLoading}>
+              disabled={isLikeLoading}
+            >
               <ThumbsUp size={16} />
               <span className="text-sm">{likesCount} اعجبني</span>
             </button>
@@ -207,7 +226,8 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
           {isAuthorized && !isReply && (
             <button
               className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-              onClick={() => setShowReplyForm(!showReplyForm)}>
+              onClick={() => setShowReplyForm(!showReplyForm)}
+            >
               <MessageCircle size={16} />
               <span className="text-sm">{comment.numOfReplies} رد</span>
             </button>
@@ -226,7 +246,8 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
               submitButtonText="ابلاغ"
               onSubmit={(formData) => {
                 handleReportComment(formData);
-              }}>
+              }}
+            >
               <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
                 <MessageSquareWarning size={16} />
                 <span className="text-sm">ابلاغ</span>
@@ -242,10 +263,12 @@ export default function Comment({ comment, isReply = false, courseId, onDelete, 
               submitButtonText="اخفاء"
               onSubmit={(formData) => {
                 handleHideComment(formData);
-              }}>
+              }}
+            >
               <button
                 className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
-                type="button">
+                type="button"
+              >
                 <Trash2 size={16} />
                 <span className="text-sm">اخفاء</span>
               </button>
@@ -290,7 +313,8 @@ const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
   <button
     onClick={onClick}
     className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors mr-4"
-    disabled={isLoading}>
+    disabled={isLoading}
+  >
     {isLoading ? (
       "جاري التحميل..."
     ) : showReplies ? (
@@ -308,7 +332,13 @@ const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
 );
 
 // Reply form component
-const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel, courseCode }) => {
+const ReplyForm = ({
+  parentId,
+  courseId,
+  onReplyAdded,
+  onCancel,
+  courseCode,
+}) => {
   const [replyContent, setReplyContent] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -345,21 +375,26 @@ const ReplyForm = ({ parentId, courseId, onReplyAdded, onCancel, courseCode }) =
         placeholder="اكتب ردك هنا..."
         value={replyContent}
         onChange={(e) => setReplyContent(e.target.value)}
-        disabled={isSubmitting}></textarea>
+        disabled={isSubmitting}
+      ></textarea>
       <div className=" mt-2">
         <div className="flex flex-row gap-2">
           <button
             className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
-              isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
+              isSubmitting
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-blue-600"
             }`}
             onClick={handleSubmitReply}
-            disabled={isSubmitting || !replyContent.trim()}>
+            disabled={isSubmitting || !replyContent.trim()}
+          >
             <Send size={14} /> إرسال
           </button>
           <button
             className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
             onClick={onCancel}
-            disabled={isSubmitting}>
+            disabled={isSubmitting}
+          >
             إلغاء
           </button>
         </div>
