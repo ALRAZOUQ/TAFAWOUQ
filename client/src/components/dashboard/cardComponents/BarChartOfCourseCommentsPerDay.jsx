@@ -44,12 +44,17 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
   useEffect(() => {
     getCoursesList(setCoursesList);
   }, []);
+
   useEffect(() => {
+    if (
+      new Date(formatDateTo_YYYY_MM_01(selectedMonth)) <=
+      new Date()
+    ) {
     getTheCommentsCountForTheMonthDays(
       selectedCourseId,
       formatDateTo_YYYY_MM_01(selectedMonth),
       setChartData
-    );
+    )}
   }, [selectedMonth, selectedCourseId]);
 
   return (

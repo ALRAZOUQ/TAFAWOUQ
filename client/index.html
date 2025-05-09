@@ -10,6 +10,8 @@
   <link rel="icon" type="image/svg+xml" href="src/assets/mainLogo.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>تفوُق</title>
+  <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
+
   <style>
     #loading-screen {
       position: fixed;
@@ -84,13 +86,16 @@
       </div>
     </div>
   </div>
-
+<!-- 
   <div class="bg-icons-container">
 
-  </div>
+  </div> -->  <div class="absolute inset-0 bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200 -z-30"></div>
+
+  <div id="particles-js"></div>
+
   <div id="root"></div>
     <!-- particles.js container -->
-    <div id="particles-js" class=" bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200">
+    <!-- <div id="particles-js" class=" bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200"> -->
 
     </div>
   <script>
@@ -98,12 +103,121 @@
       document.getElementById("loading-screen").remove();
     });
   </script>
-   <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+   <!-- <script src="http://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script> -->
    <!-- <script src="./src/util/bgParticlesJS.js"></script> -->
 
+   <script>
+      const isMobile = window.innerWidth <= 768;
 
+    particlesJS("particles-js", {
+      particles: {
+        number: {
+          value:isMobile?70: 160,
+          density: { enable: false, 
+            // value_area:isMobile?200: 400 
+          }
+        },
+        color: {
+          value: ["#23b7fc"]
+        },
+        shape: {
+          type: "circle"
+        },
+        opacity: {
+          value:isMobile?0.05: 0.3,
+          random: true
+        },
+        size: {
+          value: isMobile?0.5: 1,
+          random: false
+        },
+        line_linked: {
+          enable: true,
+          distance: isMobile?80:150,
+          color: "#23b7fc", // matches tailwind's gray-300
+          opacity: isMobile?0.2:0.3,
+          width:isMobile?0.5: 1
+        },
+        move: {
+          enable: true,
+          speed: 1,
+          random: false,
+          straight: false,
+          out_mode: "out"
+        }
+      },
+      interactivity: {
+        events: {
+          onhover: {
+            enable: true,
+            mode: "repulse"
+          }
+        },
+        modes: {
+          repulse: {
+            distance: 50,
+            duration: 0.4
+          }
+        }
+      },
+      retina_detect: true
+    });
+  </script>
+  
 
-
+   <!-- <script>
+    particlesJS("particles-js", {
+      particles: {
+        number: {
+          value: 990,
+          density: { enable: true, value_area: 1000 }
+        },
+        color: {
+          value: ["#FFD6A5", "#BBD0FF", "#B0b0fF", "#E2E2E2"] // soft pastel colors
+        },
+        shape: {
+          type: "circle",
+        },
+        opacity: {
+          value: 0.9,
+          random: true,
+          anim: {
+            enable: false
+          }
+        },
+        size: {
+          value: 2.5,
+          random: true
+        },
+        move: {
+          enable: true,
+          speed: 0.6,
+          direction: "none",
+          random: true,
+          straight: false,
+          out_mode: "out"
+        }
+      },
+      interactivity: {
+        events: {
+          onhover: {
+            enable: true,
+            mode: "repulse"
+          },
+          onclick: {
+            enable: false
+          }
+        },
+        modes: {
+          repulse: {
+            distance: 50,
+            duration: 0.4
+          }
+        }
+      },
+      retina_detect: true
+    });
+  </script> -->
 
   <script type="module" src="/src/main.jsx"></script>
 </body>

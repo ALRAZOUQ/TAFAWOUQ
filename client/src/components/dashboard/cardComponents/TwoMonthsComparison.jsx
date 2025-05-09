@@ -70,7 +70,7 @@ export default function TwoMonthsComparison({ className }) {
         <CardHeader className="flex items-stretch gap-2 space-y-0 border-b py-5 sm:flex-row">
           <div className=" flex justify-between items-center w-full text-center sm:text-right">
             <CardTitle className="text-blue-900" align={"start"}>
-              عدد التعليقات للشهر الماضي وشهر{" "}
+              عدد التعليقات للشهر الحالي وشهر{" "}
               {monthMapper[secondMonth.month - 1]}
             </CardTitle>
             <MonthPicker {...{ secondMonth, setSecondMonth }} />

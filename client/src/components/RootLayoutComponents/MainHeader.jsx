@@ -79,7 +79,7 @@ export default function MainHeader() {
       </AnimatePresence>
       <nav
         className="p-1 flex flex-col md:flex-row items-center justify-between bg-TAF-200 w-screen border-b border-gray-700  
-        lg:min-h-[100px] xl:min-h-[100px] relative z-50 max-[810px]:min-[770px]:p-2 overflow-visible"
+        lg:min-h-[2rem] xl:min-h-[2rem] relative z-50 max-[810px]:min-[770px]:p-2 overflow-visible"
       >
         {/* Logo and Toggle Button */}
         <div className="flex items-center justify-between w-full md:w-auto px-2">
@@ -87,7 +87,7 @@ export default function MainHeader() {
             <Link
               to={isAuthorized ? (user?.isAdmin ? "/admin" : "/home") : "/"}
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 xl:w-28 xl:h-28 max-[810px]:min-[766px]:w-16 max-[810px]:min-[770px]:h-16 flex items-center justify-center">
+              <div className="size-10 md:size-12 lg:size-12 xl:size-12 max-[810px]:min-[770px]:size-12 flex items-center justify-center">
                 <motion.img
                   src={main_logo}
                   className="object-contain w-full h-full"
@@ -104,7 +104,7 @@ export default function MainHeader() {
               className="text-TAF-100 focus:outline-none"
               onClick={() => setIsOpen(!isOpen)}
             >
-              {isOpen ? <X size={28} /> : <Menu size={28} />}
+              {isOpen ? <X size={28} /> : <Menu size={28} className="me-0 sm:me-3" />}
             </button>
           </div>
         </div>
