@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TopperCard({ icon, title, counts, toppersList, className }) {
-  console.log("toppersList :>> ", toppersList);
+  // console.log("toppersList :>> ", toppersList);
   // Dummy data
   return (
     <Card className={`rounded-3xl overflow-hidden  ${className}`} dir="rtl">
