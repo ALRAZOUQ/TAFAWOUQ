@@ -131,7 +131,7 @@ export default function MainHeader() {
               animate={{ y: 0, opacity: 1 }}
               exit={{ y: -300, opacity: 0 }}
               transition={{ duration: 0.3, ease: "easeInOut" }}
-              className="flex flex-col gap-4 absolute top-16 left-0 right-0 w-screen h-auto bg-TAF-200 p-6 shadow-lg border-t rounded-b-3xl border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto text-center items-center"
+              className="flex flex-col gap-4 absolute top-12 left-0 right-0 w-screen h-auto bg-TAF-200 p-6 shadow-lg border-t rounded-b-3xl border-gray-700 max-h-[calc(100vh-120px)] overflow-y-auto text-center items-center"
             >
               {/* Navigation Links */}
               <div className="flex flex-col w-full gap-4 mb-4">
