@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 export default function HiddenQuizCard({ handleUnhideQuiz, x, user, formatTime }) {
   return (
     <div
@@ -9,7 +11,7 @@ export default function HiddenQuizCard({ handleUnhideQuiz, x, user, formatTime }
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">
             <span className="text-sm font-semibold text-gray-900">المستخدم:</span>
-            <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{x.quizAuthor}</span>
+            <span className="text-sm font-semibold text-gray-900 truncate max-w-[200px]">{x.quizAuthorName}</span>
           </div>
         </div>
 
@@ -69,6 +71,14 @@ export default function HiddenQuizCard({ handleUnhideQuiz, x, user, formatTime }
             </button>
           </div>
         )}
+        <Link to={`/quiz/${x.quizId}`}>
+            <button
+              className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              <span>عرض الاختبار</span>
+              <ChevronRight size={16} className="transform rotate-180" />
+            </button>
+          </Link>
       </div>
     </div>
   );
