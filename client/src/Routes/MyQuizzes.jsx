@@ -27,9 +27,7 @@ export default function MyQuizzes() {
     fetchMyQuizzes();
   }, []);
 
-  const handleStartQuiz = (quizId) => {
-    // Add your navigation or quiz start logic here
-  };
+
 
   return (
     <Screen className={`p-4`} title="MyQuizzes">
@@ -50,7 +48,6 @@ export default function MyQuizzes() {
               <QuizCard
                 key={quiz.id}
                 quiz={quiz}
-                onStartQuiz={handleStartQuiz}
               />
             ))}
           </div>

@@ -7,7 +7,9 @@ import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthor
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 import { AnimatePresence, motion } from "framer-motion";
-import { Flag, MessageSquareMore, PcCase, UserPen } from "lucide-react";
+import { Flag, PcCase, UserPen,ChevronRight} from "lucide-react";
+import { Link } from "react-router-dom";
+
 // Lazy load Pagination component
 const Pagination = lazy(() =>
   import("../components/coursePageComponents/Pagination")
@@ -100,12 +102,21 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
           <span className="font-semibold ">الاختبار: </span>
           {report.quiz.title}
         </p>
-        <p className="flex items-center gap-1 mt-2 ">
+        <p className="flex items-center gap-1 mt-2 mb-2">
           <UserPen className="size-4  text-gray-500" />
 
           <span className="font-semibold">المنشئ: </span>
           {report.quiz.authorName}
         </p>
+    
+        <Link to={`/quiz/${report.quiz.id}`}>
+            <button
+              className="px-2 py-1.5 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              <span>عرض الاختبار</span>
+              <ChevronRight size={16} className="transform rotate-180" />
+            </button>
+          </Link>
         {/* <p className="mt-2  whitespace-normal break-words">
         <span className="font-semibold">الحالة: </span>
         {report.isResolved ? "تمت المعالجة" : "تحت الانتظار"}
@@ -130,6 +141,7 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
                 </li>
               )}
             </ul>
+           
           </div>
         )}
         {/*  */}

@@ -40,7 +40,7 @@ const formatDate = (dateString) => {
 
 
 
-export default function QuizCard({ quiz, onStartQuiz, onDelete }) {
+export default function QuizCard({ quiz, onDelete }) {
   const reportFields = useMemo(
     () => [
       {
@@ -123,8 +123,7 @@ export default function QuizCard({ quiz, onStartQuiz, onDelete }) {
           <div>
             <h3 className="font-bold text-gray-800">{quiz.title}</h3>
             <div className="flex items-center gap-2 text-gray-500 text-xs">
-              <span>{quiz.courseCode}</span>
-              <span className="text-gray-400">•</span>
+              
               <span>بواسطة {quiz.authorName}</span>
               <span className="text-gray-400">•</span>
               <span>{formatDate(quiz.creationDate)}</span>
@@ -143,7 +142,7 @@ export default function QuizCard({ quiz, onStartQuiz, onDelete }) {
        
           <div className="flex items-center gap-2 text-gray-500">
             <Tag size={16} />
-            <span className="text-xs font-medium">{quiz.courseCode}</span>
+            <span className="text-xs font-medium">{quiz.courseCode || "غير محدد"}</span>
           </div>
           {isAuthorized && !user.isAdmin &&(
             <GenericForm
@@ -180,17 +179,25 @@ export default function QuizCard({ quiz, onStartQuiz, onDelete }) {
           )}
         </div>
         
-        <Link to={`/quiz/${quiz.id}`}>
-       
+        {/* Quiz start button with authorization check */}
+        {isAuthorized ? (
+          <Link to={`/quiz/${quiz.id}`}>
+            <button
+              className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              <span>ابدأ الاختبار</span>
+              <ChevronRight size={16} className="transform rotate-180" />
+            </button>
+          </Link>
+        ) : (
           <button
-          onClick={() => onStartQuiz(quiz.id)}
-          className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          <span>ابدأ الاختبار</span>
-          <ChevronRight size={16} className="transform rotate-180" />
-        </button>
-        </Link>
-        
+            onClick={() => toast.info("يجب تسجيل الدخول لبدء الاختبار")}
+            className="px-4 py-1.5 bg-blue-600 text-white text-sm rounded-full hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            <span>ابدأ الاختبار</span>
+            <ChevronRight size={16} className="transform rotate-180" />
+          </button>
+        )}
       </div>
     </div>
   

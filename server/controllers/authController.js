@@ -209,7 +209,8 @@ const authController = {
   LEFT JOIN (
     SELECT parentCommentId, COUNT(*) AS reply_count
     FROM comment
-    WHERE parentCommentId IS NOT NULL
+    LEFT JOIN hideComment hr ON comment.id = hr.commentId
+    WHERE parentCommentId IS NOT NULL AND hr.id IS NULL
     GROUP BY parentCommentId
   ) r ON c.id = r.parentCommentId
   LEFT JOIN hideComment hc ON c.id = hc.commentId

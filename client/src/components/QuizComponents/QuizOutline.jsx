@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { isWrongAnswer, isCorrectAnswer } from "../../util/QuizHelper";
 import ShareQuizModal from "./ShareQuizModal";
+import { useAuth } from "../../context/authContext";
 export default function QuizOutline({
   score,
   quizData,
@@ -11,6 +12,8 @@ export default function QuizOutline({
   userAnswers,
   startQuiz,
 }) {
+
+  const { user, isAuthorized } = useAuth();
   const [showShareModal, setShowShareModal] = useState(false);
   const navigate = useNavigate();
   function handleShareQuiz() {
@@ -35,21 +38,34 @@ export default function QuizOutline({
         }
       );
 
-      return addQuizToMyQuizListResult.status === 201;
+      return { success: true, status: addQuizToMyQuizListResult.status };
     } catch (error) {
       console.error("Error storing quiz or adding to list:", error);
-      return false;
+      // Return the error object instead of just false
+      return { success: false, error };
     }
   };
   function handleCloseShareModal() {
     setShowShareModal(false);
   }
   const handeStoreQuiz = async () => {
-    if (await storeQuiz(quizData)) {
-      toast.success("تم اضافة الاختبار الى قائمتك بنجاح");
-      navigate("/myquizzes");
-    } else {
-      toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
+    try {
+      const result = await storeQuiz(quizData);
+      
+      if (result.success) {
+        toast.success("تم اضافة الاختبار الى قائمتك بنجاح");
+        navigate("/myquizzes");
+        return;
+      }
+      // Handle error cases
+      const error = result.error;
+      if (error.response?.data?.message === "Quiz already exists in myQuizList.") {
+        toast.error("الاختبار موجود بالفعل في قائمة الاختبارات الخاصة بك");
+      } else {
+        toast.error("حدث خطأ عند محاولة اضافة الاختبار الى قائمتك");
+      }
+    } catch (error) {
+      toast.error("حدث خطأ غير متوقع، يرجى المحاولة مرة أخرى");
     }
   };
   return (
@@ -74,6 +90,7 @@ export default function QuizOutline({
         </div>
 
         {/* Action buttons */}
+        {!(user.isAdmin) &&(
         <div className="flex gap-4 mb-8">
           {!(quizData.isShared) && (
             
@@ -91,7 +108,7 @@ export default function QuizOutline({
             حفظ الاختبار في قائمتي
           </button>
         </div>
-
+        )}
         {/* Question review */}
         <div className="space-y-8 mt-8">
           <h2 className="text-xl font-bold border-b pb-2">مراجعة الإجابات</h2>
