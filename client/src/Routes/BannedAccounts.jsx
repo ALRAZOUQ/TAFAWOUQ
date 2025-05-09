@@ -32,8 +32,8 @@ export default function BannedAccounts() {
           setBannedAccounts(response.data.bannendAccounts);
         }
       } catch (error) {
-        console.error("Failed to fetch banned accounts:", error);
-        toast.info("لا يوجد أي حساب محظور");
+       // console.error("Failed to fetch banned accounts:", error);
+        //toast.info("لا يوجد أي حساب محظور");
       } finally {
         setIsLoading(false);
       }
@@ -85,7 +85,7 @@ export default function BannedAccounts() {
   if (bannedAccounts.length === 0) {
     return (
       <Screen title="Banned Accounts" className="p-2 sm:p-4 md:p-6 flex items-center justify-center">
-        <div className="text-red-400 text-2xl">لا يوجد حسابات محظورة</div>
+        <div className="text-gray-700 text-2xl">لا يوجد حسابات محظورة</div>
       </Screen>
     );
   }
