@@ -209,33 +209,34 @@ export default function Comment({
         {comment.content}
       </p>
 
-      <div className="flex justify-between items-center border-t border-gray-100 pt-2">
-        <div className="flex gap-4">
+      <div className="border-t border-gray-100 pt-2">
+        {/* Actions row */}
+        <div className="flex flex-wrap gap-2 sm:gap-4 mb-2">
           {isAuthorized && (
             <button
-              className={`flex items-center gap-2 ${
+              className={`flex items-center gap-1 sm:gap-2 ${
                 isLiked ? "text-blue-600" : "text-gray-600"
               } hover:text-blue-600 transition-colors`}
               onClick={handleLikeToggle}
               disabled={isLikeLoading}
             >
-              <ThumbsUp size={16} />
-              <span className="text-sm">{likesCount} اعجبني</span>
+              <ThumbsUp size={14} className="sm:size-[16px]" />
+              <span className="text-xs sm:text-sm">{likesCount} اعجبني</span>
             </button>
           )}
           {isAuthorized && !isReply && (
             <button
-              className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+              className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-blue-600 transition-colors"
               onClick={() => setShowReplyForm(!showReplyForm)}
             >
-              <MessageCircle size={16} />
-              <span className="text-sm">{comment.numOfReplies} رد</span>
+              <MessageCircle size={14} className="sm:size-[16px]" />
+              <span className="text-xs sm:text-sm">{comment.numOfReplies} رد</span>
             </button>
           )}
           {!isReply && (
-            <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-              <Tag size={16} />
-              <span className="text-sm">{comment.tag}</span>
+            <button className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+              <Tag size={14} className="sm:size-[16px]" />
+              <span className="text-xs sm:text-sm">{comment.tag}</span>
             </button>
           )}
           {isAuthorized && !user.isAdmin && (
@@ -248,9 +249,9 @@ export default function Comment({
                 handleReportComment(formData);
               }}
             >
-              <button className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors">
-                <MessageSquareWarning size={16} />
-                <span className="text-sm">ابلاغ</span>
+              <button className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-blue-600 transition-colors">
+                <MessageSquareWarning size={14} className="sm:size-[16px]" />
+                <span className="text-xs sm:text-sm">ابلاغ</span>
               </button>
             </GenericForm>
           )}
@@ -266,22 +267,26 @@ export default function Comment({
               }}
             >
               <button
-                className="flex items-center gap-2 text-gray-600 hover:text-blue-600 transition-colors"
+                className="flex items-center gap-1 sm:gap-2 text-gray-600 hover:text-blue-600 transition-colors"
                 type="button"
               >
-                <Trash2 size={16} />
-                <span className="text-sm">اخفاء</span>
+                <Trash2 size={14} className="sm:size-[16px]" />
+                <span className="text-xs sm:text-sm">اخفاء</span>
               </button>
             </GenericForm>
           )}
         </div>
-
-        {comment.numOfReplies > 0 && (
-          <ReplyToggleButton
-            isLoading={isLoadingReplies}
-            showReplies={showReplies}
-            onClick={handleToggleReplies}
-          />
+        
+        {/* Dedicated replies section */}
+        {comment.numOfReplies > 0 && !isReply && (
+          <div className="mt-2 text-center">
+            <ReplyToggleButton
+              isLoading={isLoadingReplies}
+              showReplies={showReplies}
+              onClick={handleToggleReplies}
+              replyCount={comment.numOfReplies}
+            />
+          </div>
         )}
       </div>
 
@@ -298,10 +303,13 @@ export default function Comment({
 
       {/* Replies Section */}
       {showReplies && replies.length > 0 && (
-        <div className="mt-4 space-y-3">
-          {replies.map((reply) => (
-            <Comment key={reply.id} comment={reply} isReply={true} />
-          ))}
+        <div className="mt-3 pt-2 border-t border-gray-100 space-y-3">
+          <h4 className="text-sm font-medium text-gray-500 mb-2">الردود ({replies.length})</h4>
+          <div className="space-y-3 pr-2 sm:pr-4 border-r-2 border-gray-100">
+            {replies.map((reply) => (
+              <Comment key={reply.id} comment={reply} isReply={true} />
+            ))}
+          </div>
         </div>
       )}
     </div>
@@ -309,23 +317,26 @@ export default function Comment({
 }
 
 // Separate the reply toggle button for cleaner code
-const ReplyToggleButton = ({ isLoading, showReplies, onClick }) => (
+const ReplyToggleButton = ({ isLoading, showReplies, onClick, replyCount }) => (
   <button
     onClick={onClick}
-    className="text-gray-600 hover:text-blue-600 flex items-center gap-1 transition-colors mr-4"
+    className="w-full py-2 px-4 rounded-md bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium flex items-center justify-center gap-2 transition-all duration-200 border border-gray-200"
     disabled={isLoading}
   >
     {isLoading ? (
-      "جاري التحميل..."
+      <span className="flex items-center gap-2">
+        <span className="inline-block h-4 w-4 border-2 border-t-blue-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></span>
+        جاري التحميل...
+      </span>
     ) : showReplies ? (
       <>
         إخفاء الردود
-        <ChevronUp size={16} />
+        <ChevronUp size={18} className="text-blue-500" />
       </>
     ) : (
       <>
-        عرض الردود
-        <ChevronDown size={16} />
+        عرض الردود ({replyCount})
+        <ChevronDown size={18} className="text-blue-500" />
       </>
     )}
   </button>
@@ -369,18 +380,20 @@ const ReplyForm = ({
   };
 
   return (
-    <div className="mt-3 bg-gray-50 p-3 rounded-lg">
+    <div className="mt-3 bg-gray-50 p-3 rounded-lg border border-gray-200">
+      <h4 className="text-sm font-medium text-gray-600 mb-2">إضافة رد</h4>
       <textarea
-        className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
+        className="w-full p-3 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 text-right"
         placeholder="اكتب ردك هنا..."
         value={replyContent}
         onChange={(e) => setReplyContent(e.target.value)}
         disabled={isSubmitting}
+        rows={3}
       ></textarea>
-      <div className=" mt-2">
+      <div className="mt-3">
         <div className="flex flex-row gap-2">
           <button
-            className={`px-3 py-1 bg-blue-500 text-white rounded-md flex items-center gap-1 ${
+            className={`px-4 py-2 bg-blue-500 text-white rounded-md flex items-center gap-2 ${
               isSubmitting
                 ? "opacity-70 cursor-not-allowed"
                 : "hover:bg-blue-600"
@@ -388,10 +401,10 @@ const ReplyForm = ({
             onClick={handleSubmitReply}
             disabled={isSubmitting || !replyContent.trim()}
           >
-            <Send size={14} /> إرسال
+            <Send size={16} /> إرسال
           </button>
           <button
-            className="px-3 py-1 bg-gray-200 text-gray-700 rounded-md mr-2"
+            className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors"
             onClick={onCancel}
             disabled={isSubmitting}
           >
