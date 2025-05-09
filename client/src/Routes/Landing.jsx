@@ -77,7 +77,7 @@ export default function Landing() {
 
   return (
     <Screen>
-      <div className=" text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm">
+      <div className=" text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm overflow-hidden">
         <div className="w-full max-w-[400px] min-w-[100px] mx-auto mt-12 z-[2]">
           <motion.img
             loading="lazy"
