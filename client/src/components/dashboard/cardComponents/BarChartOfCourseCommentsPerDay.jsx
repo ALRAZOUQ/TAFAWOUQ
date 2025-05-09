@@ -54,7 +54,9 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
       selectedCourseId,
       formatDateTo_YYYY_MM_01(selectedMonth),
       setChartData
-    )}
+    )}else{
+      setChartData([])
+    }
   }, [selectedMonth, selectedCourseId]);
 
   return (

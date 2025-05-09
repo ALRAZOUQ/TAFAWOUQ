@@ -106,12 +106,13 @@ passport.deserializeUser(async (id, done) => {
 });
 
 // cross to prepare communicate with client server (React)
+
 app.use(
   cors({
     origin: [
       "https://nwsb8x0b-5173.inc1.devtunnels.ms",
       process.env.DEVELOPMENT_CLIENT_URL,
-      process.env.DEVELOPMENT_CLIENT2_URL,
+      // process.env.DEVELOPMENT_CLIENT2_URL, // TODO: Razouq: IDK why this exist!
       process.env.PRODUCTION_CLIENT_URL,
     ], //React link. we have to check if will work normally or not
     credentials: true,
