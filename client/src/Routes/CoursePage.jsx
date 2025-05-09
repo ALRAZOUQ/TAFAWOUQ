@@ -5,11 +5,11 @@ import { toast } from "react-toastify";
 import { useAuth } from "../context/authContext";
 import { useCourseData } from "../context/CourseContext";
 import Screen from "../components/Screen";
-import { CommentSkeleton } from "../components/skeleton/CommentSkeleton";
-import { QuizSkeleton } from "../components/skeleton/QuizSkeleton";
-import { CourseSkeleton } from "../components/skeleton/CourseSkeleton";
-import { FilterControlsSkeleton } from "../components/skeleton/FilterControlsSkeleton";
-import{EnterCommentSkeleton} from "../components/skeleton/EnterCommentSkeleton"
+import { CommentSkeleton } from "@/components/skeleton/CommentSkeleton";
+import { QuizSkeleton } from "@/components/skeleton/QuizSkeleton";
+import { CourseSkeleton } from "@/components/skeleton/CourseSkeleton";
+import { FilterControlsSkeleton } from "@/components/skeleton/FilterControlsSkeleton";
+import{EnterCommentSkeleton} from "@/components/skeleton/EnterCommentSkeleton"
 // Lazy-loaded components
 const ConfirmDialog = lazy(() => import("../components/ConfirmationComponent"));
 const CourseCard = lazy(() =>
