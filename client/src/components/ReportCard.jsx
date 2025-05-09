@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useAuth } from "@/context/authContext";
 
 export default function ReportCard({ report, onReject, updateProperty }) {
-  console.log(`report ${report.comment.content} :>> `, report);
+  // console.log(`report ${report.comment.content} :>> `, report);
   /** obj of the current admin info */
   const { user: me } = useAuth();
   return (
@@ -177,6 +177,7 @@ export default function ReportCard({ report, onReject, updateProperty }) {
   // ==================================================
 
   async function onDeleteCommentAndBanUser() {
+    
     try {
       const response = await axios.post("/admin/banUser", {
         reason: report.content,
