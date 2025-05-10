@@ -7,7 +7,7 @@ import { useRouteIfAuthorizedAndHeIsNotAdmin } from "../util/useRouteIfNotAuthor
 import SearchButton from "../components/SearchButton";
 import Page from "../components/Page";
 import { AnimatePresence, motion } from "framer-motion";
-import { Flag, PcCase, UserPen,ChevronRight} from "lucide-react";
+import { Flag, PcCase, UserPen,ChevronRight,Hash } from "lucide-react";
 import { Link } from "react-router-dom";
 
 // Lazy load Pagination component
@@ -102,11 +102,16 @@ const QuizReportCard = ({ report, onReject, updateProperty }) => {
           <span className="font-semibold ">الاختبار: </span>
           {report.quiz.title}
         </p>
-        <p className="flex items-center gap-1 mt-2 mb-2">
+        <p className="flex items-center gap-1 mt-2">
           <UserPen className="size-4  text-gray-500" />
 
           <span className="font-semibold">المنشئ: </span>
           {report.quiz.authorName}
+        </p>
+        <p className="flex items-center gap-1 mt-2 mb-2">
+          <Hash  className="size-4  text-gray-500" />
+          <span className="font-semibold">رقم البلاغ: </span>
+          {report.reportId}
         </p>
     
         <Link to={`/quiz/${report.quiz.id}`}>
@@ -273,12 +278,22 @@ export default function AdminHomePage() {
   // Filter & pagination calculations
   const filteredReports = toggleReportsType
     ? quizReports.filter((report) =>
-        report.quiz?.title?.toLowerCase().includes(searchQuery.toLowerCase())
+        report.quiz?.title?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+    report.quiz?.authorName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    report.reportId?.toString().includes(searchQuery.toLowerCase()) ||
+    report.adminExecutedHide?.toString().includes(searchQuery.toLowerCase()) ||
+    report.adminExecutedBan?.toString().includes(searchQuery.toLowerCase()) ||
+    report.content?.toString().includes(searchQuery.toLowerCase())
       )
     : commentReports.filter((report) =>
         report.comment?.content
-          ?.toLowerCase()
-          .includes(searchQuery.toLowerCase())
+          ?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+          report.comment?.authorName
+          ?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          report.reportId?.toString().includes(searchQuery.toLowerCase()) ||
+          report.adminExecutedHide?.toString().includes(searchQuery.toLowerCase()) ||
+          report.adminExecutedBan?.toString().includes(searchQuery.toLowerCase()) ||
+          report.content?.toString().includes(searchQuery.toLowerCase())
       );
 
   const indexOfLastReport = currentPage * reportsPerPage;
