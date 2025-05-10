@@ -22,7 +22,7 @@ const questionsTypes = {
 }
   // Array of motivational button texts
   const buttonTexts = [
-    "أنت الآن قريبًا من أنشاء اختبار رائع",
+    "هيا نصنع شيئًا رائعًا",
     "حان وقت إنشاء شيء رائع",
     "لنصمم اختباراً معاً",
     "حوّل ملف PDF إلى اختبار تفاعلي",
@@ -143,7 +143,7 @@ const questionsTypes = {
     }
   };
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md border-x-4 border-x-TAF-300 border-y border-y-gray-100">
+    <div className="max-w-md mx-auto mt-14 p-6 bg-white rounded-3xl shadow-md border-x-4 border-x-TAF-300 border-y border-y-gray-100">
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
         لنصمم إختبارك
       </h2>
@@ -151,7 +151,7 @@ const questionsTypes = {
       {/* Eye-catching button with dynamic text */}
       <motion.button
         onClick={() => setShowModal(true)}
-        className="w-full py-4 px-6 rounded-lg font-bold text-white bg-gradient-to-r from-TAF-100 via-purple-400 to-purple-600 hover:from-TAF-100 hover:via-purple-500 hover:to-purple-700 shadow-lg"
+        className="w-full py-4 px-6 rounded-2xl font-bold text-white bg-gradient-to-r from-TAF-100 via-purple-400 to-purple-600 hover:from-TAF-100 hover:via-purple-500 hover:to-purple-700 shadow-lg"
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.98 }}
         transition={{ type: "spring", stiffness: 400, damping: 17 }}

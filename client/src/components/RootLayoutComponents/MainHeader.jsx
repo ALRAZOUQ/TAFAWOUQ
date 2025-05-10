@@ -87,7 +87,8 @@ export default function MainHeader() {
         <div className="flex items-center justify-between w-full md:w-auto px-2">
           <h1 className="text-white font-bold text-xl md:text-2xl">
             <Link
-              to={isAuthorized ? (user?.isAdmin ? "/admin" : "/home") : "/"}
+              // to={isAuthorized ? (user?.isAdmin ? "/admin" : "/home") : "/"}
+              to="/"
             >
               <div className="size-10 md:size-12 lg:size-12 xl:size-12 max-[810px]:min-[770px]:size-12 flex items-center justify-center">
                 <motion.img
