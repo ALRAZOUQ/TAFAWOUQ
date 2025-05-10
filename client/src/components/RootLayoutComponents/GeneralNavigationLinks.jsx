@@ -5,7 +5,7 @@ export default function GeneralNavigationLinks() {
   return (
     <>
       <NavigationLink
-        linkTo={"الصفحة الرئيسية"}
+        linkTo={user?.isAdmin ? "إحصائيات الموقع" :"الصفحة الرئيسية"}
         route={isAuthorized ? (user?.isAdmin ? "/admin" : "/home") : "/"}
       />
 

@@ -14,7 +14,7 @@ import monthMapper from "@/non-changeable-data/englishToArabicMonths";
 export default function BarChartOfCourseCommentsPerDay({ className }) {
   const [selectedMonth, setSelectedMonth] = useState({
     month: new Date().getMonth(),
-    monthName: "Jan",
+    monthName: new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleString("en-US", { month: "long" }),
     year: new Date().getFullYear(),
   });
   const [coursesList, setCoursesList] = useState([
@@ -64,7 +64,7 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
       <CardHeader>
         <div className="flex justify-between">
           <CardTitle className="text-blue-900">
-            التعليقات على المقرر لشهر {monthMapper[selectedMonth.month - 1]}
+            التعليقات على المقرر لشهر {monthMapper[selectedMonth.month-1 ]}
           </CardTitle>
           <div className="flex ">
             <DropdownMenuOfBarChart {...{ coursesList, selectedCourseId, setSelectedCourseId }} />

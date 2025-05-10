@@ -1,37 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @import "tailwindcss";
-@layer components {
-  @import "../../client/src/Dashboard-Sub-project/css/additional-styles/utility-patterns.css";
-} */
+
 @layer base {
-  /* :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
-    --chart-1: 12 76% 61%;
-    --chart-2: 173 58% 39%;
-    --chart-3: 197 37% 24%;
-    --chart-4: 43 74% 66%;
-    --chart-5: 27 87% 67%;
-  } */
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -90,32 +61,6 @@
   ._monthInputField_1ny07_1 {
     margin-bottom: 0px !important;
   }
-  /* .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --chart-1: 220 70% 50%;
-    --chart-2: 160 60% 45%;
-    --chart-3: 30 80% 55%;
-    --chart-4: 280 65% 60%;
-    --chart-5: 340 75% 55%;
-  } */
 }
 @layer base {
   * {
@@ -175,15 +120,88 @@
     color: #31b9f7;
   }
 }
-
+/* ========= The bg icons  ========= */
+:root {
+  /* --bg-icons: 50px; */
+  --bg-icons: clamp(40px, 6vw, 60px);
+}
 .bg-icons-container {
   position: relative;
   background-color: #fff;
+  z-index: -1;
+
+  svg {
+    opacity: 0.75;
+    content: "";
+    position: absolute;
+    pointer-events: none;
+    height: var(--bg-icons);
+    width: var(--bg-icons);
+    overflow: visible;
+    stroke-width: 1.5px;
+    /* background-size: 120%; */
+    padding: 7px 1px 12px 1px;
+    /* padding: 14px 6px 14px 1px; */
+    color: #31b8f788;
+    background: url("../../client/src/assets/bgIcons/icons-bg.svg") center
+      no-repeat;
+    animation: floatSwayRotate 5s ease-in-out infinite;
+  }
+
+  .book {
+    top: 300px;
+    left: 8vw;
+    animation-delay: 0s;
+  }
+  .laptop {
+    top: 300px;
+    right: 10vw;
+    animation-delay: 2s;
+  }
+  .icon.pencil {
+    top:180px;
+    left: 25vw;
+    animation-delay: 1s;
+  }
+  .icon.handshake {
+    top: 180px;
+    right: 25vw;
+    animation-delay: 2.5s;
+  }
+  .icon.school {
+    top: 420px;
+    left: 30vw;
+    animation-delay: 1.2s;
+  }
+  .icon.growth {
+    top: 130px;
+    right: 45vw;
+    animation-delay: 3s;
+  }
+  .icon.classroom {
+    top: 400px;
+    left: 70vw;
+    animation-delay: 1.7s;
+  }
 }
-:root {
-  --bg-icons: 15px;
+@keyframes floatSwayRotate {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
+  25% {
+    transform: translateY(-10px) translateX(5px) rotate(10deg);
+  }
+  50% {
+    transform: translateY(-15px) translateX(0) rotate(0deg);
+  }
+  75% {
+    transform: translateY(-10px) translateX(-5px) rotate(-10deg);
+  }
+  100% {
+    transform: translateY(0) translateX(0) rotate(0deg);
+  }
 }
-.bg-icons-container::before {
+/* .bg-icons-container::before {
   content: "";
   position: absolute;
   top: 300px;
@@ -193,27 +211,9 @@
   pointer-events: none;
   height: var(--bg-icons);
   width: var(--bg-icons);
-}
-/* .bg-icons-container::before {
-  content: "";
-  position: absolute;
-  top: 400px;
-  left: 100px;
-  background: url("https://www.svgrepo.com/show/535115/alien.svg") center/cover no-repeat;
-  opacity: 0.95; 
-  pointer-events: none; 
-  height: var(--bg-icons);
-  width: var(--bg-icons);
 } */
-/* 
-#particles-js {
-  position: absolute;
-  z-index: 1;
-  top: 0;
-  height: 100%;
-  width: 100%;
-  z-index: -1;
-} */
+
+/* ========= bg particles ========= */
 #particles-js {
   position: fixed;
   top: 0;
@@ -227,7 +227,4 @@ canvas {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover; /* Optional: keep scaling smooth */
-}
-test {
-  color: #23b7fc;
 }

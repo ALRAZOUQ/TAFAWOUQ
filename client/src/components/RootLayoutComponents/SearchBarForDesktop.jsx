@@ -41,7 +41,7 @@ export default function SearchBarForDesktop({ handleSearching }) {
     >
       <div
         id="search-container"
-        className="w-full relative bg-TAF-300 rounded-md shadow-md overflow-visible"
+        className="w-full relative bg-TAF-300 rounded-md shadow-md overflow-visible "
       >
         {/* input + clear button */}
         <div className="relative flex items-center w-full">

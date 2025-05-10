@@ -32,6 +32,7 @@ export default function TwoMonthsComparison({ className }) {
 
   const [secondMonth, setSecondMonth] = useState({
     month: new Date().getMonth()-1,
+    monthName: new Date(new Date().setMonth(new Date().getMonth() - 2)).toLocaleString("en-US", { month: "long" }),
     year: new Date().getFullYear(),
   });
   const chartConfig = {
