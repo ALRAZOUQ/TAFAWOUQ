@@ -24,7 +24,6 @@ export default function Signup() {
     const password = formData.get("password");
     const confirmPassword = formData.get("confirmPassword");
 
-
     let errors = [];
 
     // Validate email
@@ -76,7 +75,7 @@ export default function Signup() {
       const response = await axios.post("auth/register", userData);
 
       if (response.status === 201) {
-        toast.success("تم تسجيل الدخول بنجاح!");
+        toast.success("تم إنشاء الحساب بنجاح!");
         setUserStateLogin(response.data.user);
         return { success: true, message: response.data.message };
       }
@@ -197,10 +196,7 @@ export default function Signup() {
                 </ul>
               )}
             </div>
-            <TermsAgreement
-              agreed={agreed}
-              setAgreed={setAgreed}
-            />
+            <TermsAgreement agreed={agreed} setAgreed={setAgreed} />
 
             {/* Submit button */}
             <button className="w-full p-2 sm:p-3 mt-4 sm:mt-6 bg-TAF-100 text-white font-semibold rounded-lg hover:opacity-70 active:opacity-50 hover:outline-TAF-100 focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm sm:text-base">

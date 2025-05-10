@@ -161,7 +161,8 @@ export default function HiddenItems() {
       comment.adminExecutedHide
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      comment.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()),
+      comment.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      comment.reportId?.toString().includes(searchQuery.toLowerCase()),
     [searchQuery]
   );
 
@@ -171,7 +172,7 @@ export default function HiddenItems() {
       quiz?.adminExecutedHide
         ?.toLowerCase()
         .includes(searchQuery.toLowerCase()) ||
-      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()),
+      quiz?.hideReason?.toLowerCase().includes(searchQuery.toLowerCase()) || quiz.reportId?.toString().includes(searchQuery.toLowerCase()),
     [searchQuery]
   );
 
