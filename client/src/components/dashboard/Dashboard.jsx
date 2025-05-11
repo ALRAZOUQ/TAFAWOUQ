@@ -4,7 +4,7 @@ import Top20Courses from "./dashbaordCards/Top20Courses";
 import Top20Commenters from "./dashbaordCards/Top20Commenters";
 
 export default function Dashboard() {
-  const className = "border-none bg-transparent";
+  const className = "border-none bg-gradient-to-b from-TAF-200 via-gray-50 to-TAF-200";
   return (
     <div>
       <TwoMonthsComparison {...{ className }} />

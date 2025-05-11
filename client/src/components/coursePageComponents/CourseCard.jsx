@@ -136,9 +136,9 @@ export default function CourseCard({ course, isAdmin, onDelete, onCourseUpdate, 
           </div>
         </div>
 
-        <div className="flex items-center gap-2 mt-1 relative">
+        <div className="flex items-center flex-wrap gap-2 mt-1 relative">
           <h3 className="text-xl text-gray-700">{course.name}</h3>
-          <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded">
+          <span className="text-sm font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded whitespace-nowrap">
             عدد الساعات {course.creditHours}
           </span>
         </div>

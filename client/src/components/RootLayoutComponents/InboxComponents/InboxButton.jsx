@@ -28,10 +28,10 @@ function InboxButton() {
   }, [showDialog]);
 
   return (
-    <React.Fragment>
+    <div className="flex justify-center">
       <Dropdown
         arrowIcon={false}
-        className="cursor-pointer rounded-3xl"
+        className="cursor-pointer rounded-3xl "
         label={
           <>
             {hasUnreaded && (
@@ -66,7 +66,7 @@ function InboxButton() {
       </Dropdown>
       {/* //dirty code to test */}
       {showDialog && <PushNotificationDialog openIt={true} />}
-    </React.Fragment>
+    </div>
   );
   async function fetchNotifications() {
     try {

@@ -8,7 +8,7 @@ export default function AdminLinks() {
   const route = useLocation();
   return (
     <>
-      <NavigationLink linkTo={"التقارير"} route={"/admin/reports"} />
+      <NavigationLink linkTo={"البلاغات"} route={"/admin/reports"} />
       <NavigationLink
         linkTo={"الحسابات المحظورة"}
         route={"/admin/bannedaccounts"}

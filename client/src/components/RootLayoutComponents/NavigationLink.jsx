@@ -15,7 +15,7 @@ export default function NavigationLink({ linkTo, route }) {
     >
       <Link
         to={route}
-        className={`relative w-full whitespace-nowrap md:w-auto text-center py-1 px-3 text-base max-[810px]:min-[760px]:text-sm text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
+        className={`relative w-full whitespace-nowrap md:w-auto text-sm lg:text-lg text-center py-1 px-3  max-[810px]:min-[760px]:text-sm text-gray-700 hover:text-gray-500 transition-colors border-b-4 border-TAF-100 ${
           isActive ? "border-opacity-100" : "border-opacity-0"
         }`}
         aria-label={linkTo}

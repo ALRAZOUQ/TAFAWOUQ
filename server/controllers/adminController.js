@@ -743,7 +743,7 @@ async bannendAccounts(req, res){
     }
   },
 
-  async banUser(req, res){
+  async unBanUser(req, res){
     try {
       const { studentId } = req.body;
       const adminId = req.user.id;

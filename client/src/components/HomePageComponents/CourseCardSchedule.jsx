@@ -69,7 +69,7 @@ export default function CourseCardSchedule({ course, current = true }) {
             <div className="mt-4">
               <p className="text-gray-600 mb-1 text-center">
                 <span className="bg-gray-50">
-                  قمت بتقييم صعوبة هذا المقرر:{" "}
+                  قمت بتقييم صعوبة هذا المقرر
                 </span>
               </p>
               <div className="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
@@ -96,7 +96,7 @@ export default function CourseCardSchedule({ course, current = true }) {
           {!current && course.grade > 0 && (
             <div className="mt-4">
               <p className="text-gray-600 mb-1 text-center">
-                <span className="bg-gray-50">:كانت درجتك في هذا المقرر </span>
+                <span className="bg-gray-50">كانت درجتك في هذا المقرر </span>
               </p>
               <div className="w-full bg-gray-200 rounded-full h-4 relative overflow-hidden">
                 <motion.div

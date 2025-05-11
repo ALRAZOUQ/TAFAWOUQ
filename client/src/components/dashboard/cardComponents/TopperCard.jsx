@@ -1,12 +1,12 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function TopperCard({ icon, title, counts, toppersList, className }) {
-  console.log("toppersList :>> ", toppersList);
+  // console.log("toppersList :>> ", toppersList);
   // Dummy data
   return (
     <Card className={`rounded-3xl overflow-hidden  ${className}`} dir="rtl">
       <CardHeader
-        className={`flex flex-row items-center justify-  bg-gradient-to-t from-sky-50 via-sky-50 to-blue-50 pb-2 xl:pb-6 `}>
+        className={`flex flex-row items-center justify-  bg-gradient-to-t from-sky-100 via-sky-50 to-blue-50 pb-2 xl:pb-6 `}>
         <CardTitle className="flex w-full justify-evenly items-center gap-1 xl:gap-2 text-base xl:text-xl text-blue-800 ">
           <span> {icon} </span>
           <span> {title} </span>
@@ -22,7 +22,7 @@ export default function TopperCard({ icon, title, counts, toppersList, className
           {toppersList.map((topper, i) => (
             <div key={i} className="flex items-center gap-4 xl:gap-6">
               <div
-                className={`relative size-12 xl:size-[72px] rounded-full bg-gradient-to-t from-sky-50 via-sky-50 to-blue-50 flex items-center justify-center text-2xl font-bold text-blue-700 shrink-0`}>
+                className={`relative size-12 xl:size-[72px] rounded-full bg-gradient-to-t from-sky-100 via-sky-50 to-blue-100 flex items-center justify-center text-2xl font-bold text-blue-700 shrink-0`}>
                 {topper.name.charAt(0)}
                 <div className="absolute -bottom-[6px] -start-3 text-sm bg-sky-100 text-blue-700 border rounded-full py-[1px] px-[4px] xl:px-2 xl:py-[2px]">
                   {topper.comment_count}

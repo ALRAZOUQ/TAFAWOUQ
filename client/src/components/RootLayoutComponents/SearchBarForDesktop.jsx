@@ -4,7 +4,7 @@ import { useCourseData } from "../../context/CourseContext";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-export default function SearchBarForDesktop({ handleSearching }) {
+export default function SearchBarForDesktop({ handleSearching, isSearching }) {
   const [filterdCourses, setfilterdCourses] = useState([]);
   const [showResults, setShowResults] = useState(false);
   const [searchInput, setSearchInput] = useState("");
@@ -34,14 +34,18 @@ export default function SearchBarForDesktop({ handleSearching }) {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.95 }}
-      animate={{ opacity: 1, scale: 1 }}
+      animate={{ 
+        opacity: 1, 
+        scale: 1,
+        width: isSearching ? "100%" : "auto"
+      }}
       exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-      className="relative w-full ml-10 flex justify-center items-center bg-TAF-300 z-50 transition-all duration-300 overflow-visible"
+      transition={{ duration: 0.3, ease: "easeOut" }}
+      className="relative w-full mx-auto flex justify-center items-center bg-transparent z-[100] transition-all duration-300 overflow-visible h-[80%]"
     >
       <div
         id="search-container"
-        className="w-full relative bg-TAF-300 rounded-md shadow-md overflow-visible"
+        className="w-full max-w-xl mx-auto relative bg-white rounded-md shadow-lg overflow-visible border border-gray-200"
       >
         {/* input + clear button */}
         <div className="relative flex items-center w-full">
@@ -65,12 +69,14 @@ export default function SearchBarForDesktop({ handleSearching }) {
               /*space here is very important don't remove it i know you can't stand unless you remve but try not to remove it */ "        إبحث عن المواد"
             }
             className="w-full p-3 pl-10 rounded-md border border-gray-300 focus:outline-none 
-                       focus:ring-2 focus:ring-TAF-100 focus:border-transparent transition-all"
+                       focus:ring-2 focus:ring-TAF-100 focus:border-transparent transition-all h-10"
+            style={{ minHeight: "2.5rem" }}
             value={searchInput}
             onChange={onSearch}
             onFocus={() => setShowResults(searchInput.length > 0)}
             onBlur={() => setTimeout(() => setShowResults(false), 200)}
-            autoFocus
+            autoFocus={isSearching}
+            ref={(input) => isSearching && input && input.focus()}
           />
 
           {/* search icon as placeholder on the right */}
@@ -83,7 +89,7 @@ export default function SearchBarForDesktop({ handleSearching }) {
         {showResults && (
           <div
             className="absolute top-full left-0 right-0 mt-2 bg-white rounded-md border border-gray-300 
-                       shadow-xl z-50 max-h-[60vh] overflow-y-auto"
+                       shadow-xl z-[110] max-h-[60vh] overflow-y-auto"
           >
             {filterdCourses.length === 0 ? (
               <div className="p-3 text-gray-500">لا توجد نتائج</div>

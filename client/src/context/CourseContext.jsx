@@ -1,4 +1,4 @@
-import { createContext, useState, useContext } from "react";
+import { createContext, useState, useContext,useEffect } from "react";
 import axios from "../api/axios";
 import { toast } from "react-toastify";
 /*
@@ -16,6 +16,29 @@ const CourseContext = createContext();
  */
 export function CourseProvider({ children }) {
   const [coursesData, setCoursesData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const fetchCoursesContext = async () => {
+    setIsLoading(true);
+    try {
+      const response = await axios.get("auth/courses");
+      if (response.status === 200) {
+        setCoursesData(response.data.courses);
+      }
+    } catch (error) {
+      if(error.response?.status === 404){
+        toast.error("لا يوجد مقررات في قاعدة البيانات");
+      }else{
+        console.error("Error fetching courses:", error);
+      }
+      setCoursesData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  // Fetch courses automatically when the context is initialized (we need the courses data to be fetched when we try to share the quiz
+  useEffect(() => {
+    fetchCoursesContext();
+  }, []);
 
   // Add a new course to the courses list
   const addCourseToContext = (newCourse) => {
@@ -64,23 +87,6 @@ export function CourseProvider({ children }) {
       }
       
       toast.error(errorMessage);
-    }
-  };
-
-  // Fetch all courses from the API
-  const fetchCoursesContext = async () => {
-    try {
-      const response = await axios.get("auth/courses");
-      if (response.status === 200) {
-        setCoursesData(response.data.courses);
-      }
-    } catch (error) {
-      if(error.response?.status === 404){
-        toast.error("لا يوجد مقررات في قاعدة البيانات");
-      }else{
-        console.error("Error fetching courses:", error);
-      }
-      setCoursesData(null);
     }
   };
 

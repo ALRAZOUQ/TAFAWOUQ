@@ -58,7 +58,7 @@ router.get("/bannendAccounts", adminController.bannendAccounts);
 
 router.post("/banUser", adminController.banUser);
 
-router.put("/unBanUser", adminController.banUser);
+router.put("/unBanUser", adminController.unBanUser);
 
 //==================================================
 //==================== term =========================

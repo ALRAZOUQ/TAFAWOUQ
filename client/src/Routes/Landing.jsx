@@ -3,14 +3,15 @@ import main_logo from "../assets/mainLogo.svg";
 import { motion } from "framer-motion";
 import { features } from "../non-changeable-data/features.jsx";
 import { useState, useEffect } from "react";
-import TafawouqMainCanvas from "../components/TAFAWOUQ-Canvas";
-import Screen from "@/components/Screen";
+import { useAuth } from "../context/authContext";
+// import TafawouqMainCanvas from "../components/TAFAWOUQ-Canvas";
+import Screen from "../components/Screen";
 const Texts = ["شارك", "تعلم", " انطلق نحو النجاح", "تعاون"];
 export default function Landing() {
   const [buttonText, setButtonText] = useState("ساهم");
   const [textIndex, setTextIndex] = useState(0);
   const [dotPosition, setDotPosition] = useState(0);
-
+  const { isAuthorized, user } = useAuth();
   // Effect to cycle through the Texts array
   useEffect(() => {
     const textInterval = setInterval(() => {
@@ -77,7 +78,7 @@ export default function Landing() {
 
   return (
     <Screen>
-      <div className=" text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm">
+      <div className=" text-gray-800 min-h-screen flex flex-col items-center justify-center p-6 mt-0 font-alm overflow-hidden">
         <div className="w-full max-w-[400px] min-w-[100px] mx-auto mt-12 z-[2]">
           <motion.img
             loading="lazy"
@@ -93,8 +94,8 @@ export default function Landing() {
           />
         </div>
         <p className="text-center mb-10 text-2xl font-alm z-[2]">
-          بيئة تفاعلية تجمع طلاب الجامعة لتبادل الخبرات والمعارف ومشاركة الآراء حول المسارات الدراسية
-          والمقررات الأكاديمية.
+          بيئة تفاعلية تجمع طلاب جامعة الملك سعود لتبادل الخبرات والمعارف
+          ومشاركة الآراء حول المسارات الدراسية والمقررات الأكاديمية.
         </p>
 
         <div className="flex flex-col gap-10 w-full justify-center items-center z-[2]">
@@ -105,7 +106,8 @@ export default function Landing() {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.4 }}>
+              transition={{ duration: 0.6, delay: index * 0.4 }}
+            >
               {feature.icon}
               <span>{feature.text}</span>
             </motion.div>
@@ -118,7 +120,8 @@ export default function Landing() {
           <motion.div
             className="absolute z-[2] w-full h-full"
             animate={{ rotate: 360 }}
-            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}>
+            transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+          >
             <div
               className="absolute w-4 h-4 rounded-full z-[2] bg-TAF-100 shadow-lg shadow-TAF-100"
               style={{
@@ -130,11 +133,15 @@ export default function Landing() {
           </motion.div>
 
           <motion.button
-            className="relative px-8 py-4 rounded-full bg-gradient-to-r z-[2] from-TAF-300 to-TAF-100 text-white font-bold text-xl shadow-lg overflow-hidden group"
+            className="relative px-8 py-4 rounded-full bg-gradient-to-r z-[2] from-[#0a98db] to-[#0e9fe3] text-white font-bold text-xl shadow-lg overflow-hidden group"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            transition={{ type: "spring", stiffness: 400, damping: 17 }}>
-            <Link to="/login" className="flex items-center z-[2] justify-center gap-2">
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
+          >
+            <Link
+              to={isAuthorized ? (user.isAdmin ? "/admin" : "/home") : "/login"}
+              className="flex items-center z-[2] justify-center gap-2"
+            >
               <span className="relative z-10"> إنضم الآن و</span>
               <span className="relative z-10">{buttonText}</span>
 
@@ -146,7 +153,7 @@ export default function Landing() {
               />
             </Link>
             <motion.div
-              className="absolute -inset-1 rounded-full blur-sm z-[2] bg-gradient-to-l from-TAF-100 via-gray-400 to-TAF-100 opacity-70"
+              className="absolute -inset-1 rounded-full blur-sm z-[2] bg-gradient-to-l from-TAF-100 via-[#0b8eca] to-TAF-100 opacity-70"
               animate={{ rotate: [0, 360] }}
               transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             />

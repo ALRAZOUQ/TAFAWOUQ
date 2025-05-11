@@ -12,20 +12,27 @@ import {
 } from "@/components/ui/chart";
 import MonthPicker from "./MonthPicker";
 import monthMapper from "../../../non-changeable-data/englishToArabicMonths.js";
-import { formatDateTo_YYYY_MM_01, randomDataMaker } from "../../../util/dashboardUtils.js";
+import {
+  formatDateTo_YYYY_MM_01,
+  randomDataMaker,
+} from "../../../util/dashboardUtils.js";
 import axios from "../../../api/axios";
 
 export default function TwoMonthsComparison({ className }) {
   const [chartData, setChartData] = useState([
-    { date: "2024-04-01", desktop: 5, mobile: 5 },
-    { date: "2024-04-01", desktop: 5, mobile: 5 },
+    { date: "2020-04-01", desktop: 5, mobile: 5 },
+    { date: "2020-05-01", desktop: 5, mobile: 5 },
   ]);
   const [currentMonth, setCurrentMonth] = useState({
-    month: new Date().getMonth() + 1,
+    month: new Date().getMonth() ,
     year: new Date().getFullYear(),
   });
+
+  const [currentAlreadySet, setCurrentAlreadySet] = useState(false);
+
   const [secondMonth, setSecondMonth] = useState({
-    month: new Date().getMonth(),
+    month: new Date().getMonth()-1,
+    monthName: new Date(new Date().setMonth(new Date().getMonth() - 2)).toLocaleString("en-US", { month: "long" }),
     year: new Date().getFullYear(),
   });
   const chartConfig = {
@@ -33,7 +40,7 @@ export default function TwoMonthsComparison({ className }) {
       label: "Visitors",
     },
     desktop: {
-      label: "الشهر الحالي",
+      label: "الشهر الماضي",
       color: "hsl(var(--chart-1))",
     },
     mobile: {
@@ -44,8 +51,20 @@ export default function TwoMonthsComparison({ className }) {
   // console.log("Array.from(chartData) :>> ", Array.from(chartData));
 
   useEffect(() => {
-    // console.log("secondMonth :>> ", secondMonth);
-    getTwoMonthsComparison(formatDateTo_YYYY_MM_01(currentMonth), formatDateTo_YYYY_MM_01(secondMonth));
+    if (
+      new Date(formatDateTo_YYYY_MM_01(secondMonth)) <
+      new Date(formatDateTo_YYYY_MM_01(currentMonth))
+    ) {
+      // console.log("secondMonth :>> ", formatDateTo_YYYY_MM_01(secondMonth));
+      getTwoMonthsComparison(
+        formatDateTo_YYYY_MM_01(currentMonth),
+        formatDateTo_YYYY_MM_01(secondMonth),
+        currentAlreadySet,
+        setCurrentAlreadySet
+      );
+    }else{
+      setChartData([])
+    }
   }, [secondMonth]);
 
   return (
@@ -54,7 +73,8 @@ export default function TwoMonthsComparison({ className }) {
         <CardHeader className="flex items-stretch gap-2 space-y-0 border-b py-5 sm:flex-row">
           <div className=" flex justify-between items-center w-full text-center sm:text-right">
             <CardTitle className="text-blue-900" align={"start"}>
-              عدد التعليقات للشهر الماضي وشهر {monthMapper[secondMonth.month - 1]}
+              عدد التعليقات للشهر الماضي وشهر{" "}
+              {monthMapper[secondMonth.month - 1]}
             </CardTitle>
             <MonthPicker {...{ secondMonth, setSecondMonth }} />
           </div>
@@ -77,16 +97,35 @@ export default function TwoMonthsComparison({ className }) {
         </CardHeader>
 
         <CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-          <ChartContainer config={chartConfig} className="aspect-auto h-[380px] w-full">
+          <ChartContainer
+            config={chartConfig}
+            className="aspect-auto h-[380px] w-full"
+          >
             <AreaChart data={Array.from(chartData)}>
               <defs>
                 <linearGradient id="fillDesktop" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-desktop)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--color-desktop)" stopOpacity={0.1} />
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-desktop)"
+                    stopOpacity={0.1}
+                  />
                 </linearGradient>
                 <linearGradient id="fillMobile" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="var(--color-mobile)" stopOpacity={0.8} />
-                  <stop offset="95%" stopColor="var(--color-mobile)" stopOpacity={0.1} />
+                  <stop
+                    offset="5%"
+                    stopColor="var(--color-mobile)"
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="95%"
+                    stopColor="var(--color-mobile)"
+                    stopOpacity={0.1}
+                  />
                 </linearGradient>
               </defs>
               <CartesianGrid vertical={false} />
@@ -101,7 +140,9 @@ export default function TwoMonthsComparison({ className }) {
                 minTickGap={32}
                 tickFormatter={(value) => {
                   return value;
-                  const date = new Date(`${secondMonth.year}-${secondMonth.month}`);
+                  const date = new Date(
+                    `${secondMonth.year}-${secondMonth.month}`
+                  );
                   return date.toLocaleDateString("en-US", {
                     month: "short",
                     day: "numeric",
@@ -114,20 +155,29 @@ export default function TwoMonthsComparison({ className }) {
                   <ChartTooltipContent
                     labelFormatter={(value) => {
                       return monthMapper[secondMonth.month - 1];
-                      return new Date(`${secondMonth.year}-${secondMonth.month}`).toLocaleDateString(
-                        "en-US",
-                        {
-                          month: "short",
-                          day: "numeric",
-                        }
-                      );
+                      return new Date(
+                        `${secondMonth.year}-${secondMonth.month}`
+                      ).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                      });
                     }}
                     indicator="dot"
                   />
                 }
               />
-              <Area dataKey="mobile" type="natural" fill="url(#fillMobile)" stroke="var(--color-mobile)" />
-              <Area dataKey="desktop" type="natural" fill="url(#fillDesktop)" stroke="var(--color-desktop)" />
+              <Area
+                dataKey="mobile"
+                type="natural"
+                fill="url(#fillMobile)"
+                stroke="var(--color-mobile)"
+              />
+              <Area
+                dataKey="desktop"
+                type="natural"
+                fill="url(#fillDesktop)"
+                stroke="var(--color-desktop)"
+              />
               <ChartLegend content={<ChartLegendContent />} />
             </AreaChart>
           </ChartContainer>
@@ -135,22 +185,43 @@ export default function TwoMonthsComparison({ className }) {
       </Card>
     </div>
   );
-  async function getTwoMonthsComparison(currentMonth, secondMonth) {
-    const makeItRandom = false;
+  async function getTwoMonthsComparison(
+    currentMonth,
+    secondMonth,
+    currentAlreadySet,
+    setCurrentAlreadySet
+  ) {
+    const makeItRandom = true;
     // I put them currentMonth, secondMonth as params to make any next change easier
     try {
-      const twoMonthsData = await axios.get("admin/dashboard/getTwoMonthsComparison", {
-        params: {
-          currentMonth,
-          secondMonth,
-        },
-      });
+      const twoMonthsData = await axios.get(
+        "admin/dashboard/getTwoMonthsComparison",
+        {
+          params: {
+            currentMonth,
+            secondMonth,
+          },
+        }
+      );
 
       if (makeItRandom) {
         randomDataMaker(twoMonthsData.data.chartData);
       }
-
-      setChartData(twoMonthsData.data.chartData);
+      twoMonthsData.data.chartData=twoMonthsData.data.chartData.map(day=>{day.date+=1
+        return day
+      })
+      setChartData((prev) => {
+        
+        if (currentAlreadySet) {
+          twoMonthsData.data.chartData.map((day, i) => {
+            // console.log(`prev[${i}].desktop :>> `, prev[i]?.desktop);
+            day.desktop = prev[i]?prev[i].desktop:day.desktop ;
+          });
+        }else{
+          setCurrentAlreadySet(true);
+        }
+        return twoMonthsData.data.chartData;
+      });
     } catch (error) {
       console.error(error);
     }

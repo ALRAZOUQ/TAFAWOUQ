@@ -23,7 +23,7 @@ const ParticleBackground = () => {
             value: 115,
             density: {
               enable: false,
-              area: 2720,
+              area: 2520, // I must check this
             },
           },
           color: {

@@ -6,11 +6,18 @@ import axios from "../api/axios";
 import { useAuth } from "../context/authContext";
 import { toast } from "react-toastify";
 import BackButton from "../components/BackButton";
-import Screen from "@/components/Screen";
+import Screen from "../components/Screen";
 
 export default function Login() {
   const { setUserStateLogin } = useAuth(); // to update the context of the user
   const navigate = useNavigate();
+  const { isAuthorized,user } = useAuth();
+  useEffect(() => {
+    if (isAuthorized) {
+      navigate(user.isAdmin ? "/admin" : "/home");
+    }
+  }, [isAuthorized, navigate, user]);
+
   async function login_handler(prevFormState, formData) {
     const email = formData.get("email");
     const password = formData.get("password");
@@ -38,9 +45,12 @@ export default function Login() {
 
       if (response.status === 200) {
         setUserStateLogin(response.data.user);
-
+        if (response.data.user.isadmin) {
+          navigate("/admin");
+        } else {
+          navigate("/home");
+        }
         toast.success("تم تسجيل الدخول بنجاح!");
-        navigate(response.data.user.isAdmin ? "admin" : "/home");
         return { success: true, message: response.data.message };
       }
     } catch (error) {
@@ -55,7 +65,9 @@ export default function Login() {
       } else {
         console.error("An error occurred while sending the request");
         return {
-          errors: [error.message] || ["An error occurred while sending the request"],
+          errors: [error.message] || [
+            "An error occurred while sending the request",
+          ],
         };
       }
     }
@@ -68,7 +80,7 @@ export default function Login() {
   // Redirect to the After_login if the user is logged in
   useEffect(() => {
     if (formState.success) {
-      navigate("/home");
+      //navigate(isAdmin ? "/admin" : "/home"); // this line may cause the system to crash
     }
   }, [formState.success, navigate]);
   // bg-gradient-to-b from-TAF-200 via-white to-TAF-200
@@ -86,7 +98,10 @@ export default function Login() {
             <form action={formAction}>
               {/* Email field */}
               <div className="mb-3 sm:mb-4">
-                <label htmlFor="email" className="block text-sm sm:text-base text-gray-600">
+                <label
+                  htmlFor="email"
+                  className="block text-sm sm:text-base text-gray-600"
+                >
                   الإيميل
                 </label>
                 <input
@@ -100,7 +115,10 @@ export default function Login() {
 
               {/* Password field */}
               <div className="mb-3 sm:mb-4">
-                <label htmlFor="password" className="block text-sm sm:text-base text-gray-600">
+                <label
+                  htmlFor="password"
+                  className="block text-sm sm:text-base text-gray-600"
+                >
                   كلمة المرور
                 </label>
                 <input
@@ -116,7 +134,10 @@ export default function Login() {
               {formState.errors && (
                 <ul>
                   {formState.errors.map((error) => (
-                    <li className="text-red-600 text-sm sm:text-base" key={error}>
+                    <li
+                      className="text-red-600 text-sm sm:text-base"
+                      key={error}
+                    >
                       {errorMapping(error)}
                     </li>
                   ))}
@@ -132,7 +153,8 @@ export default function Login() {
               <div className="flex justify-center mt-4 sm:mt-6">
                 <Link
                   to="/signup"
-                  className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none">
+                  className="text-blue-500 text-sm sm:text-base hover:underline focus:outline-none"
+                >
                   ليس لديك حساب؟ التسجيل
                 </Link>
               </div>

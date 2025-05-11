@@ -14,7 +14,7 @@ import monthMapper from "@/non-changeable-data/englishToArabicMonths";
 export default function BarChartOfCourseCommentsPerDay({ className }) {
   const [selectedMonth, setSelectedMonth] = useState({
     month: new Date().getMonth(),
-    monthName: "Jan",
+    monthName: new Date(new Date().setMonth(new Date().getMonth() - 1)).toLocaleString("en-US", { month: "long" }),
     year: new Date().getFullYear(),
   });
   const [coursesList, setCoursesList] = useState([
@@ -44,12 +44,19 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
   useEffect(() => {
     getCoursesList(setCoursesList);
   }, []);
+
   useEffect(() => {
+    if (
+      new Date(formatDateTo_YYYY_MM_01(selectedMonth)) <=
+      new Date()
+    ) {
     getTheCommentsCountForTheMonthDays(
       selectedCourseId,
       formatDateTo_YYYY_MM_01(selectedMonth),
       setChartData
-    );
+    )}else{
+      setChartData([])
+    }
   }, [selectedMonth, selectedCourseId]);
 
   return (
@@ -57,7 +64,7 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
       <CardHeader>
         <div className="flex justify-between">
           <CardTitle className="text-blue-900">
-            التعليقات على المقرر لشهر {monthMapper[selectedMonth.month - 1]}
+            التعليقات على المقرر لشهر {monthMapper[selectedMonth.month-1 ]}
           </CardTitle>
           <div className="flex ">
             <DropdownMenuOfBarChart {...{ coursesList, selectedCourseId, setSelectedCourseId }} />
@@ -95,14 +102,14 @@ export default function BarChartOfCourseCommentsPerDay({ className }) {
   async function getCoursesList(setCoursesList) {
     try {
       let result = await axios.get("auth/courses");
-      console.log("result.data.courses :>> ", result.data.courses);
+      // console.log("result.data.courses :>> ", result.data.courses);
       setCoursesList(result.data.courses);
     } catch (error) {
       console.error(error);
     }
   }
   async function getTheCommentsCountForTheMonthDays(selectedCourseId, selectedMonth, setChartData) {
-    const makeItRandom = false;
+    const makeItRandom = true;
     // I put them currentMonth, secondMonth as params to make any next change easier
     try {
       const twoMonthsData = await axios.get("admin/dashboard/getCourseCommentsPerDay", {
