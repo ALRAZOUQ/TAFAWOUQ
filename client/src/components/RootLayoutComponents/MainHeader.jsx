@@ -116,7 +116,14 @@ export default function MainHeader() {
           </div>
         </div>
 
-        <div
+        <motion.div
+          initial={{ opacity: 1, x: 0 }}
+          animate={{ 
+            opacity: isSearching ? 0 : 1, 
+            x: isSearching ? -50 : 0,
+            width: isSearching ? 0 : 'auto'
+          }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
           className="hidden md:flex md:items-center md:gap-5 md:ml-0 md:mr-4 md:static
          md:shadow-none md:border-none md:p-0 md:flex-row md:justify-start lg:gap-8 xl:gap-10 md:flex-1 max-w-[50%]
          w-full px-4 max-[810px]:min-[770px]:gap-2 max-[810px]:min-[770px]:mr-12 max-[810px]:min-[770px]:flex-grow-0 
@@ -128,7 +135,7 @@ export default function MainHeader() {
           {/* admin Links */}
           {isAuthorized && user?.isAdmin && <AdminLinks />}
           {isAuthorized && <InboxButton />}
-        </div>
+        </motion.div>
 
         {/* Mobile Menu - AnimatePresence for slide effect */}
         <AnimatePresence>
@@ -180,23 +187,44 @@ export default function MainHeader() {
         </AnimatePresence>
 
         {/* Action buttons and search area */}
-        <div className="flex ml-8 items-center justify-center relative md:flex-1 z-30 overflow-visible">
-          {/* Search Bar that appears inline */}
+        <div className="flex ml-8 items-center justify-center relative md:flex-1 z-30 overflow-visible flex-grow">
+          {/* Search backdrop overlay */}
           <AnimatePresence>
             {isSearching && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 0.5 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="fixed inset-0 bg-black bg-opacity-50 z-40 hidden md:block"
+                onClick={handleSearching}
+              />
+            )}
+          </AnimatePresence>
+          
+          {/* Search Bar that appears inline */}
+          <AnimatePresence>
+            {isSearching && isAuthorized && (
               <motion.div
                 initial={{ opacity: 0, width: 0 }}
                 animate={{ opacity: 1, width: "100%" }}
                 exit={{ opacity: 0, width: 0 }}
                 transition={{ duration: 0.3, ease: "easeInOut" }}
-                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 w-full px-4 z-50 overflow-visible"
+                className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 w-full px-4 z-[100] overflow-visible h-[85%] items-center justify-center"
               >
-                <SearchBarForDesktop handleSearching={handleSearching} />
+                <SearchBarForDesktop handleSearching={handleSearching} isSearching={isSearching} />
               </motion.div>
             )}
           </AnimatePresence>
 
-          <div className="flex items-center justify-end gap-6 w-full max-[810px]:min-[760px]:gap-4">
+          <motion.div 
+            initial={{ opacity: 1, x: 0 }}
+            animate={{ 
+              opacity: isSearching ? 0 : 1, 
+              x: isSearching ? 50 : 0
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="flex items-center justify-end gap-6 w-full max-[810px]:min-[760px]:gap-4">
             {isAuthorized && (
               <div className="relative group z-20">
                 <button
@@ -232,7 +260,7 @@ export default function MainHeader() {
                 {isAuthorized ? "تسجيل الخروج" : "تسجيل الدخول"}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </nav>
     </div>

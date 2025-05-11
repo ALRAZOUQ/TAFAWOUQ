@@ -94,8 +94,8 @@ export default function Landing() {
           />
         </div>
         <p className="text-center mb-10 text-2xl font-alm z-[2]">
-          بيئة تفاعلية تجمع طلاب الجامعة لتبادل الخبرات والمعارف ومشاركة الآراء
-          حول المسارات الدراسية والمقررات الأكاديمية.
+          بيئة تفاعلية تجمع طلاب جامعة الملك سعود لتبادل الخبرات والمعارف
+          ومشاركة الآراء حول المسارات الدراسية والمقررات الأكاديمية.
         </p>
 
         <div className="flex flex-col gap-10 w-full justify-center items-center z-[2]">
