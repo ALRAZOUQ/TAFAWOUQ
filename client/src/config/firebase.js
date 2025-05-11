@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getMessaging, getToken, onMessage } from "firebase/messaging";
+import { getMessaging, getToken } from "firebase/messaging";
 import axios from "../api/axios";
 import detectDeviceType from "../util/detectDeviceType";
 const firebaseConfig = {
@@ -58,5 +58,7 @@ export async function requestNotificationPermissionAndGetTheFCMToken() {
 //             resolve(payload);
 //         });
 //     });
+
+
 
 export { messaging };
