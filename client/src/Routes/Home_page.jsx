@@ -4,7 +4,7 @@ import { useSchedule } from "../context/ScheduleContext";
 import { Eye, EyeOff } from "lucide-react";
 import { useRouteIfAuthorizedAndHeIsAdmin } from "../util/useRouteIfNotAuthorized";
 import GPA from "../components/HomePageComponents/GPA";
-import PushNotificationDialog from "@/components/RootLayoutComponents/InboxComponents/PushNotificationDialog";
+import PushNotificationDialog from "../components/RootLayoutComponents/InboxComponents/PushNotificationDialog";
 import Screen from "../components/Screen";
 export default function HomePage() {
   useRouteIfAuthorizedAndHeIsAdmin();
