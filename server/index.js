@@ -114,6 +114,7 @@ app.use(
       process.env.DEVELOPMENT_CLIENT_URL,
       process.env.DEVELOPMENT_CLIENT2_URL, 
       process.env.PRODUCTION_CLIENT_URL,
+      process.env.PRODUCTION_DOMAIN_NAME_URL,
     ], //React link. we have to check if will work normally or not
     credentials: true,
   })
