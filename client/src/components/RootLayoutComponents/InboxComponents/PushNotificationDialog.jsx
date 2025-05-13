@@ -24,7 +24,7 @@ export default function PushNotificationDialog({ openIt = false }) {
     const shouldShowNotificationPrompt = !sessionStorage.getItem(
       "notificationsPrompted"
     );
-console.log('window.Notification :>> ', window.Notification);
+console.log('window.Notification :>> ', window   .Notification);
 console.log('Notification :>> ', Notification);
     if (
       openIt || window.Notification
