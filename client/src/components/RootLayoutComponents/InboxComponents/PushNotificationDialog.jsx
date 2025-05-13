@@ -10,9 +10,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+} from "../../../components/ui/alert-dialog";
 import { BellRing } from "lucide-react";
-import { requestNotificationPermissionAndGetTheFCMToken } from "@/config/firebase";
+import { requestNotificationPermissionAndGetTheFCMToken } from "../../../config/firebase";
 
 export default function PushNotificationDialog({ openIt = false }) {
   console.log("openIt :>> ", openIt);
@@ -21,9 +21,14 @@ export default function PushNotificationDialog({ openIt = false }) {
   useEffect(() => {
     // Check if we should show the notification dialog
     // This is where you'd put your condition, for example:
-    const shouldShowNotificationPrompt = !sessionStorage.getItem("notificationsPrompted");
+    const shouldShowNotificationPrompt = !sessionStorage.getItem(
+      "notificationsPrompted"
+    );
 
-    if (openIt || (shouldShowNotificationPrompt && Notification.permission == "default")) {
+    if (
+      openIt ||
+      (shouldShowNotificationPrompt && Notification.permission == "default")
+    ) {
       setOpen(true);
     }
   }, []);
@@ -34,16 +39,22 @@ export default function PushNotificationDialog({ openIt = false }) {
         <AlertDialogHeader>
           <div className="flex items-center space-x-3 mb-2 ">
             <BellRing className="size-8 text-blue-500 me-2" />
-            <AlertDialogTitle>هل نخبرك عندما يرد أحدهم على تعليقاتك؟</AlertDialogTitle>
+            <AlertDialogTitle>
+              هل نخبرك عندما يرد أحدهم على تعليقاتك؟
+            </AlertDialogTitle>
           </div>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="font-semibold rounded-xl me-4 text-md" onClick={handleCancel}>
+          <AlertDialogCancel
+            className="font-semibold rounded-xl me-4 text-md"
+            onClick={handleCancel}
+          >
             ليس الآن
           </AlertDialogCancel>
           <AlertDialogAction
             className="font-semibold rounded-xl bg-blue-700 text-md "
-            onClick={handleAllowNotifications}>
+            onClick={handleAllowNotifications}
+          >
             بالطبع أخبرني!
           </AlertDialogAction>
         </AlertDialogFooter>
