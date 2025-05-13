@@ -14,11 +14,12 @@ export function useRouteIfAuthorizedAndHeIsAdmin() {
   const navigate = useNavigate();
   const { isAuthorized, user } = useAuth();
   useEffect(() => {
+    if (typeof window === "undefined") return;
     if (!isAuthorized) {
       navigate("/");
       return;
     }
-    if (isAuthorized && user.isAdmin) {
+    if (isAuthorized && user && user.isAdmin) {
       navigate("/admin");
       return;
     }
