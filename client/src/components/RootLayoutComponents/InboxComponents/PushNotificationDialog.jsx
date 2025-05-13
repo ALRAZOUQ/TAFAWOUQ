@@ -24,10 +24,11 @@ export default function PushNotificationDialog({ openIt = false }) {
     const shouldShowNotificationPrompt = !sessionStorage.getItem(
       "notificationsPrompted"
     );
-
+console.log('window.Notification :>> ', window.Notification);
+console.log('Notification :>> ', Notification);
     if (
-      openIt ||
-      (shouldShowNotificationPrompt && Notification.permission == "default")
+      openIt || window.Notification
+      (shouldShowNotificationPrompt && Notification?.permission == "default")
     ) {
       setOpen(true);
     }
