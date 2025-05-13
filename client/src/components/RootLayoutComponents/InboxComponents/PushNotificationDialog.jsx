@@ -19,19 +19,23 @@ export default function PushNotificationDialog({ openIt = false }) {
   const [open, setOpen] = useState(openIt);
 
   useEffect(() => {
-    // Check if we should show the notification dialog
+    try {
+      // Check if we should show the notification dialog
     // This is where you'd put your condition, for example:
     const shouldShowNotificationPrompt = !sessionStorage.getItem(
       "notificationsPrompted"
     );
-console.log('window.Notification :>> ', window.Notification);
-console.log('Notification :>> ', Notification);
+    // console.log("window.Notification :>> ", window.Notification);
+    // console.log("Notification :>> ", Notification);
     if (
-      openIt || window.Notification
-      (shouldShowNotificationPrompt && Notification?.permission == "default")
+      openIt || (shouldShowNotificationPrompt && Notification?.permission == "default")
     ) {
       setOpen(true);
     }
+    } catch (error) {
+      console.error(`PushNotificationDialog component: ${error}`);
+    }
+    
   }, []);
 
   return (
