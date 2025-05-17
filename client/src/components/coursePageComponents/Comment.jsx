@@ -180,7 +180,7 @@ export default function Comment({
 
   return (
     <div
-      className={`border border-gray-200 rounded-lg p-4 bg-white shadow-sm hover:shadow-md transition-shadow space-y-3 mb-4 ${
+      className={`border border-gray-200 rounded-xl p-4 bg-white shadow-sm hover:shadow-md transition-shadow space-y-3 mb-4 ${
         isReply ? "ml-8" : ""
       }`}
       id={comment.id}
@@ -199,7 +199,7 @@ export default function Comment({
           </div>
         </div>
         {!isReply && (
-          <span className="px-3 py-1 bg-gray-100 text-gray-600 text-sm rounded-full">
+          <span className="px-3 py-1 bg-sky-100 text-cyan-700 text-sm rounded-full">
             {comment.tag}
           </span>
         )}
@@ -320,7 +320,7 @@ export default function Comment({
 const ReplyToggleButton = ({ isLoading, showReplies, onClick, replyCount }) => (
   <button
     onClick={onClick}
-    className="w-full py-2 px-4 rounded-md bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium flex items-center justify-center gap-2 transition-all duration-200 border border-gray-200"
+    className="w-full py-2 px-4 rounded-xl  bg-cyan-50 hover:bg-cyan-100 text-cyan-700 font-medium flex items-center justify-center gap-2 transition-all duration-200 border border-cyan-200"
     disabled={isLoading}
   >
     {isLoading ? (

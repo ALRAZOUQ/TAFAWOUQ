@@ -59,7 +59,7 @@ export default function CourseCard({ course, isAdmin, onDelete, onCourseUpdate, 
   }
   if (!course) return <div className="text-center py-4">Loading...</div>;
   return (
-    <div className="w-full h-auto bg-white shadow-lg rounded-3xl p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300 hover:shadow-xl transition-shadow">
+    <div className="w-full h-auto bg-white shadow-md rounded-3xl p-6 border-y border-y-gray-200 border-x-4 border-x-TAF-300  transition-shadow">
       <EditCourseModal
         id={course.id}
         isOpen={isEditModalOpen}
