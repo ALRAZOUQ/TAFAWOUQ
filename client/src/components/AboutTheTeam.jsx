@@ -41,12 +41,12 @@ const teamMembers = [
 
 export default function TeamSection() {
   return (
-    <section className="py-12 text-center">
+    <section className="py-12 text-center ">
       <h2 className="text-3xl font-bold mb-10">فريق تفوق</h2>
-      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 px-4 md:px-8">
+      <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 px-4 md:px-8 ">
         {teamMembers.map((member, index) => (
-          <Card key={index} className="rounded-2xl shadow-sm bg-[#f8feff]">
-            <CardContent className="flex flex-col items-center p-6">
+          <Card key={index} className="rounded-2xl shadow-sm h-full bg-[#f8feff]">
+            <CardContent className="flex flex-col h-full items-center p-6">
             {member.image? (  <div className="w-24 h-24 rounded-full overflow-hidden mb-4">
                <img
                   src={member.image}
@@ -60,6 +60,7 @@ export default function TeamSection() {
               <p className="text-sm text-gray-500 mb-3 text-center leading-relaxed">
                 {member.role}
               </p>
+              <div className="flex-grow "></div>
              <div className="flex gap-4">
 
               <a
