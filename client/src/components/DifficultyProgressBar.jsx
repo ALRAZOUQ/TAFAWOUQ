@@ -29,7 +29,7 @@ export default function DifficultyProgressBar({ value }) {
         className={`absolute inset-0 flex justify-center items-center ${
           value > 0
             ? value <= 2.5 && value > 1.5
-              ? "text-green-800"
+              ? "text-black"
               : value <= 1.5 && value >= 1
               ? "text-green-400"
               : "text-white"

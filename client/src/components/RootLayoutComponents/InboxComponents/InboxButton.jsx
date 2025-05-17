@@ -4,7 +4,6 @@ import { Bell } from "lucide-react";
 import NotificatoinElement from "./NotificatoinElement";
 import axios from "../../../api/axios";
 import { toast } from "react-toastify";
-import { requestNotificationPermissionAndGetTheFCMToken } from "../../../config/firebase";
 import PushNotificationDialog from "./PushNotificationDialog";
 
 function InboxButton() {

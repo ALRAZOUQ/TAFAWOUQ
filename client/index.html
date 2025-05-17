@@ -79,7 +79,7 @@
 <body class="font-alm scroll-bar-TAF relative">
   <script>
     let currentLocatino=window?.location.href
-    if(  !"http://localhost:5173/".startsWith(currentLocatino) &&  !"https://tafawouq-2efa1dff3d60.herokuapp.com/".startsWith(currentLocatino) &&  !"https://tafawouq.com/".startsWith(currentLocatino) && !"https://tafawouq.onrender.com/".startsWith(currentLocatino) ){
+    if(  !currentLocatino.startsWith("http://localhost:5173") && !currentLocatino.startsWith("https://tafawouq.com") && !currentLocatino.startsWith("https://tafawouq.onrender.com") ){
       window.location.href="https://tafawouq.com"
     }
   </script>
