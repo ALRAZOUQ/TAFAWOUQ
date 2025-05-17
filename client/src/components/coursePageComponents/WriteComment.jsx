@@ -89,14 +89,17 @@ export default function WriteComment({ courseId, onCommentAdded }) {
         onChange={(e) => setComment(e.target.value)}
         disabled={isSubmitting}></textarea>
 
-      <div className="flex justify-between items-center mt-2">
+      <div className="flex justify-end items-center mt-2">
         <button
-          className={`bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 ${
+          className={`bg-blue-500 text-white px-4 py-2 rounded-xl flex items-center gap-2 ${
             isSubmitting ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-600"
           }`}
           onClick={handlePost}
-          disabled={isSubmitting}>
-          <Send size={16} /> نشر
+          disabled={isSubmitting}>         
+
+           نشر
+                     <Send size={16} />
+
         </button>
       </div>
 
