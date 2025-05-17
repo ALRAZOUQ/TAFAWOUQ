@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "../context/authContext";
 // import TafawouqMainCanvas from "../components/TAFAWOUQ-Canvas";
 import Screen from "../components/Screen";
+import TeamSection from "@/components/AboutTheTeam";
 const Texts = ["شارك", "تعلم", " انطلق نحو النجاح", "تعاون"];
 export default function Landing() {
   const [buttonText, setButtonText] = useState("ساهم");
@@ -163,6 +164,7 @@ export default function Landing() {
           ⚡ تعلم، شارك، وانطلق نحو النجاح!
         </p>
       </div>
+      <TeamSection/>
     </Screen>
   );
 }

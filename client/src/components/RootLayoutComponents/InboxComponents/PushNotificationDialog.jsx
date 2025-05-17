@@ -10,8 +10,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "../../../components/ui/alert-dialog";
+} from "../../ui/alert-dialog";
 import { BellRing } from "lucide-react";
+import { requestNotificationPermissionAndGetTheFCMToken } from "../../../config/firebase";
 import { requestNotificationPermissionAndGetTheFCMToken } from "../../../config/firebase";
 
 export default function PushNotificationDialog({ openIt = false }) {
