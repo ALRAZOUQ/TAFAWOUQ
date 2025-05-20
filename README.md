@@ -2,7 +2,10 @@
   <img src="mainLogo.svg" alt="Project Logo" width="300" align="center"> 
 </p> 
 
-Tafawouq is a peer-to-peer AI-powered academic social platform created specifically for King Saud University students to increase collaboration and academic success. 
+Tafawouq is a peer-to-peer AI-powered academic social platform created specifically for King Saud University students to increase collaboration and academic success. <br>
+<a href="https://tafawouq.com">To try Tafawouq Click here!</a><br>
+
+
 ![Landing Page](./ReadMeContent/LandingPage.png)
 
 ## Features 
