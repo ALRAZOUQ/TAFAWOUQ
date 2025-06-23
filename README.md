@@ -19,11 +19,7 @@ Tafawouq is a peer-to-peer AI-powered academic social platform created specifica
 - **Dashboard**: A visual analytics interface that shows monthly comment statistics, the most interactive courses, and the most active users. It helps administrators and students monitor engagement trends on the platform.  
 ![Dashboard](./ReadMeContent/Dashboard.png)
 
-## Technology Stack 
-- **Frontend**: ReactJS, Shadcn/UI, Tailwind
-- **Backend**: Node.js using ExpressJS framework 
-- **Database**: PostgreSQL 
-- **API Integration**: Gemini 2.0 Flash, Firebase from Google 
+
 ## Technology Stack
 
 - **Frontend:** 
